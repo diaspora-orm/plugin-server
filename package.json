@@ -1,33 +1,54 @@
 {
-  "name": "diaspora-server",
-  "version": "0.0.1",
-  "description": "A webserver module for Diaspora",
-  "main": "index.js",
-  "scripts": {
-    "test": "mocha test/index.js"
-  },
-  "keywords": [
-    "ORM",
-    "Diaspora",
-    "webserver",
-    "API",
-    "RESTFULL"
-  ],
+	"name": "diaspora-server",
+	"version": "0.0.1",
+	"description": "A webserver module for Diaspora",
+	"main": "index.js",
+	"scripts": {
+		"test": "mocha test/index.js",
+		"test-coverage": "nyc --reporter=lcov mocha test/index.js",
+		"dist": "grunt documentate",
+		"build-then-check": "npm run dist && npm run test",
+		"preversion": "script/deploy",
+		"version": "npm run build-then-check && git add ."
+	},
+	"keywords": [
+		"ORM",
+		"Diaspora",
+		"webserver",
+		"API",
+		"RESTFULL"
+	],
 	"directories": {
 		"doc": "doc",
 		"lib": "lib",
 		"test": "test"
 	},
-
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/GerkinDev/diaspora-server.git"
 	},
-
 	"bugs": {
 		"url": "https://github.com/GerkinDev/diaspora-server/issues"
 	},
 	"homepage": "https://github.com/GerkinDev/diaspora-server#readme",
-  "author": "Gerkin",
-  "license": "GPL-3.0"
+	"author": "Gerkin",
+	"license": "GPL-3.0",
+	"dependencies": {
+		"body-parser": "^1.18.2",
+		"diaspora": "^0.2.0-rc.2",
+		"minimatch": "^3.0.4"
+	},
+	"devDependencies": {
+		"chai": "^4.1.2",
+		"chai-as-promised": "^7.1.1",
+		"eslint-plugin-jsdoc": "^3.1.3",
+		"express": "^4.16.2",
+		"grunt": "^1.0.1",
+		"grunt-contrib-clean": "^1.1.0",
+		"grunt-docco-husky": "0.0.4",
+		"grunt-jsdoc": "^2.2.0",
+		"gruntify-eslint": "^4.0.0",
+		"request": "^2.83.0",
+		"load-grunt-tasks": "^3.5.2"
+	}
 }
