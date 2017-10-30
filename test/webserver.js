@@ -36,11 +36,11 @@ app.use( '/api', DiasporaServer({
 }));
 
 const config = require( './config' );
-app.listen( config.port, function() {
+const server = app.listen( config.port, function() {
 	console.log( `Example app listening on port ${ config.port }!` );
 	if ( module.exports.after ) {
 		module.exports.after();
 	}
 });
 
-module.exports = app;
+module.exports = server;

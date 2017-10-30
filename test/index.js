@@ -137,6 +137,7 @@ describe( 'Test basic interactions', () => {
 
 	after( cb => {
 		// runs after all tests in this block
+		app.close();
 		return cb();
 	});
 
