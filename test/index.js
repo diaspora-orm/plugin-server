@@ -13,9 +13,37 @@ const assert = chai.assert;
 const expect = chai.expect;
 const config = require( './config' );
 const _ = require('lodash');
+const utils = require('../lib/utils');
+const Diaspora = require('diaspora');
+
+const datas = [
+	{
+		name: 'YoloMan',
+	},
+	{
+		name:  'HeyThere',
+		email: 'heythere@mail.com',
+	},
+	{
+		name:  'Another Test',
+		phone: '123456',
+		email: 'test.another@mail.com',
+	},
+	{
+		name: 'John Doe',
+		phone: '051295'
+	},
+	{
+		name: 'Frank Sinatra',
+		email: 'frank@sinatra.com',
+	},
+	{
+		email: 'mickael.jackson@musicking.org',
+		phone: '555-975-123',
+	},
+];
 
 describe('Test utilities', () => {
-	const utils = require('../lib/utils');
 	it('configureList', () => {
 		expect(utils.configureList({'*': true, b: false}, ['a', 'b', 'c'])).to.deep.equal({a: true, c: true});
 		expect(utils.configureList({'/aa?/': true}, ['a', 'aa', 'ab', 'aaa', 'b', 'ba', 'c'])).to.deep.equal({a: true, aa: true, ab: true, aaa: true, ba: true});
@@ -29,6 +57,36 @@ describe('Test utilities', () => {
 			barqux: {bar: true, last: 'bar'},
 			foobar: {foo: true, bar: true, last: 'bar'},
 		})
+	});
+	it('respondError', () => {
+		return new Promise((resolve, reject) => {
+			let checks = {
+				status: false,
+				message: false,
+			};
+			const pseudoRes = {
+				status(code){
+					checks.status = code === 500;
+					return this;
+				},
+				send(message){
+					checks.message = true;
+					if(_.isEqual(checks, {
+						status: true,
+						message: true,
+					})){
+						return resolve();
+					} else {
+						return reject();
+					}
+					return this;
+				}
+			};
+			utils.respondError(pseudoRes);
+		});
+	});
+	it('prettylog', () => {
+		utils.prettylog(datas);
 	});
 });
 
@@ -55,20 +113,6 @@ describe( 'Test basic interactions', () => {
 	});
 
 	const baseAPI = `http://localhost:${ config.port }${ config.baseApi }`;
-	const datas = [
-		{
-			name: 'YoloMan',
-		},
-		{
-			name:  'HeyThere',
-			email: 'heythere@mail.com',
-		},
-		{
-			name:  'Another Test',
-			phone: '123456',
-			email: 'test.another@mail.com',
-		}
-	];
 	// test cases
 	it( 'Get API index', () => {
 		return request( baseAPI ).then(([ res, body ]) => {
@@ -81,170 +125,492 @@ describe( 'Test basic interactions', () => {
 			expect( respJson['/PhoneBooks']).to.have.property( 'description' );
 		});
 	});
-	describe( 'Create some items', () => {
-		it('Create a single item', () => {
-			return request.postAsync({
-				url:  `${ baseAPI }/PhoneBook`,
-				json: datas[0],
-			}).then(([ res, respJson ]) => {
-				expect(res).to.have.property('statusCode', 201);
-				expect( respJson ).to.include( datas[0]);
-			});
-		});
-		it('Create several items', () => {
-			return request.postAsync({
-				url:  `${ baseAPI }/PhoneBooks`,
-				json: datas.slice(1),
-			}).then(([ res, respJson ]) => {
-				expect(res).to.have.property('statusCode', 201);
-				expect( respJson ).to.have.lengthOf(2);
-				expect(respJson[0]).to.include( datas[1]);
-				expect(respJson[1]).to.include( datas[2]);
-			});
-		});
-		let id;
-		describe('Use query string', () => {
-			it('Update OK', () => {
+
+	describe('POST', () => {
+		describe('Single', () => {
+			let id;
+			it('Create item', () => {
 				return request.postAsync({
 					url:  `${ baseAPI }/PhoneBook`,
-					json: {
-						name: 'HeyDude'
-					},
-					qs: {
-						query: JSON.stringify({
-							name: {
-								$equal: 'HeyThere',
-							},
-						}),
-						limit: 1
-					},
-				}).then(([res, respJson]) => {
-					expect(respJson).to.deep.include(_.assign({}, datas[0], {name: 'HeyDude'}));
-					id = respJson.idHash.myDataSource;
+					json: datas[0],
+				}).then(([ res, respJson ]) => {
+					expect(res).to.have.property('statusCode', 201);
+					expect( respJson ).to.include( datas[0]);
 				});
 			});
-			it('Trigger JSON error (single)', () => {
+			describe('Use query string', () => {
+				it('Update OK', () => {
+					const update = {
+						name: 'HeyDyde',
+					};
+
+					return request.postAsync({
+						url:  `${ baseAPI }/PhoneBook`,
+						json: update,
+						qs: {
+							query: JSON.stringify({
+								name: {
+									$equal: datas[0].name,
+								},
+							}),
+							limit: 1
+						},
+					}).then(([res, respJson]) => {
+						expect(res).to.have.property('statusCode', 200);
+						_.assign(datas[0], update);
+						expect(respJson).to.deep.include(datas[0]);
+						id = respJson.idHash.myDataSource;
+					});
+				});
+				it('Trigger JSON error', () => {
+					return request.postAsync({
+						url:  `${ baseAPI }/PhoneBook`,
+						json: true,
+						qs: {
+							query: '{hey:"there"}',
+						},
+					}).then(([res, respJson]) => {
+						expect(res).to.have.property('statusCode', 400);
+					});
+				});
+				it('Update by id in URL', () => {
+					const update = {
+						name: 'Foo Bar',
+					};
+					return request.postAsync({
+						url:  `${ baseAPI }/PhoneBook/${id}`,
+						json: update,
+					}).then(([res, respJson]) => {
+						expect(res).to.have.property('statusCode', 200);
+						_.assign(datas[0], update);
+						expect(respJson).to.deep.include(datas[0]);
+					});
+				});
+			});
+			it('Update not found', () => {
 				return request.postAsync({
-					url:  `${ baseAPI }/PhoneBook`,
-					json: true,
-					qs: {
-						query: '{hey:"there"}',
-					},
+					url:  `${ baseAPI }/PhoneBook/12`,
+					json: {Yolo:'swag'},
 				}).then(([res, respJson]) => {
-					expect(res).to.have.property('statusCode', 400);
+					expect(res).to.have.property('statusCode', 404);
+					expect(respJson).to.be.undefined;
 				});
 			});
-			it('Trigger JSON error (multiple)', () => {
+		});
+		describe('Multiple', () => {
+			it('Create items', () => {
+				let idx = 1;
 				return request.postAsync({
 					url:  `${ baseAPI }/PhoneBooks`,
-					json: true,
+					json: datas.slice(idx, idx + 2),
+				}).then(([ res, respJson ]) => {
+					expect(res).to.have.property('statusCode', 201);
+					expect( respJson ).to.have.lengthOf(2);
+					expect(respJson[0]).to.include( datas[1]);
+					expect(respJson[1]).to.include( datas[2]);
+				});
+			});
+			it('Update not found', () => {
+				return request.postAsync({
+					url:  `${ baseAPI }/PhoneBooks`,
+					json: {Yolo:'swag'},
 					qs: {
-						query: '{hey:"there"}',
+						name: 'NotFound',
 					},
 				}).then(([res, respJson]) => {
-					expect(res).to.have.property('statusCode', 400);
+					expect(res).to.have.property('statusCode', 404);
+					expect(respJson).to.be.an('array').that.have.lengthOf(0);
 				});
 			});
-			it('Update by id in URL', () => {
-				return request.postAsync({
-					url:  `${ baseAPI }/PhoneBook/${id}`,
-					json: {name: 'HeyThere'},
-				}).then(([res, respJson]) => {
-					expect(respJson).to.deep.include(datas[0]);
+			describe('Use query string', () => {
+				it( 'Update OK', () => {
+					const update = {
+						otherProp: 'foo'
+					};
+					return request.postAsync({
+						url:  `${ baseAPI }/PhoneBooks`,
+						json: update,
+						qs: {
+							query: JSON.stringify({
+								name: {
+									$diff: datas[0].name,
+								},
+							}),
+						},
+					}).then(([res, respJson]) => {
+						const matched = [1,2];
+						_.forEach(matched, idx => {
+							_.assign(datas[idx], update);
+						});
+						expect(res).to.have.property('statusCode', 200);
+						expect(respJson).to.have.lengthOf(2);
+						_.forEach(respJson, (entity, index) => {
+							expect(entity).to.deep.include(datas[matched[index]]);
+						});
+					});
 				});
-			});
-		});
-		it('Update not found', () => {
-			return request.postAsync({
-				url:  `${ baseAPI }/PhoneBook/12`,
-				json: {Yolo:'swag'},
-			}).then(([res, respJson]) => {
-				expect(res).to.have.property('statusCode', 404);
-				expect(respJson).to.be.undefined;
+				it( 'Trigger JSON error', () => {
+					return request.postAsync({
+						url:  `${ baseAPI }/PhoneBooks`,
+						json: true,
+						qs: {
+							query: '{hey:"there"}',
+						},
+					}).then(([res, respJson]) => {
+						expect(res).to.have.property('statusCode', 400);
+					});
+				});
 			});
 		});
 	});
-	describe('Retrieve some items', () => {
-		it('Get all', () => {
-			return request.getAsync({
-				url:  `${ baseAPI }/PhoneBooks`,
-				json: true,
-			}).then(([res, respJson]) => {
-				expect(respJson).to.be.an('array').that.have.lengthOf(datas.length);
-				_.forEach(respJson, (entity, index) => {
-					expect(entity).to.deep.include(datas[index]);
+	describe('PUT', () => {
+		describe('Single', () => {
+			let id;
+			it('Create item', () => {
+				return request.putAsync({
+					url:  `${ baseAPI }/PhoneBook`,
+					json: datas[3],
+				}).then(([ res, respJson ]) => {
+					expect(res).to.have.property('statusCode', 201);
+					expect( respJson ).to.include( datas[3]);
+				});
+			});
+			describe('Use query string', () => {
+				it('Update OK', () => {
+					const update = {
+						name: 'HeyDyde',
+					};
+
+					return request.putAsync({
+						url:  `${ baseAPI }/PhoneBook`,
+						json: update,
+						qs: {
+							query: JSON.stringify({
+								name: {
+									$equal: datas[0].name,
+								},
+							}),
+							limit: 1
+						},
+					}).then(([res, respJson]) => {
+						expect(res).to.have.property('statusCode', 200);
+						datas[0] = update;
+						expect(respJson).to.deep.include(datas[0]);
+						id = respJson.idHash.myDataSource;
+					});
+				});
+				it('Trigger JSON error', () => {
+					return request.putAsync({
+						url:  `${ baseAPI }/PhoneBook`,
+						json: true,
+						qs: {
+							query: '{hey:"there"}',
+						},
+					}).then(([res, respJson]) => {
+						expect(res).to.have.property('statusCode', 400);
+					});
+				});
+				it('Update by id in URL', () => {
+					const update = {
+						name: 'Foo Bar',
+					};
+					return request.putAsync({
+						url:  `${ baseAPI }/PhoneBook/${id}`,
+						json: update,
+					}).then(([res, respJson]) => {
+						expect(res).to.have.property('statusCode', 200);
+						_.assign(datas[0], update);
+						expect(respJson).to.deep.include(datas[0]);
+					});
+				});
+			});
+			it('Update not found', () => {
+				return request.putAsync({
+					url:  `${ baseAPI }/PhoneBook/12`,
+					json: {Yolo:'swag'},
+				}).then(([res, respJson]) => {
+					expect(res).to.have.property('statusCode', 404);
+					expect(respJson).to.be.undefined;
 				});
 			});
 		});
-		it('Get single by name', () => {
-			return request.getAsync({
-				url:  `${ baseAPI }/PhoneBook`,
-				json: true,
-				qs: {
-					name: datas[1].name,
-				}
-			}).then(([res, respJson]) => {
-				expect(respJson).to.be.an('object').that.include(datas[1]);
-			});
-		});
-		let id;
-		describe('Use query string', () => {
-			it('Search OK', () => {
-				return request.getAsync({
+		describe('Multiple', () => {
+			it('Create items', () => {
+				let idx = 4;
+				return request.putAsync({
 					url:  `${ baseAPI }/PhoneBooks`,
-					json: true,
+					json: datas.slice(idx, idx + 2),
+				}).then(([ res, respJson ]) => {
+					expect(res).to.have.property('statusCode', 201);
+					expect( respJson ).to.have.lengthOf(2);
+					expect(respJson[0]).to.include( datas[4]);
+					expect(respJson[1]).to.include( datas[5]);
+				});
+			});
+			it('Update not found', () => {
+				return request.putAsync({
+					url:  `${ baseAPI }/PhoneBooks`,
+					json: {Yolo:'swag'},
 					qs: {
-						query: JSON.stringify({
-							name: {
-								$diff: 'HeyThere',
-							},
-						}),
-						limit: 1
+						name: 'NotFound',
 					},
 				}).then(([res, respJson]) => {
-					expect(respJson).to.be.an('array').that.have.lengthOf(1);
-					expect(respJson[0]).to.deep.include(datas[0]);
-					id = respJson[0].idHash.myDataSource;
+					expect(res).to.have.property('statusCode', 404);
+					expect(respJson).to.be.an('array').that.have.lengthOf(0);
 				});
 			});
-			it('Trigger JSON error (single)', () => {
+			describe('Use query string', () => {
+				it('Update OK', () => {
+					const update = {
+						name: 'Terry Fisher'
+					};
+					return request.putAsync({
+						url:  `${ baseAPI }/PhoneBooks`,
+						json: update,
+						qs: {
+							query: JSON.stringify({
+								name: datas[0].name,
+							}),
+						},
+					}).then(([res, respJson]) => {
+						_.forEach(datas, (entity, index) => {
+							if(_.isMatch(entity, {name: datas[0].name})){
+								datas[index] = _.clone(update);
+							}
+						});
+						expect(res).to.have.property('statusCode', 200);
+						expect(respJson).to.have.lengthOf(1);
+						_.forEach(respJson, entity => {
+							expect(entity).to.deep.include(update);
+						});
+					});
+				});
+				it('Trigger JSON error', () => {
+					return request.putAsync({
+						url:  `${ baseAPI }/PhoneBooks`,
+						json: true,
+						qs: {
+							query: '{hey:"there"}',
+						},
+					}).then(([res, respJson]) => {
+						expect(res).to.have.property('statusCode', 400);
+					});
+				});
+			});
+		});
+	});
+	describe('GET', () => {
+		describe('Single', () => {
+			let id;
+			it('Get item', () => {
 				return request.getAsync({
 					url:  `${ baseAPI }/PhoneBook`,
 					json: true,
-					qs: {
-						query: '{hey:"there"}',
-					},
-				}).then(([res, respJson]) => {
-					expect(res).to.have.property('statusCode', 400);
+				}).then(([ res, respJson ]) => {
+					expect(res).to.have.property('statusCode', 200);
+					expect( respJson ).to.include( datas[0] );
 				});
 			});
-			it('Trigger JSON error (multiple)', () => {
+			it('Get not found', () => {
 				return request.getAsync({
-					url:  `${ baseAPI }/PhoneBooks`,
+					url:  `${ baseAPI }/PhoneBook/12`,
 					json: true,
-					qs: {
-						query: '{hey:"there"}',
-					},
 				}).then(([res, respJson]) => {
-					expect(res).to.have.property('statusCode', 400);
+					expect(res).to.have.property('statusCode', 404);
+					expect(respJson).to.be.undefined;
 				});
 			});
-			it('Search by id in URL', () => {
-				return request.getAsync({
-					url:  `${ baseAPI }/PhoneBook/${id}`,
-					json: true,
-				}).then(([res, respJson]) => {
-					expect(respJson).to.deep.include(datas[0]);
+			describe('Use query string', () => {
+				let id;
+				it('Get item', () => {
+					return request.getAsync({
+						url:  `${ baseAPI }/PhoneBook`,
+						json: true,
+						qs: {
+							email: datas[5].email,
+						}
+					}).then(([ res, respJson ]) => {
+						expect(res).to.have.property('statusCode', 200);
+						id = respJson.idHash.myDataSource;
+						expect( respJson ).to.include( datas[5] );
+					});
+				});
+				it('Trigger JSON error', () => {
+					return request.getAsync({
+						url:  `${ baseAPI }/PhoneBook`,
+						json: true,
+						qs: {
+							query: '{hey:"there"}',
+						},
+					}).then(([res, respJson]) => {
+						expect(res).to.have.property('statusCode', 400);
+					});
+				});
+				it('Get by id in URL', () => {
+					return request.getAsync({
+						url:  `${ baseAPI }/PhoneBook/${id}`,
+						json: true,
+					}).then(([res, respJson]) => {
+						expect(res).to.have.property('statusCode', 200);
+						expect(respJson).to.deep.include(datas[5]);
+					});
 				});
 			});
 		});
-		it('Search not found', () => {
-			return request.getAsync({
-				url:  `${ baseAPI }/PhoneBook/12`,
-				json: true,
-			}).then(([res, respJson]) => {
-				expect(res).to.have.property('statusCode', 404);
-				expect(respJson).to.be.undefined;
+		describe('Multiple', () => {
+			it('Get items', () => {
+				return request.getAsync({
+					url:  `${ baseAPI }/PhoneBooks`,
+					json: true,
+				}).then(([ res, respJson ]) => {
+					expect(res).to.have.property('statusCode', 200);
+					expect( respJson ).to.have.lengthOf(datas.length);
+					_.forEach(respJson, (entity, index) => {
+						expect(entity).to.include(datas[index]);
+					});
+				});
+			});
+			it('Get not found', () => {
+				return request.getAsync({
+					url:  `${ baseAPI }/PhoneBooks`,
+					qs: {
+						name: 'NotFound',
+					},
+					json: true,
+				}).then(([res, respJson]) => {
+					expect(res).to.have.property('statusCode', 404);
+					expect(respJson).to.be.an('array').that.have.lengthOf(0);
+				});
+			});
+			describe('Use query string', () => {
+				it('Get OK', () => {
+					return request.getAsync({
+						url:  `${ baseAPI }/PhoneBooks`,
+						json: true,
+						qs: {
+							query: JSON.stringify({
+								name: {
+									$exists: true,
+								},
+							}),
+						},
+					}).then(([res, respJson]) => {
+						expect(res).to.have.property('statusCode', 200);
+						const matches = _.reduce(datas, (ret, entity) => {
+							if(!_.isNil(entity.name)){
+								ret.push(entity);
+							}
+							return ret;
+						}, []);
+						expect(respJson).to.have.lengthOf(5);
+						_.forEach(respJson, (entity, index) => {
+							expect(entity).to.deep.include(matches[index]);
+						});
+					});
+				});
+				it('Trigger JSON error', () => {
+					return request.getAsync({
+						url:  `${ baseAPI }/PhoneBooks`,
+						json: true,
+						qs: {
+							query: '{hey:"there"}',
+						},
+					}).then(([res, respJson]) => {
+						expect(res).to.have.property('statusCode', 400);
+					});
+				});
+			});
+		});
+	});
+	describe('DELETE', () => {
+		describe('Single', () => {
+			let id;
+			describe('Use query string', () => {
+				it('Delete item', () => {
+					return request.deleteAsync({
+						url:  `${ baseAPI }/PhoneBook`,
+						json: true,
+						qs: {
+							email: datas[5].email,
+						}
+					}).then(([ res, respJson ]) => {
+						expect(res).to.have.property('statusCode', 200);
+						datas.splice(5, 1);
+						expect( respJson ).to.be.undefined;
+					});
+				});
+				it('Trigger JSON error', () => {
+					return request.deleteAsync({
+						url:  `${ baseAPI }/PhoneBook`,
+						json: true,
+						qs: {
+							query: '{hey:"there"}',
+						},
+					}).then(([res, respJson]) => {
+						expect(res).to.have.property('statusCode', 400);
+					});
+				});
+				it('Delete by id in URL', () => {
+					return request.getAsync({
+						url:  `${ baseAPI }/PhoneBook`,
+						json: true,
+					}).then(([res, foundEntity]) => {
+						return request.deleteAsync({
+							url:  `${ baseAPI }/PhoneBook/${foundEntity.idHash.myDataSource}`,
+							json: true,
+						});
+					}).then(([res, respJson]) => {
+						expect(res).to.have.property('statusCode', 200);
+						datas.splice(0, 1);
+						expect(respJson).to.be.undefined;
+					});
+				});
+			});
+		});
+		describe('Multiple', () => {
+			describe('Use query string', () => {
+				it('Delete OK', () => {
+					return request.deleteAsync({
+						url:  `${ baseAPI }/PhoneBooks`,
+						json: true,
+						qs: {
+							query: JSON.stringify({
+								email: {
+									$exists: false,
+								},
+							}),
+						},
+					}).then(([res, respJson]) => {
+						expect(res).to.have.property('statusCode', 200);
+						_.remove(datas, entity => {
+							return _.isNil(entity.email);
+						});
+						expect(respJson).to.be.undefined;
+					});
+				});
+				it('Trigger JSON error', () => {
+					return request.deleteAsync({
+						url:  `${ baseAPI }/PhoneBooks`,
+						json: true,
+						qs: {
+							query: '{hey:"there"}',
+						},
+					}).then(([res, respJson]) => {
+						expect(res).to.have.property('statusCode', 400);
+					});
+				});
+				it('Check delete', () => {
+					return request.getAsync({
+						url:  `${ baseAPI }/PhoneBooks`,
+						json: true,
+					}).then(([ res, respJson ]) => {
+						expect(res).to.have.property('statusCode', 200);
+						expect( respJson ).to.have.lengthOf(datas.length);
+						_.forEach(respJson, (entity, index) => {
+							expect(entity).to.include(datas[index]);
+						});
+					});
+				});
 			});
 		});
 	});
