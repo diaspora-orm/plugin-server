@@ -2,9 +2,6 @@
 
 /* global module: false */
 
-require( 'chalk' );
-const path = require( 'path' );
-
 module.exports = function gruntInit( grunt ) {
 	// Project configuration.
 

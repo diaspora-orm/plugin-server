@@ -1,9 +1,11 @@
+'use strict';
+
 const express = require( 'express' );
 const app = express();
 const Diaspora = require( 'diaspora' );
 
 Diaspora.createNamedDataSource( 'myDataSource', 'inMemory', {});
-const PhoneBook = Diaspora.declareModel( 'PhoneBook', {
+/*const PhoneBook = */Diaspora.declareModel( 'PhoneBook', {
 	sources:    [ 'myDataSource' ],
 	attributes: {
 		name: {
@@ -18,7 +20,7 @@ const PhoneBook = Diaspora.declareModel( 'PhoneBook', {
 		},
 	},
 });
-const Ignored = Diaspora.declareModel( 'Ignored', {
+/*const Ignored = */Diaspora.declareModel( 'Ignored', {
 	sources:    [ 'myDataSource' ],
 	attributes: {},
 });
@@ -36,7 +38,7 @@ app.use( '/api', DiasporaServer({
 }));
 
 const config = require( './config' );
-const server = app.listen( config.port, function() {
+const server = app.listen( config.port, () => {
 	console.log( `Example app listening on port ${ config.port }!` );
 	if ( module.exports.after ) {
 		module.exports.after();

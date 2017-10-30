@@ -1,5 +1,7 @@
 'use strict';
 
+/* globals describe: false, it: false, before: false, after: false */
+
 const Promise = require( 'bluebird' );
 const request = Promise.promisifyAll( Promise.promisify( require( 'request' ), {
 	multiArgs: true,
@@ -9,12 +11,11 @@ const request = Promise.promisifyAll( Promise.promisify( require( 'request' ), {
 const chai = require( 'chai' );
 const chaiAsPromised = require( 'chai-as-promised' );
 chai.use( chaiAsPromised );
-const assert = chai.assert;
 const expect = chai.expect;
 const config = require( './config' );
 const _ = require( 'lodash' );
 const utils = require( '../lib/utils' );
-const Diaspora = require( 'diaspora' );
+//const Diaspora = require( 'diaspora' );
 
 const datas = [
 	{
@@ -106,6 +107,7 @@ describe( 'Test utilities', () => {
 					return this;
 				},
 				send( message ) {
+					expect( message ).to.not.be.undefined;
 					checks.message = true;
 					if ( _.isEqual( checks, {
 						status:  true,
@@ -115,7 +117,6 @@ describe( 'Test utilities', () => {
 					} else {
 						return reject();
 					}
-					return this;
 				},
 			};
 			utils.respondError( pseudoRes );
@@ -141,18 +142,21 @@ describe( 'Test basic interactions', () => {
 		return cb();
 	});
 
-	beforeEach( function() {
+	/*
+	beforeEach( () => {
 		// runs before each test in this block
 	});
 
-	afterEach( function() {
+	afterEach( () => {
 		// runs after each test in this block
 	});
+	*/
 
 	const baseAPI = `http://localhost:${ config.port }${ config.baseApi }`;
 	// test cases
 	it( 'Get API index', () => {
 		return request( baseAPI ).then(([ res, body ]) => {
+			expect( res ).to.have.property( 'statusCode', 200 );
 			const respJson = JSON.parse( body );
 			expect( respJson ).to.have.all.keys([ '/PhoneBook/$ID', '/PhoneBooks' ]);
 			expect( respJson['/PhoneBook/$ID']).to.have.property( 'canonicalUrl', `${ config.baseApi }/PhoneBook/$ID` );
@@ -206,7 +210,7 @@ describe( 'Test basic interactions', () => {
 						qs:   {
 							query: '{hey:"there"}',
 						},
-					}).then(([ res, respJson ]) => {
+					}).then(([ res ]) => {
 						expect( res ).to.have.property( 'statusCode', 400 );
 					});
 				});
@@ -297,7 +301,7 @@ describe( 'Test basic interactions', () => {
 						qs:   {
 							query: '{hey:"there"}',
 						},
-					}).then(([ res, respJson ]) => {
+					}).then(([ res ]) => {
 						expect( res ).to.have.property( 'statusCode', 400 );
 					});
 				});
@@ -347,7 +351,7 @@ describe( 'Test basic interactions', () => {
 						qs:   {
 							query: '{hey:"there"}',
 						},
-					}).then(([ res, respJson ]) => {
+					}).then(([ res ]) => {
 						expect( res ).to.have.property( 'statusCode', 400 );
 					});
 				});
@@ -439,7 +443,7 @@ describe( 'Test basic interactions', () => {
 						qs:   {
 							query: '{hey:"there"}',
 						},
-					}).then(([ res, respJson ]) => {
+					}).then(([ res ]) => {
 						expect( res ).to.have.property( 'statusCode', 400 );
 					});
 				});
@@ -448,7 +452,6 @@ describe( 'Test basic interactions', () => {
 	});
 	describe( 'GET', () => {
 		describe( 'Single', () => {
-			let id;
 			it( 'Get item', () => {
 				return request.getAsync({
 					url:  `${ baseAPI }/PhoneBook`,
@@ -489,7 +492,7 @@ describe( 'Test basic interactions', () => {
 						qs:   {
 							query: '{hey:"there"}',
 						},
-					}).then(([ res, respJson ]) => {
+					}).then(([ res ]) => {
 						expect( res ).to.have.property( 'statusCode', 400 );
 					});
 				});
@@ -562,7 +565,7 @@ describe( 'Test basic interactions', () => {
 						qs:   {
 							query: '{hey:"there"}',
 						},
-					}).then(([ res, respJson ]) => {
+					}).then(([ res ]) => {
 						expect( res ).to.have.property( 'statusCode', 400 );
 					});
 				});
@@ -571,7 +574,6 @@ describe( 'Test basic interactions', () => {
 	});
 	describe( 'DELETE', () => {
 		describe( 'Single', () => {
-			let id;
 			describe( 'Use query string', () => {
 				it( 'Delete item', () => {
 					return request.deleteAsync({
@@ -593,7 +595,7 @@ describe( 'Test basic interactions', () => {
 						qs:   {
 							query: '{hey:"there"}',
 						},
-					}).then(([ res, respJson ]) => {
+					}).then(([ res ]) => {
 						expect( res ).to.have.property( 'statusCode', 400 );
 					});
 				});
@@ -601,7 +603,7 @@ describe( 'Test basic interactions', () => {
 					return request.getAsync({
 						url:  `${ baseAPI }/PhoneBook`,
 						json: true,
-					}).then(([ res, foundEntity ]) => {
+					}).then(([ , foundEntity ]) => {
 						return request.deleteAsync({
 							url:  `${ baseAPI }/PhoneBook/${ foundEntity.idHash.myDataSource }`,
 							json: true,
@@ -642,7 +644,7 @@ describe( 'Test basic interactions', () => {
 						qs:   {
 							query: '{hey:"there"}',
 						},
-					}).then(([ res, respJson ]) => {
+					}).then(([ res ]) => {
 						expect( res ).to.have.property( 'statusCode', 400 );
 					});
 				});
