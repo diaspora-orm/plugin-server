@@ -4,7 +4,8 @@
 
 ## Build status
 
-> Below status reflect the last development commit status. Releases require all tests to pass successfully
+> Below status reflect the last development commit status. Releases require all
+tests to pass successfully
 
 Fancy badges:
 [![Build Status](https://travis-ci.org/GerkinDev/diaspora-server.svg?branch=master)](https://travis-ci.org/GerkinDev/diaspora-server)
