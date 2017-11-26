@@ -35,7 +35,7 @@
 	"license": "GPL-3.0",
 	"dependencies": {
 		"body-parser": "^1.18.2",
-		"diaspora": "^0.2.0-rc.3",
+		"diaspora": "git+https://github.com/GerkinDev/diaspora.git",
 		"minimatch": "^3.0.4"
 	},
 	"devDependencies": {
