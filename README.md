@@ -20,3 +20,5 @@ Fancy badges:
 ## Infos
 
 > ***Warning!* Not ready for production**
+
+Spec is from this page: http://www.restapitutorial.com/lessons/httpmethods.html

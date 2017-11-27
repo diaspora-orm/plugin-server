@@ -8,7 +8,8 @@
 	},
 	"extends": "eslint:recommended",
 	"parserOptions": {
-		"sourceType": "script"
+		"sourceType": "script",
+		"ecmaVersion": 8
 	},
 	"globals": {
 		"global": false
