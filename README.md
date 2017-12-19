@@ -22,3 +22,8 @@ Fancy badges:
 > ***Warning!* Not ready for production**
 
 Spec is from this page: http://www.restapitutorial.com/lessons/httpmethods.html
+
+## Todo
+
+* API Maps with OPTION verb
+* SOAP support?
