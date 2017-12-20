@@ -21,7 +21,21 @@ Fancy badges:
 
 > ***Warning!* Not ready for production**
 
-Spec is from this page: http://www.restapitutorial.com/lessons/httpmethods.html
+For each requests below, the server may respond:
+
+* **204** *No Content* if the operation didn't returned an entity or the set is empty.
+* **400** *Bad Request* if the parsing of the query failed
+* **404** *Not Found* if using singular API with ID: `/api/foo/66b72592-b1e2-4229-82b2-c94b475c9135`
+
+| Action | HTTP Verb | Additionnal possible responses |
+|------------------|-----------|------------------------------------------------------------------------------------------------------------------------|
+| Insert | POST | **201** *Created* on success, **400** *Bad request* if validation failed |
+| Find | GET | **200** *OK* on success |
+| Update (diff) | PUT | **200** *OK* on success, **400** *Bad request* if validation failed, **405** *Method Not Allowed* if no `where` clause |
+| Update (replace) | PATCH | **200** *OK* on success, **400** *Bad request* if validation failed, **405** *Method Not Allowed* if no `where` clause |
+| Delete | DELETE | **204** *No Content* if no errors occured |
+
+Inspired by [this tutorial](http://www.restapitutorial.com/lessons/httpmethods.html)
 
 ## Todo
 

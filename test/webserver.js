@@ -4,12 +4,13 @@ const express = require( 'express' );
 const app = express();
 const Diaspora = require( 'diaspora' );
 
-Diaspora.createNamedDataSource( 'myDataSource', 'inMemory', {});
-/*const PhoneBook = */Diaspora.declareModel( 'PhoneBook', {
+const inMemorySource = Diaspora.createNamedDataSource( 'myDataSource', 'inMemory', {});
+const PhoneBook = Diaspora.declareModel( 'PhoneBook', {
 	sources:    [ 'myDataSource' ],
 	attributes: {
 		name: {
 			type: 'string',
+			required: true,
 		},
 		phone: 'string',
 		email: {
@@ -45,4 +46,8 @@ const server = app.listen( config.port, () => {
 	}
 });
 
-module.exports = server;
+module.exports = {
+	server,
+	PhoneBook,
+	inMemorySource,
+};

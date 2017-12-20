@@ -15,33 +15,27 @@ const expect = chai.expect;
 const config = require( './config' );
 const _ = require( 'lodash' );
 const utils = require( '../lib/utils' );
-//const Diaspora = require( 'diaspora' );
+const compareArrays = (a, b) => {
+	expect( a ).to.have.lengthOf(b.length);
+	_.forEach(a, (item, index) => {
+		expect( a[index] ).to.deep.include( b[index] );
+	});
+}
+
+const DUPLICATE_DATA = [
+	{ email: 'heythere@mail.com' },
+	{ phone: '123456' },
+]
 
 const datas = [
-	{
-		name: 'YoloMan',
-	},
-	{
-		name:  'HeyThere',
-		email: 'heythere@mail.com',
-	},
-	{
-		name:  'Another Test',
-		phone: '123456',
-		email: 'test.another@mail.com',
-	},
-	{
-		name:  'John Doe',
-		phone: '051295',
-	},
-	{
-		name:  'Frank Sinatra',
-		email: 'frank@sinatra.com',
-	},
-	{
-		email: 'mickael.jackson@musicking.org',
-		phone: '555-975-123',
-	},
+	{ name: 'YoloMan' },
+	_.assign({ name:  'HeyThere' }, DUPLICATE_DATA[0]),
+	_.assign({ name:  'Hey There' }, DUPLICATE_DATA[0]),
+	_.assign({ name:  'Another Test', email: 'test.another@mail.com' }, DUPLICATE_DATA[1]),
+	_.assign({ name:  'Another Test alias' }, DUPLICATE_DATA[1]),
+	{ name:  'John Doe', phone: '051295' },
+	{ name:  'Frank Sinatra', email: 'frank@sinatra.com' },
+	{ name: 'aname', email: 'mickael.jackson@musicking.org', phone: '555-975-123' },
 ];
 
 describe( 'Test utilities', () => {
@@ -129,17 +123,21 @@ describe( 'Test utilities', () => {
 
 describe( 'Test basic interactions', () => {
 	let app;
+	let PhoneBook;
+	let inMemorySource;
+
 	before( cb => {
 		// runs before all tests in this block
-		app = require( './webserver' );
-		app.after = cb;
+		const initComponents = require( './webserver' );
+		app = initComponents.server;
+		PhoneBook = initComponents.PhoneBook;
+		inMemorySource = initComponents.inMemorySource;
+		initComponents.after = cb;
 		return;
 	});
-
 	after( cb => {
 		// runs after all tests in this block
-		app.close();
-		return cb();
+		app.close(cb);
 	});
 
 	/*
@@ -154,10 +152,11 @@ describe( 'Test basic interactions', () => {
 
 	const baseAPI = `http://localhost:${ config.port }${ config.baseApi }`;
 	// test cases
-	it( 'Get API index', () => {
+	it( 'Get API index (OPTION)', () => {
 		return request( baseAPI ).then(([ res, body ]) => {
 			expect( res ).to.have.property( 'statusCode', 200 );
 			const respJson = JSON.parse( body );
+			utils.prettylog(respJson);
 			expect( respJson ).to.have.all.keys([ '/PhoneBook/$ID', '/PhoneBooks' ]);
 			expect( respJson['/PhoneBook/$ID']).to.have.property( 'canonicalUrl', `${ config.baseApi }/PhoneBook/$ID` );
 			expect( respJson['/PhoneBook/$ID']).to.have.property( 'parameters' );
@@ -167,498 +166,540 @@ describe( 'Test basic interactions', () => {
 		});
 	});
 
-	describe( 'POST', () => {
-		describe( 'Single', () => {
-			let id;
-			it( 'Create item', () => {
-				return request.postAsync({
+	describe( 'Create (POST)', () => {
+		describe('Single', () => {
+			it( 'OK', async () => {
+				const prevLen = inMemorySource.store.PhoneBook.items.length;
+				let idx = 3;
+				const [ res, respJson ] = await request.postAsync({
 					url:  `${ baseAPI }/PhoneBook`,
-					json: datas[0],
-				}).then(([ res, respJson ]) => {
-					expect( res ).to.have.property( 'statusCode', 201 );
-					expect( respJson ).to.include( datas[0]);
+					json: datas[idx],
 				});
+				expect( res ).to.have.property( 'statusCode', 201 );
+				expect( respJson ).to.include( datas[idx]);
+				expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen + 1);
 			});
-			describe( 'Use query string', () => {
-				it( 'Update OK', () => {
-					const update = {
-						name: 'HeyDyde',
-					};
-
-					return request.postAsync({
-						url:  `${ baseAPI }/PhoneBook`,
-						json: update,
-						qs:   {
-							query: JSON.stringify({
-								name: {
-									$equal: datas[0].name,
-								},
-							}),
-							limit: 1,
-						},
-					}).then(([ res, respJson ]) => {
-						expect( res ).to.have.property( 'statusCode', 200 );
-						_.assign( datas[0], update );
-						expect( respJson ).to.deep.include( datas[0]);
-						id = respJson.idHash.myDataSource;
-					});
-				});
-				it( 'Trigger JSON error', () => {
-					return request.postAsync({
-						url:  `${ baseAPI }/PhoneBook`,
-						json: true,
-						qs:   {
-							query: '{hey:"there"}',
-						},
-					}).then(([ res ]) => {
-						expect( res ).to.have.property( 'statusCode', 400 );
-					});
-				});
-				it( 'Update by id in URL', () => {
-					const update = {
-						name: 'Foo Bar',
-					};
-					return request.postAsync({
-						url:  `${ baseAPI }/PhoneBook/${ id }`,
-						json: update,
-					}).then(([ res, respJson ]) => {
-						expect( res ).to.have.property( 'statusCode', 200 );
-						_.assign( datas[0], update );
-						expect( respJson ).to.deep.include( datas[0]);
-					});
-				});
-			});
-			it( 'Update not found', () => {
-				return request.postAsync({
-					url:  `${ baseAPI }/PhoneBook/12`,
-					json: {
-						Yolo: 'swag',
-					},
-				}).then(([ res, respJson ]) => {
-					expect( res ).to.have.property( 'statusCode', 404 );
-					expect( respJson ).to.be.undefined;
-				});
-			});
-		});
-		describe( 'Multiple', () => {
-			it( 'Create items', () => {
-				let idx = 1;
-				return request.postAsync({
-					url:  `${ baseAPI }/PhoneBooks`,
-					json: datas.slice( idx, idx + 2 ),
-				}).then(([ res, respJson ]) => {
-					expect( res ).to.have.property( 'statusCode', 201 );
-					expect( respJson ).to.have.lengthOf( 2 );
-					expect( respJson[0]).to.include( datas[1]);
-					expect( respJson[1]).to.include( datas[2]);
-				});
-			});
-			it( 'Update not found', () => {
-				return request.postAsync({
-					url:  `${ baseAPI }/PhoneBooks`,
-					json: {
-						Yolo: 'swag',
-					},
-					qs: {
-						name: 'NotFound',
-					},
-				}).then(([ res, respJson ]) => {
-					expect( res ).to.have.property( 'statusCode', 404 );
-					expect( respJson ).to.be.an( 'array' ).that.have.lengthOf( 0 );
-				});
-			});
-			describe( 'Use query string', () => {
-				it( 'Update OK', () => {
-					const update = {
-						otherProp: 'foo',
-					};
-					return request.postAsync({
-						url:  `${ baseAPI }/PhoneBooks`,
-						json: update,
-						qs:   {
-							query: JSON.stringify({
-								name: {
-									$diff: datas[0].name,
-								},
-							}),
-						},
-					}).then(([ res, respJson ]) => {
-						const matched = [ 1, 2 ];
-						_.forEach( matched, idx => {
-							_.assign( datas[idx], update );
-						});
-						expect( res ).to.have.property( 'statusCode', 200 );
-						expect( respJson ).to.have.lengthOf( 2 );
-						_.forEach( respJson, ( entity, index ) => {
-							expect( entity ).to.deep.include( datas[matched[index]]);
-						});
-					});
-				});
-				it( 'Trigger JSON error', () => {
-					return request.postAsync({
-						url:  `${ baseAPI }/PhoneBooks`,
-						json: true,
-						qs:   {
-							query: '{hey:"there"}',
-						},
-					}).then(([ res ]) => {
-						expect( res ).to.have.property( 'statusCode', 400 );
-					});
-				});
-			});
-		});
-	});
-	describe( 'PUT', () => {
-		describe( 'Single', () => {
-			let id;
-			it( 'Create item', () => {
-				return request.putAsync({
+			it( 'Validation error', async () => {
+				const prevLen = inMemorySource.store.PhoneBook.items.length;
+				let idx = 3;
+				const [ res, respJson ] = await request.postAsync({
 					url:  `${ baseAPI }/PhoneBook`,
-					json: datas[3],
-				}).then(([ res, respJson ]) => {
-					expect( res ).to.have.property( 'statusCode', 201 );
-					expect( respJson ).to.include( datas[3]);
-				});
-			});
-			describe( 'Use query string', () => {
-				it( 'Update OK', () => {
-					const update = {
-						name: 'HeyDyde',
-					};
-
-					return request.putAsync({
-						url:  `${ baseAPI }/PhoneBook`,
-						json: update,
-						qs:   {
-							query: JSON.stringify({
-								name: {
-									$equal: datas[0].name,
-								},
-							}),
-							limit: 1,
-						},
-					}).then(([ res, respJson ]) => {
-						expect( res ).to.have.property( 'statusCode', 200 );
-						datas[0] = update;
-						expect( respJson ).to.deep.include( datas[0]);
-						id = respJson.idHash.myDataSource;
-					});
-				});
-				it( 'Trigger JSON error', () => {
-					return request.putAsync({
-						url:  `${ baseAPI }/PhoneBook`,
-						json: true,
-						qs:   {
-							query: '{hey:"there"}',
-						},
-					}).then(([ res ]) => {
-						expect( res ).to.have.property( 'statusCode', 400 );
-					});
-				});
-				it( 'Update by id in URL', () => {
-					const update = {
-						name: 'Foo Bar',
-					};
-					return request.putAsync({
-						url:  `${ baseAPI }/PhoneBook/${ id }`,
-						json: update,
-					}).then(([ res, respJson ]) => {
-						expect( res ).to.have.property( 'statusCode', 200 );
-						_.assign( datas[0], update );
-						expect( respJson ).to.deep.include( datas[0]);
-					});
-				});
-			});
-			it( 'Update not found', () => {
-				return request.putAsync({
-					url:  `${ baseAPI }/PhoneBook/12`,
 					json: {
-						Yolo: 'swag',
-					},
-				}).then(([ res, respJson ]) => {
-					expect( res ).to.have.property( 'statusCode', 404 );
-					expect( respJson ).to.be.undefined;
+						phone: '123',
+					}
 				});
+				expect( res ).to.have.property( 'statusCode', 400 );
+				expect( respJson ).to.have.property( 'name', 'EntityValidationError' );
+				expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
+			});
+			it( 'Forbid post to explicit ID', async () => {
+				const prevLen = inMemorySource.store.PhoneBook.items.length;
+				const [ res, respJson ] = await request.postAsync({
+					url:  `${ baseAPI }/PhoneBook/42`,
+					json: {
+						name: 'Qux',
+					}
+				});
+				expect( res ).to.have.property( 'statusCode', 405 );
+				expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
 			});
 		});
-		describe( 'Multiple', () => {
-			it( 'Create items', () => {
+		describe('Multiple', () => {
+			it( 'OK', async () => {
+				const prevLen = inMemorySource.store.PhoneBook.items.length;
 				let idx = 4;
-				return request.putAsync({
+				const [ res, respJson ] = await request.postAsync({
 					url:  `${ baseAPI }/PhoneBooks`,
 					json: datas.slice( idx, idx + 2 ),
-				}).then(([ res, respJson ]) => {
-					expect( res ).to.have.property( 'statusCode', 201 );
-					expect( respJson ).to.have.lengthOf( 2 );
-					expect( respJson[0]).to.include( datas[4]);
-					expect( respJson[1]).to.include( datas[5]);
 				});
+				expect( res ).to.have.property( 'statusCode', 201 );
+				expect( respJson ).to.have.lengthOf( 2 );
+				expect( respJson[0]).to.include( datas[idx]);
+				expect( respJson[1]).to.include( datas[idx + 1]);
+				expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen + 2);
 			});
-			it( 'Update not found', () => {
-				return request.putAsync({
+			it( 'Validation error', async () => {
+				const prevLen = inMemorySource.store.PhoneBook.items.length;
+				let idx = 3;
+				const [ res, respJson ] = await request.postAsync({
 					url:  `${ baseAPI }/PhoneBooks`,
-					json: {
-						Yolo: 'swag',
-					},
-					qs: {
-						name: 'NotFound',
-					},
-				}).then(([ res, respJson ]) => {
-					expect( res ).to.have.property( 'statusCode', 404 );
-					expect( respJson ).to.be.an( 'array' ).that.have.lengthOf( 0 );
+					json: [
+						{ phone: '123' },
+						{ name: 'foo' },
+					],
+				});
+				expect( res ).to.have.property( 'statusCode', 400 );
+				expect( respJson ).to.have.property( 'name', 'SetValidationError' );
+				expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
+			});
+		})
+		after(() => {
+			return PhoneBook.deleteMany();
+		});
+	});
+	describe( 'Update (PATCH)', () => {
+		const idx_1 = 1;
+		const idx_2 = 3;
+		const update = {
+			name: 'HeyDyde',
+		};
+		describe( 'Single', () => {
+			before(() => {
+				return PhoneBook.insertMany([
+					datas[idx_1],
+					datas[idx_2],
+				]);
+			});
+			describe( 'Update by query', () => {
+				it( 'OK', async () => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res, respJson] = await request.patchAsync({
+						url:  `${ baseAPI }/PhoneBook`,
+						json: update,
+						qs:   {
+							email: datas[idx_1].email,
+						},
+					});
+					expect( res ).to.have.property( 'statusCode', 200 );
+					const patchedData = _.assign( {}, datas[idx_1], update );
+					expect( respJson ).to.deep.include( patchedData);
+					expect((await PhoneBook.find({
+						email: datas[idx_1].email,
+					})).attributes).to.include(patchedData);
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
+				});
+				it( 'Not found', async () => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res, respJson] = await request.patchAsync({
+						url:  `${ baseAPI }/PhoneBook`,
+						json: update,
+						qs:   {
+							email: 'NotFound@foo.bar',
+						},
+					});
+					expect( res ).to.have.property( 'statusCode', 204 );
+					expect( respJson ).to.be.undefined;
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
+				});
+				it( 'Trigger JSON error', async() => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res] = await request.patchAsync({
+						url:  `${ baseAPI }/PhoneBook`,
+						json: update,
+						qs:   {
+							query: '{hey:"there"}',
+						},
+					});
+					expect( res ).to.have.property( 'statusCode', 400 );
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
+				});
+				it( 'Throw if no "where" clause', async() => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res] = await request.patchAsync({
+						url:  `${ baseAPI }/PhoneBook`,
+						json: update,
+					});
+					expect( res ).to.have.property( 'statusCode', 405 );
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
 				});
 			});
-			describe( 'Use query string', () => {
-				it( 'Update OK', () => {
-					const update = {
-						name: 'Terry Fisher',
-					};
-					return request.putAsync({
+			describe( 'Update by id in URL', () => {
+				it('OK', async () => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const entity = await PhoneBook.find({}, {skip: 1});
+					const id = entity.getId();
+					const [res, respJson] = await request.patchAsync({
+						url:  `${ baseAPI }/PhoneBook/${id}`,
+						json: update,
+					});
+					expect( res ).to.have.property( 'statusCode', 200 );
+					const patchedData = _.assign( {}, datas[idx_2], update );
+					expect( respJson ).to.deep.include( patchedData);
+					expect((await PhoneBook.find(id)).attributes).to.include(patchedData);
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
+				});
+				it('Not found', async () => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const id = 42;
+					const [res, respJson] = await request.patchAsync({
+						url:  `${ baseAPI }/PhoneBook/${ id }`,
+						json: update,
+					});
+					expect( res ).to.have.property( 'statusCode', 404 );
+					expect( respJson ).to.be.undefined;
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
+				});
+			});
+			after(() => {
+				return PhoneBook.deleteMany();
+			});
+		});
+		describe('Mutliple', () => {
+			before(() => {
+				return PhoneBook.insertMany([
+					datas[idx_1],
+					datas[idx_1 + 1],
+					datas[idx_2],
+				]);
+			});
+			describe( 'Update by query', () => {
+				it( 'OK', async () => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res, respJson] = await request.patchAsync({
 						url:  `${ baseAPI }/PhoneBooks`,
 						json: update,
 						qs:   {
-							query: JSON.stringify({
-								name: datas[0].name,
-							}),
+							email: datas[idx_1].email,
 						},
-					}).then(([ res, respJson ]) => {
-						_.forEach( datas, ( entity, index ) => {
-							if ( _.isMatch( entity, {
-								name: datas[0].name,
-							})) {
-								datas[index] = _.clone( update );
-							}
-						});
-						expect( res ).to.have.property( 'statusCode', 200 );
-						expect( respJson ).to.have.lengthOf( 1 );
-						_.forEach( respJson, entity => {
-							expect( entity ).to.deep.include( update );
-						});
 					});
+					expect( res ).to.have.property( 'statusCode', 200 );
+					const patchedData = [
+						_.assign( {}, datas[idx_1], update ),
+						_.assign( {}, datas[idx_1 + 1], update ),
+					];
+					compareArrays( respJson, patchedData);
+					compareArrays( _.map(await PhoneBook.findMany({
+						email: datas[idx_1].email,
+					}), 'attributes'), patchedData);
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
 				});
-				it( 'Trigger JSON error', () => {
-					return request.putAsync({
+				it( 'Not found', async () => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res, respJson] = await request.patchAsync({
 						url:  `${ baseAPI }/PhoneBooks`,
-						json: true,
+						json: update,
+						qs:   {
+							email: 'NotFound@foo.bar',
+						},
+					});
+					expect( res ).to.have.property( 'statusCode', 204 );
+					expect( respJson ).to.be.undefined;
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
+				});
+				it( 'Trigger JSON error', async() => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res] = await request.patchAsync({
+						url:  `${ baseAPI }/PhoneBooks`,
+						json: update,
 						qs:   {
 							query: '{hey:"there"}',
 						},
-					}).then(([ res ]) => {
-						expect( res ).to.have.property( 'statusCode', 400 );
 					});
+					expect( res ).to.have.property( 'statusCode', 400 );
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
 				});
+				it( 'Throw if no "where" clause', async() => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res] = await request.patchAsync({
+						url:  `${ baseAPI }/PhoneBooks`,
+						json: update,
+					});
+					expect( res ).to.have.property( 'statusCode', 405 );
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
+				});
+			});
+			after(() => {
+				return PhoneBook.deleteMany();
 			});
 		});
 	});
-	describe( 'GET', () => {
+	describe( 'Find (GET)', () => {
+		const idx_1 = 1;
+		const idx_2 = 3;
 		describe( 'Single', () => {
-			it( 'Get item', () => {
-				return request.getAsync({
-					url:  `${ baseAPI }/PhoneBook`,
-					json: true,
-				}).then(([ res, respJson ]) => {
-					expect( res ).to.have.property( 'statusCode', 200 );
-					expect( respJson ).to.include( datas[0]);
-				});
+			before(() => {
+				return PhoneBook.insertMany([
+					datas[idx_1],
+					datas[idx_2],
+				]);
 			});
-			it( 'Get not found', () => {
-				return request.getAsync({
-					url:  `${ baseAPI }/PhoneBook/12`,
-					json: true,
-				}).then(([ res, respJson ]) => {
-					expect( res ).to.have.property( 'statusCode', 404 );
-					expect( respJson ).to.be.undefined;
-				});
-			});
-			describe( 'Use query string', () => {
-				let id;
-				it( 'Get item', () => {
-					return request.getAsync({
+			describe( 'Find by query', () => {
+				it( 'OK', async () => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res, respJson] = await request.getAsync({
 						url:  `${ baseAPI }/PhoneBook`,
 						json: true,
 						qs:   {
-							email: datas[5].email,
+							email: datas[idx_1].email,
 						},
-					}).then(([ res, respJson ]) => {
-						expect( res ).to.have.property( 'statusCode', 200 );
-						id = respJson.idHash.myDataSource;
-						expect( respJson ).to.include( datas[5]);
 					});
+					expect( res ).to.have.property( 'statusCode', 200 );
+					expect( respJson ).to.deep.include( datas[idx_1]);
+					expect((await PhoneBook.find({
+						email: datas[idx_1].email,
+					})).attributes).to.include(datas[idx_1]);
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
 				});
-				it( 'Trigger JSON error', () => {
-					return request.getAsync({
+				it( 'Not found', async () => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res, respJson] = await request.getAsync({
+						url:  `${ baseAPI }/PhoneBook`,
+						json: true,
+						qs:   {
+							email: 'NotFound@foo.bar',
+						},
+					});
+					expect( res ).to.have.property( 'statusCode', 204 );
+					expect( respJson ).to.be.undefined;
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
+				});
+				it('Trigger JSON error', async() => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res] = await request.getAsync({
 						url:  `${ baseAPI }/PhoneBook`,
 						json: true,
 						qs:   {
 							query: '{hey:"there"}',
 						},
-					}).then(([ res ]) => {
-						expect( res ).to.have.property( 'statusCode', 400 );
 					});
+					expect( res ).to.have.property( 'statusCode', 400 );
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
 				});
-				it( 'Get by id in URL', () => {
-					return request.getAsync({
+				it( 'Do not throw if no "where" clause', async() => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res, respJson] = await request.getAsync({
+						url:  `${ baseAPI }/PhoneBook`,
+						json: true,
+					});
+					expect( res ).to.have.property( 'statusCode', 200 );
+					expect(respJson).to.include(datas[idx_1]);
+					expect((await PhoneBook.find({})).attributes).to.include(datas[idx_1]);
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
+				});
+			});
+			describe( 'Find by id in URL', () => {
+				it('OK', async () => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const entity = await PhoneBook.find({}, {skip: 1});
+					const id = entity.getId();
+					const [res, respJson] = await request.getAsync({
+						url:  `${ baseAPI }/PhoneBook/${id}`,
+						json: true,
+					});
+					expect( res ).to.have.property( 'statusCode', 200 );
+					expect( respJson ).to.deep.include( datas[idx_2]);
+					expect((await PhoneBook.find(id)).attributes).to.include(datas[idx_2]);
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
+				});
+				it('Not found', async () => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const id = 42;
+					const [res, respJson] = await request.getAsync({
 						url:  `${ baseAPI }/PhoneBook/${ id }`,
 						json: true,
-					}).then(([ res, respJson ]) => {
-						expect( res ).to.have.property( 'statusCode', 200 );
-						expect( respJson ).to.deep.include( datas[5]);
 					});
+					expect( res ).to.have.property( 'statusCode', 404 );
+					expect( respJson ).to.be.undefined;
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
 				});
+			});
+			after(() => {
+				return PhoneBook.deleteMany();
 			});
 		});
-		describe( 'Multiple', () => {
-			it( 'Get items', () => {
-				return request.getAsync({
-					url:  `${ baseAPI }/PhoneBooks`,
-					json: true,
-				}).then(([ res, respJson ]) => {
-					expect( res ).to.have.property( 'statusCode', 200 );
-					expect( respJson ).to.have.lengthOf( datas.length );
-					_.forEach( respJson, ( entity, index ) => {
-						expect( entity ).to.include( datas[index]);
-					});
-				});
+		describe('Mutliple', () => {
+			const datasIn = [
+					datas[idx_1],
+					datas[idx_1 + 1],
+					datas[idx_2],
+				];
+			before(() => {
+				return PhoneBook.insertMany(datasIn);
 			});
-			it( 'Get not found', () => {
-				return request.getAsync({
-					url: `${ baseAPI }/PhoneBooks`,
-					qs:  {
-						name: 'NotFound',
-					},
-					json: true,
-				}).then(([ res, respJson ]) => {
-					expect( res ).to.have.property( 'statusCode', 404 );
-					expect( respJson ).to.be.an( 'array' ).that.have.lengthOf( 0 );
-				});
-			});
-			describe( 'Use query string', () => {
-				it( 'Get OK', () => {
-					return request.getAsync({
+			describe( 'Find by query', () => {
+				it( 'OK', async () => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res, respJson] = await request.getAsync({
 						url:  `${ baseAPI }/PhoneBooks`,
 						json: true,
 						qs:   {
-							query: JSON.stringify({
-								name: {
-									$exists: true,
-								},
-							}),
+							email: datas[idx_1].email,
 						},
-					}).then(([ res, respJson ]) => {
-						expect( res ).to.have.property( 'statusCode', 200 );
-						const matches = _.reduce( datas, ( ret, entity ) => {
-							if ( !_.isNil( entity.name )) {
-								ret.push( entity );
-							}
-							return ret;
-						}, []);
-						expect( respJson ).to.have.lengthOf( 5 );
-						_.forEach( respJson, ( entity, index ) => {
-							expect( entity ).to.deep.include( matches[index]);
-						});
 					});
+					expect( res ).to.have.property( 'statusCode', 200 );
+					const patchedData = [
+						datas[idx_1],
+						datas[idx_1 + 1]
+					];
+					compareArrays( respJson, patchedData);
+					compareArrays( _.map(await PhoneBook.findMany({
+						email: datas[idx_1].email,
+					}), 'attributes'), patchedData);
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
 				});
-				it( 'Trigger JSON error', () => {
-					return request.getAsync({
+				it( 'Not found', async () => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res, respJson] = await request.getAsync({
+						url:  `${ baseAPI }/PhoneBooks`,
+						json: true,
+						qs:   {
+							email: 'NotFound@foo.bar',
+						},
+					});
+					expect( res ).to.have.property( 'statusCode', 204 );
+					expect( respJson ).to.be.undefined;
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
+				});
+				it( 'Trigger JSON error', async() => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res] = await request.getAsync({
 						url:  `${ baseAPI }/PhoneBooks`,
 						json: true,
 						qs:   {
 							query: '{hey:"there"}',
 						},
-					}).then(([ res ]) => {
-						expect( res ).to.have.property( 'statusCode', 400 );
 					});
+					expect( res ).to.have.property( 'statusCode', 400 );
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
 				});
+				it( 'Do not throw if no "where" clause', async() => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res, respJson] = await request.getAsync({
+						url:  `${ baseAPI }/PhoneBooks`,
+						json: true,
+					});
+					expect( res ).to.have.property( 'statusCode', 200 );
+					compareArrays(respJson, datasIn);
+					compareArrays( _.map(await PhoneBook.findMany({}), 'attributes'), datasIn);
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
+				});
+			});
+			after(() => {
+				return PhoneBook.deleteMany();
 			});
 		});
 	});
-	describe( 'DELETE', () => {
+	describe( 'Delete (DELETE)', () => {
+		before(() => {
+			return PhoneBook.insertMany(datas);
+		});
 		describe( 'Single', () => {
-			describe( 'Use query string', () => {
-				it( 'Delete item', () => {
-					return request.deleteAsync({
+			describe( 'Delete by query', () => {
+				it( 'OK', async () => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res, respJson] = await request.deleteAsync({
 						url:  `${ baseAPI }/PhoneBook`,
 						json: true,
 						qs:   {
-							email: datas[5].email,
+							email: datas[7].email,
 						},
-					}).then(([ res, respJson ]) => {
-						expect( res ).to.have.property( 'statusCode', 200 );
-						datas.splice( 5, 1 );
-						expect( respJson ).to.be.undefined;
 					});
+					expect( res ).to.have.property( 'statusCode', 204 );
+					expect( respJson ).to.be.undefined;
+					expect(await PhoneBook.find({
+						email: datas[7].email,
+					})).to.be.undefined;
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen - 1);
 				});
-				it( 'Trigger JSON error', () => {
-					return request.deleteAsync({
+				it( 'Not found', async () => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res, respJson] = await request.deleteAsync({
+						url:  `${ baseAPI }/PhoneBook`,
+						json: true,
+						qs:   {
+							email: 'NotFound@foo.bar',
+						},
+					});
+					expect( res ).to.have.property( 'statusCode', 204 );
+					expect( respJson ).to.be.undefined;
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
+				});
+				it( 'Trigger JSON error', async() => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res] = await request.deleteAsync({
 						url:  `${ baseAPI }/PhoneBook`,
 						json: true,
 						qs:   {
 							query: '{hey:"there"}',
 						},
-					}).then(([ res ]) => {
-						expect( res ).to.have.property( 'statusCode', 400 );
 					});
+					expect( res ).to.have.property( 'statusCode', 400 );
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
 				});
-				it( 'Delete by id in URL', () => {
-					return request.getAsync({
+				it( 'Throw if no "where" clause', async() => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res] = await request.deleteAsync({
 						url:  `${ baseAPI }/PhoneBook`,
 						json: true,
-					}).then(([ , foundEntity ]) => {
-						return request.deleteAsync({
-							url:  `${ baseAPI }/PhoneBook/${ foundEntity.idHash.myDataSource }`,
-							json: true,
-						});
-					}).then(([ res, respJson ]) => {
-						expect( res ).to.have.property( 'statusCode', 200 );
-						datas.splice( 0, 1 );
-						expect( respJson ).to.be.undefined;
 					});
+					expect( res ).to.have.property( 'statusCode', 405 );
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
+				});
+			});
+			describe( 'Delete by id in URL', () => {
+				it('OK', async () => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const entity = await PhoneBook.find();
+					const id = entity.getId();
+					const [res, respJson] = await request.deleteAsync({
+						url:  `${ baseAPI }/PhoneBook/${ id }`,
+						json: true,
+					});
+					expect( res ).to.have.property( 'statusCode', 204 );
+					expect( respJson ).to.be.undefined;
+					expect(await PhoneBook.find(id)).to.be.undefined;
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen - 1);
+				});
+				it('Not found', async () => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const id = 42;
+					const [res, respJson] = await request.deleteAsync({
+						url:  `${ baseAPI }/PhoneBook/${ id }`,
+						json: true,
+					});
+					expect( res ).to.have.property( 'statusCode', 404 );
+					expect( respJson ).to.be.undefined;
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
 				});
 			});
 		});
 		describe( 'Multiple', () => {
-			describe( 'Use query string', () => {
-				it( 'Delete OK', () => {
-					return request.deleteAsync({
+			describe( 'Delete by query', () => {
+				it( 'OK', async () => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res, respJson] = await request.deleteAsync({
+						url:  `${ baseAPI }/PhoneBooks`,
+						json: true,
+						qs:   DUPLICATE_DATA[0],
+					});
+					expect( res ).to.have.property( 'statusCode', 204 );
+					expect( respJson ).to.be.undefined;
+					expect(await PhoneBook.find(DUPLICATE_DATA[0])).to.be.undefined;
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen - 2);
+				});
+				it( 'Not found', async () => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res, respJson] = await request.deleteAsync({
 						url:  `${ baseAPI }/PhoneBooks`,
 						json: true,
 						qs:   {
-							query: JSON.stringify({
-								email: {
-									$exists: false,
-								},
-							}),
+							email: 'NotFound@foo.bar',
 						},
-					}).then(([ res, respJson ]) => {
-						expect( res ).to.have.property( 'statusCode', 200 );
-						_.remove( datas, entity => {
-							return _.isNil( entity.email );
-						});
-						expect( respJson ).to.be.undefined;
 					});
+					expect( res ).to.have.property( 'statusCode', 204 );
+					expect( respJson ).to.be.undefined;
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
 				});
-				it( 'Trigger JSON error', () => {
-					return request.deleteAsync({
+				it( 'Trigger JSON error', async() => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res] = await request.deleteAsync({
 						url:  `${ baseAPI }/PhoneBooks`,
 						json: true,
 						qs:   {
 							query: '{hey:"there"}',
 						},
-					}).then(([ res ]) => {
-						expect( res ).to.have.property( 'statusCode', 400 );
 					});
+					expect( res ).to.have.property( 'statusCode', 400 );
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
 				});
-				it( 'Check delete', () => {
-					return request.getAsync({
+				it( 'Throw if no "where" clause', async() => {
+					const prevLen = inMemorySource.store.PhoneBook.items.length;
+					const [res] = await request.deleteAsync({
 						url:  `${ baseAPI }/PhoneBooks`,
 						json: true,
-					}).then(([ res, respJson ]) => {
-						expect( res ).to.have.property( 'statusCode', 200 );
-						expect( respJson ).to.have.lengthOf( datas.length );
-						_.forEach( respJson, ( entity, index ) => {
-							expect( entity ).to.include( datas[index]);
-						});
 					});
+					expect( res ).to.have.property( 'statusCode', 405 );
+					expect(inMemorySource.store.PhoneBook.items).to.have.lengthOf(prevLen);
 				});
 			});
 		});
