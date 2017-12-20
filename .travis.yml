@@ -1,17 +1,13 @@
 language: node_js
 matrix:
   include:
+    - node_js: "node"
+    - node_js: "iojs"
+    - node_js: "lts/*"
+    - node_js: "9"
     - node_js: "8"
-      env: SAUCE=no
     - node_js: "7"
-      env: SAUCE=no
-    - node_js: "6.4"
-      env: SAUCE=no
-    - node_js: "6.3"
-      env: SAUCE=no
-    - node_js: "6.0"
-      env: SAUCE=no
-env: 
+env:
   global:
     - CC_TEST_REPORTER_ID=4c5c6925e081383192979bf55a1ef67c3677c21c79e43ed64d5316eb4fa7fa20
 notifications:
