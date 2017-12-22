@@ -9,7 +9,7 @@ const PhoneBook = Diaspora.declareModel( 'PhoneBook', {
 	sources:    [ 'myDataSource' ],
 	attributes: {
 		name: {
-			type: 'string',
+			type:     'string',
 			required: true,
 		},
 		phone: 'string',

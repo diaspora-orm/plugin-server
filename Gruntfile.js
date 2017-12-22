@@ -6,15 +6,15 @@ module.exports = function gruntInit( grunt ) {
 	// Project configuration.
 
 	const baseDocPath = 'doc';
-	const doccoPath = `${ baseDocPath }/docco`;
-	const jsdocPath = `${ baseDocPath }/jsdoc`;
-	const jsAssets = /*['lib/adapters/baseAdapter.js'] ||*/ [
-		'Gruntfile.js',
+	//	const doccoPath = `${ baseDocPath }/docco`;
+	//const jsdocPath = baseDocPath;//`${ baseDocPath }/jsdoc`;
+	const jsLib = /*['lib/adapters/baseAdapter.js'] ||*/ [
 		'index.js',
 		'lib/**/*.js',
 		'!node_modules/**/*',
 	];
-	const jsFilesWTests = jsAssets.concat([
+	const jsFilesWTests = jsLib.concat([
+		'Gruntfile.js',
 		'test/**/*.js',
 	]);
 
@@ -36,26 +36,25 @@ module.exports = function gruntInit( grunt ) {
 				src:     jsFilesWTests,
 			},
 		},
-		docco_husky: {
-			files: {
-				expand: true,
-				src:    jsFilesWTests,
-			},
-			output_dir:   doccoPath,
-			project_name: 'Diaspora',
-			template_dir: 'node_modules/diaspora_doc/docco',
-			readme:       'README-docco.md',
-		},
-		jsdoc: {
-			src:     /*['lib/adapters/baseAdapter.js'],*/jsAssets,
-			options: {
-				private:     true,
-				destination: jsdocPath,
-				config:      `${ baseDocPath }/jsdoc.json`,
-				template:    'node_modules/diaspora_doc/jsdoc',
-				readme:      'README-jsdoc.md',
-			},
-		},
+		//		docco_husky: {
+		//			files: {
+		//				expand: true,
+		//				src:    jsFilesWTests,
+		//			},
+		//			output_dir:   doccoPath,
+		//			project_name: 'Diaspora',
+		//			template_dir: 'node_modules/diaspora_doc/docco',
+		//			readme:       'README-docco.md',
+		//		},
+		//		jsdoc: {
+		//			src:     /*['lib/adapters/baseAdapter.js'],*/jsLib,
+		//			options: {
+		//				private:     true,
+		//				destination: jsdocPath,
+		//				template:    'node_modules/diaspora_doc/jsdoc',
+		//				//				readme:      'README-jsdoc.md',
+		//			},
+		//		},
 		clean: {
 			doc_jsdoc: {
 				src: [ `${ baseDocPath }/jsdoc` ],
@@ -66,8 +65,8 @@ module.exports = function gruntInit( grunt ) {
 		},
 	});
 
-	grunt.loadNpmTasks( 'grunt-jsdoc' );
-	grunt.loadNpmTasks( 'grunt-docco-husky' );
+	//grunt.loadNpmTasks( 'grunt-jsdoc' );
+	//	grunt.loadNpmTasks( 'grunt-docco-husky' );
 	grunt.loadNpmTasks( 'gruntify-eslint' );
 	grunt.loadNpmTasks( 'grunt-contrib-clean' );
 
@@ -77,8 +76,8 @@ module.exports = function gruntInit( grunt ) {
 		'lint',
 		'clean:doc_jsdoc',
 		'clean:doc_docco',
-		'jsdoc',
-		'docco_husky',
+		//'jsdoc',
+		//		'docco_husky',
 	]);
 	grunt.registerTask( 'lint', [
 		'eslint:info',
