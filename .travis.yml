@@ -15,7 +15,7 @@ notifications:
       - altenter-project:Pc8sMyCuHNPBCg1TOw0weD9S#tech
 before_install:
   - rm npm-shrinkwrap.json
-  - npm i https://github.com/GerkinDev/diaspora.git
+  - npm i diaspora || npm i https://github.com/GerkinDev/diaspora.git
 before_script:
   - |
     curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter

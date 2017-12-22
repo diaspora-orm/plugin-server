@@ -1,6 +1,6 @@
 # Diaspora-server
 
-> A package to add RESTful APIs to Express with Diaspora
+> A package to add RESTful APIs to Express with [Diaspora](https://www.npmjs.com/package/diaspora)
 
 Fancy badges:
 [![Build Status](https://travis-ci.org/GerkinDev/diaspora-server.svg?branch=master)](https://travis-ci.org/GerkinDev/diaspora-server)
@@ -16,7 +16,7 @@ Fancy badges:
 
 ### Installation:
 
-In order to run Diaspora Server, you need to install both Diaspora Server & Diaspora itself
+In order to run Diaspora Server, you need to install both Diaspora Server & [Diaspora](https://www.npmjs.com/package/diaspora) itself
 
 ```bash
 npm i diaspora-server diaspora
