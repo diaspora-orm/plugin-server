@@ -1,0 +1,368 @@
+import _ from 'lodash';
+import express from 'express';
+import bodyparser from 'body-parser';
+const Diaspora = require('diaspora');
+import utils from '../utils';
+import chalk from 'chalk';
+
+const QUERY_OPTS = ['skip', 'limit', 'sort', 'page'];
+
+const parseQuery = queryObj => {
+	const raw = _.mapValues(queryObj, (val, key) => {
+		if (['query', 'options'].includes(key)) {
+			return JSON.parse(val);
+		} else {
+			return val;
+		}
+	});
+
+	return {
+		raw,
+		options: _.pick(raw, QUERY_OPTS),
+		where: _.get(raw, 'where', _.omit(raw, QUERY_OPTS)),
+	};
+};
+
+const setIdFromIdHash = entity => {
+	const retVal = entity.toObject();
+	delete retVal.idHash;
+	retVal.id = entity.getId();
+	return retVal;
+};
+const respondMaybeEmptySet = (res, set) => {
+	if (0 === set.length) {
+		res.status(204);
+	}
+	return res.json(set.map(setIdFromIdHash).value());
+};
+const respondMaybeNoEntity = (res, entity) => {
+	if (_.isNil(entity)) {
+		return res.status(204).send();
+	} else {
+		return res.json(setIdFromIdHash(entity));
+	}
+};
+
+const deleteHandler = async (singular, req, res, model) => {
+	if (_.isEmpty(req.diasporaApi.where)) {
+		return res.status(405).send({
+			message: `${req.method} requires a "where" clause`,
+		});
+	} else {
+		try {
+			await model[true === singular ? 'delete' : 'deleteMany'](
+				req.diasporaApi.where,
+				req.diasporaApi.options
+			);
+			return res.status(204).json();
+		} catch (error) {
+			return respondError(res, error);
+		}
+	}
+};
+const findHandler = async (singular, req, res, model) => {
+	const handler =
+		true === singular ? respondMaybeNoEntity : respondMaybeEmptySet;
+	try {
+		const foundItems = await model[true === singular ? 'find' : 'findMany'](
+			req.diasporaApi.where,
+			req.diasporaApi.options
+		);
+		return handler(res, foundItems);
+	} catch (error) {
+		return respondError(res, error);
+	}
+};
+const insertHandler = async (singular, req, res, model) => {
+	const handler =
+		true === singular ? respondMaybeNoEntity : respondMaybeEmptySet;
+	try {
+		const createdItems = await model[true === singular ? 'spawn' : 'spawnMany'](
+			req.diasporaApi.body
+		).persist();
+		res.status(201);
+		return handler(res, createdItems);
+	} catch (error) {
+		respondError(res, error);
+	}
+};
+const updateHandler = async (singular, req, res, model) => {
+	if (_.isEmpty(req.diasporaApi.where)) {
+		return res.status(405).send({
+			message: `${req.method} requires a "where" clause`,
+		});
+	} else {
+		const handler =
+			true === singular ? respondMaybeNoEntity : respondMaybeEmptySet;
+		try {
+			const updatedItems = await model[
+				true === singular ? 'update' : 'updateMany'
+			](req.diasporaApi.where, req.diasporaApi.body, req.diasporaApi.options);
+			return handler(res, updatedItems);
+		} catch (error) {
+			return respondError(res, error);
+		}
+	}
+};
+const replaceHandler = async (singular, req, res, model) => {
+	if (_.isEmpty(req.diasporaApi.where)) {
+		return res.status(405).send({
+			message: `${req.method} requires a "where" clause`,
+		});
+	} else {
+		const handler =
+			true === singular ? respondMaybeNoEntity : respondMaybeEmptySet;
+		try {
+			const toReplaceItems = await model[true === singular ? 'find' : 'findMany'](
+				req.diasporaApi.where,
+				req.diasporaApi.options
+			);
+			const action = entity =>
+				entity.replaceAttributes(req.diasporaApi.body).persist();
+			let promise;
+			if (singular) {
+				promise = action(toReplaceItems);
+			} else {
+				promise = Promise.all(_.map(toReplaceItems, action));
+			}
+			const updatedItems = await promise;
+			return handler(res, updatedItems);
+		} catch (error) {
+			return respondError(res, error);
+		}
+	}
+};
+
+const handlers = {
+	_delete(req, res, next, model) {
+		return deleteHandler(true, req, res, model);
+	},
+	_get(req, res, next, model) {
+		return findHandler(true, req, res, model);
+	},
+	_patch(req, res, next, model) {
+		return updateHandler(true, req, res, model);
+	},
+	_post(req, res, next, model) {
+		return insertHandler(true, req, res, model);
+	},
+	_put(req, res, next, model) {
+		return replaceHandler(true, req, res, model);
+	},
+
+	delete(req, res, next, model) {
+		return deleteHandler(false, req, res, model);
+	},
+	get(req, res, next, model) {
+		return findHandler(false, req, res, model);
+	},
+	patch(req, res, next, model) {
+		return updateHandler(false, req, res, model);
+	},
+	post(req, res, next, model) {
+		return insertHandler(false, req, res, model);
+	},
+	put(req, res, next, model) {
+		return replaceHandler(false, req, res, model);
+	},
+
+	_(configuredModels, req, res) {
+		const response = {};
+		_.forEach(configuredModels, (apiDesc, modelName) => {
+			let routeName = `/${apiDesc.singular}/$ID`;
+			response[routeName] = {
+				description: `Base API to query on a SINGLE item of ${modelName}`,
+				parameters: {
+					$ID: {
+						optional: true,
+						description: 'Id of the item to match',
+					},
+				},
+				canonicalUrl: `${req.baseUrl}${routeName}`,
+			};
+			routeName = `/${apiDesc.plural}`;
+			response[routeName] = {
+				description: `Base API to query on SEVERAL items of ${modelName}`,
+				canonicalUrl: `${req.baseUrl}${routeName}`,
+			};
+		});
+		return res.json(response);
+	},
+};
+
+const bind = (newRouter, type, route, model, middlewares) => {
+	const prefix = 'singular' === type ? '_' : '';
+	const partialize = methods =>
+		_(methods)
+			.compact()
+			.map(func => _.ary(func, 4))
+			.map(func => _.partialRight(func, model))
+			.value();
+	newRouter
+		.route(route)
+		.all(
+			partialize([
+				async (req, res, next) => {
+					const queryId = Diaspora.components.Utils.generateUUID();
+					Diaspora.logger.verbose(
+						`Received ${chalk.bold.red(req.method)} request ${chalk.bold.yellow(
+							queryId
+						)} on model ${chalk.bold.blue(model.name)}: `,
+						{
+							absPath: _.get(
+								req,
+								'_parsedOriginalUrl.path',
+								_.get(req, '_parsedUrl.path')
+							),
+							path: req.path,
+							type,
+							body: req.body,
+							query: req.query,
+						}
+					);
+					req.diasporaApi = {
+						id: queryId,
+						number: type,
+						action: {
+							GET: 'find',
+							DELETE: 'delete',
+							PATCH: 'update',
+							POST: 'insert',
+							PUT: 'replace',
+						}[req.method],
+						model,
+						body: req.body,
+					};
+					try {
+						_.assign(req.diasporaApi, parseQuery(req.query));
+					} catch (error) {
+						return respondError(res, error, 400);
+					}
+					delete req.diasporaApi.raw;
+					if ('singular' === req.diasporaApi.number) {
+						const id = _.get(req, 'params[1]');
+						if (!_.isNil(id)) {
+							if ('insert' === req.diasporaApi.action) {
+								return respondError(
+									res,
+									new Error('POST (insert) to explicit ID is forbidden'),
+									405
+								);
+							} else {
+								const target = await model.find(id);
+								if (_.isNil(target)) {
+									return res.status(404).send();
+								}
+								_.assign(req.diasporaApi, {
+									urlId: id,
+									where: {
+										id,
+									},
+									target,
+								});
+							}
+						}
+					}
+					Diaspora.logger.debug(
+						`DiasporaAPI params for request ${chalk.bold.yellow(queryId)}: `,
+						req.diasporaApi
+					);
+					return next();
+				},
+				middlewares.all,
+			])
+		)
+		.delete(
+			partialize([
+				middlewares.delete,
+				middlewares[`delete${'singular' === type ? 'One' : 'Many'}`],
+				handlers[`${prefix}delete`],
+			])
+		)
+		.get(
+			partialize([
+				middlewares.get,
+				middlewares.find,
+				middlewares[`find${'singular' === type ? 'One' : 'Many'}`],
+				handlers[`${prefix}get`],
+			])
+		)
+		.patch(
+			partialize([
+				middlewares.patch,
+				middlewares.update,
+				middlewares[`update${'singular' === type ? 'One' : 'Many'}`],
+				handlers[`${prefix}patch`],
+			])
+		)
+		.post(
+			partialize([
+				middlewares.post,
+				middlewares.insert,
+				middlewares["insert{  'singular' === type ? 'One' : 'Many' }"],
+				handlers[`${prefix}post`],
+			])
+		)
+		.put(
+			partialize([
+				middlewares.put,
+				middlewares.update,
+				middlewares[`replace${'singular' === type ? 'One' : 'Many'}`],
+				handlers[`${prefix}put`],
+			])
+		);
+};
+
+module.exports = configHash => {
+	// Get only models authorized
+	const allModels = _.keys(Diaspora.models);
+	const configuredModels = (() => {
+		try {
+			return utils.configureList(configHash.models, allModels);
+		} catch (error) {
+			if (error instanceof ReferenceError) {
+				throw new ReferenceError(
+					`Tried to configure Diaspora Server with unknown model. Original message: ${error.message}`
+				);
+			} else {
+				throw error;
+			}
+		}
+	})();
+
+	// Create the subrouter
+	const newRouter = express.Router();
+	// parse application/x-www-form-urlencoded
+	newRouter.use(
+		bodyParser.urlencoded({
+			extended: false,
+		})
+	);
+	// parse application/json
+	newRouter.use(bodyParser.json());
+
+	// Configure router
+	_.forEach(configuredModels, (apiDesc, modelName) => {
+		if (true === apiDesc) {
+			apiDesc = {};
+		}
+		_.defaults(apiDesc, {
+			singular: modelName.toLowerCase(),
+			plural: `${modelName.toLowerCase()}s`,
+			middlewares: {},
+		});
+		Diaspora.logger.verbose(`Exposing ${modelName}`, apiDesc);
+		const model = Diaspora.models[modelName];
+
+		bind(
+			newRouter,
+			'singular',
+			`/${apiDesc.singular}(/*)?`,
+			model,
+			apiDesc.middlewares
+		);
+		bind(newRouter, 'plural', `/${apiDesc.plural}`, model, apiDesc.middlewares);
+	});
+	newRouter.get('', _.partial(handlers._, configuredModels));
+	return newRouter;
+};
