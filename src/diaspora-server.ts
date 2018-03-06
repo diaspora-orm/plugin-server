@@ -42,11 +42,12 @@ export interface IMiddlewareHash {
 	insertMany?: (req: any, res: any, next: Function) => void;
 }
 
-export const buildApi = (config: IConfigurationRaw = {}) => {
+export const buildApi = async (config: IConfigurationRaw = {}) => {
 	const defaulted: IConfiguration = _.defaults(config, {
 		webserverType: 'express',
 		models: {},
 	});
 
-	return require(`./webservers/${defaulted.webserverType}`)(defaulted);
+	const webserver = await import(`./webservers/${defaulted.webserverType}`);
+	return webserver(defaulted);
 };
