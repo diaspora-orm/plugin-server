@@ -99,7 +99,7 @@
 				"tsConfigFile": "tsconfig.jest.json"
 			}
 		},
-		"testResultsProcessor": "./node_modules/jest-html-reporter" 
+		"testResultsProcessor": "./node_modules/jest-html-reporter"
 	},
 	"devDependencies": {
 		"@types/bluebird": "^3.5.20",
@@ -128,6 +128,8 @@
 		"rimraf": "^2.6.2",
 		"rollup": "^0.56.4",
 		"rollup-plugin-commonjs": "^9.0.0",
+		"rollup-plugin-json": "^2.3.0",
+		"rollup-plugin-node-builtins": "^2.1.2",
 		"rollup-plugin-node-resolve": "^3.0.3",
 		"rollup-plugin-sourcemaps": "^0.4.2",
 		"rollup-plugin-typescript2": "^0.12.0",

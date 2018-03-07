@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import util from 'util';
+import { inspect, InspectOptions } from 'util';
 import { Minimatch } from 'minimatch';
 // TODO: Define interface, and skip this import.
 import express from 'express';
@@ -86,12 +86,12 @@ export const configureList = (
 	return _.pickBy(configurationObject);
 };
 
-export const prettylog = (object: any, config: util.InspectOptions = {}) => {
+export const prettylog = (object: any, config: InspectOptions = {}) => {
 	config = _.defaults(config, {
 		colors: true,
 		depth: 8,
 	});
-	console.log(util.inspect(object, config));
+	console.log(inspect(object, config));
 };
 
 export interface JsonError {
