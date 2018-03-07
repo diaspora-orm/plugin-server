@@ -169,12 +169,12 @@ const insertHandler: IModelRequestApplier = async (
 	model
 ) => {
 	const handler =
-		EQueryNumber.SINGULAR == queryNumber
+		EQueryNumber.SINGULAR === queryNumber
 			? respondMaybeNoEntity
 			: respondMaybeEmptySet;
 	try {
 		const createdItems = await model[
-			EQueryNumber.SINGULAR == queryNumber ? 'spawn' : 'spawnMany'
+			EQueryNumber.SINGULAR === queryNumber ? 'spawn' : 'spawnMany'
 		](req.diasporaApi.body).persist();
 		res.status(201);
 		return handler(res, createdItems);
@@ -194,12 +194,12 @@ const updateHandler: IModelRequestApplier = async (
 		});
 	} else {
 		const handler =
-			EQueryNumber.SINGULAR == queryNumber
+			EQueryNumber.SINGULAR === queryNumber
 				? respondMaybeNoEntity
 				: respondMaybeEmptySet;
 		try {
 			const updatedItems = await model[
-				EQueryNumber.SINGULAR == queryNumber ? 'update' : 'updateMany'
+				EQueryNumber.SINGULAR === queryNumber ? 'update' : 'updateMany'
 			](req.diasporaApi.where, req.diasporaApi.body, req.diasporaApi.options);
 			return handler(res, updatedItems);
 		} catch (error) {
@@ -219,17 +219,17 @@ const replaceHandler: IModelRequestApplier = async (
 		});
 	} else {
 		const handler =
-			EQueryNumber.SINGULAR == queryNumber
+			EQueryNumber.SINGULAR === queryNumber
 				? respondMaybeNoEntity
 				: respondMaybeEmptySet;
 		try {
 			const toReplaceItems = await model[
-				EQueryNumber.SINGULAR == queryNumber ? 'find' : 'findMany'
+				EQueryNumber.SINGULAR === queryNumber ? 'find' : 'findMany'
 			](req.diasporaApi.where, req.diasporaApi.options);
 			const action = (entity: Entity) =>
 				entity.replaceAttributes(req.diasporaApi.body).persist();
 			let promise;
-			if (EQueryNumber.SINGULAR == queryNumber) {
+			if (EQueryNumber.SINGULAR === queryNumber) {
 				promise = action(toReplaceItems);
 			} else {
 				promise = Promise.all(_.map(toReplaceItems, action));
@@ -388,7 +388,7 @@ const bind = (
 			partialize([
 				middlewares.delete,
 				(middlewares as any)[
-					`delete${EQueryNumber.SINGULAR == apiNumber ? 'One' : 'Many'}`
+					`delete${EQueryNumber.SINGULAR === apiNumber ? 'One' : 'Many'}`
 				],
 				handlers[`${prefix}delete`],
 			])
@@ -398,7 +398,7 @@ const bind = (
 				middlewares.get,
 				middlewares.find,
 				(middlewares as any)[
-					`find${EQueryNumber.SINGULAR == apiNumber ? 'One' : 'Many'}`
+					`find${EQueryNumber.SINGULAR === apiNumber ? 'One' : 'Many'}`
 				],
 				handlers[`${prefix}get`],
 			])
@@ -408,7 +408,7 @@ const bind = (
 				middlewares.patch,
 				middlewares.update,
 				(middlewares as any)[
-					`update${EQueryNumber.SINGULAR == apiNumber ? 'One' : 'Many'}`
+					`update${EQueryNumber.SINGULAR === apiNumber ? 'One' : 'Many'}`
 				],
 				handlers[`${prefix}patch`],
 			])
@@ -418,7 +418,7 @@ const bind = (
 				middlewares.post,
 				middlewares.insert,
 				(middlewares as any)[
-					`insert${EQueryNumber.SINGULAR == apiNumber ? 'One' : 'Many'}`
+					`insert${EQueryNumber.SINGULAR === apiNumber ? 'One' : 'Many'}`
 				],
 				handlers[`${prefix}post`],
 			])
@@ -428,7 +428,7 @@ const bind = (
 				middlewares.put,
 				middlewares.replace,
 				(middlewares as any)[
-					`replace${EQueryNumber.SINGULAR == apiNumber ? 'One' : 'Many'}`
+					`replace${EQueryNumber.SINGULAR === apiNumber ? 'One' : 'Many'}`
 				],
 				handlers[`${prefix}put`],
 			])
