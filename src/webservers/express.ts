@@ -46,7 +46,7 @@ const respondMaybeEmptySet = (res: express.Response, set: Set) => {
 	}
 	return res.json(set.map(setIdFromIdHash).value());
 };
-const respondMaybeNoEntity = (res: express.Response, entity: Entity) => {
+const respondMaybeNoEntity = (res: express.Response, entity?: Entity) => {
 	if (_.isNil(entity)) {
 		return res.status(204).send();
 	} else {
@@ -218,23 +218,31 @@ const replaceHandler: IModelRequestApplier = async (
 			message: `${req.method} requires a "where" clause`,
 		});
 	} else {
-		const handler =
-			EQueryNumber.SINGULAR === queryNumber
-				? respondMaybeNoEntity
-				: respondMaybeEmptySet;
+		const handler: (
+			res: express.Response,
+			entityOrSet?: Set | Entity
+		) => Response = (EQueryNumber.SINGULAR === queryNumber
+			? respondMaybeNoEntity
+			: respondMaybeEmptySet) as any;
 		try {
 			const toReplaceItems = await model[
 				EQueryNumber.SINGULAR === queryNumber ? 'find' : 'findMany'
 			](req.diasporaApi.where, req.diasporaApi.options);
+
+			// Replace with entity.replaceAttributes in next Diaspora version
 			const action = (entity: Entity) =>
-				entity.replaceAttributes(req.diasporaApi.body).persist();
-			let promise;
-			if (EQueryNumber.SINGULAR === queryNumber) {
-				promise = action(toReplaceItems);
-			} else {
-				promise = Promise.all(_.map(toReplaceItems, action));
+				entity.replaceAttributes(_.clone(req.diasporaApi.body)).persist();
+
+			let updatedItems: undefined | Entity | Entity[] = undefined;
+			if (EQueryNumber.PLURAL === queryNumber) {
+				updatedItems = new Diaspora.components.Set(
+					model,
+					await Promise.all(toReplaceItems.map(action).value())
+				);
+			} else if (toReplaceItems) {
+				updatedItems = await action(toReplaceItems);
 			}
-			const updatedItems = await promise;
+
 			return handler(res, updatedItems);
 		} catch (error) {
 			return respondError(res, error);

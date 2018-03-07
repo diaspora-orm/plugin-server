@@ -40,7 +40,7 @@ const applySelector = (oldVal: any, newVal: any) => {
 };
 
 export const configureList = (
-	pickers: { [key: string]: object },
+	pickers: { [key: string]: object | boolean },
 	set: string[]
 ) => {
 	// TODO: detail
@@ -100,7 +100,7 @@ export interface JsonError {
 
 export const respondError = (
 	res: express.Response,
-	error: Error,
+	error?: Error,
 	status?: number
 ) => {
 	const jsonError: JsonError = _.assign({}, error);
