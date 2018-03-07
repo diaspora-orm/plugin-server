@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import express from 'express';
+import express, { RequestHandler } from 'express';
 import bodyParser from 'body-parser';
 import chalk from 'chalk';
 
@@ -432,7 +432,8 @@ const bind = (
 				],
 				handlers[`${prefix}put`],
 			])
-		);
+		)
+		.options();
 };
 
 export default (configHash: IConfiguration) => {
@@ -494,5 +495,5 @@ export default (configHash: IConfiguration) => {
 		);
 	});
 	newRouter.options('', _.partial(optionHandler, configuredModels));
-	return newRouter as Object;
+	return newRouter as RequestHandler;
 };

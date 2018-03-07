@@ -7,7 +7,7 @@ export interface IConfigurationRaw {
 	};
 }
 export interface IConfiguration extends IConfigurationRaw {
-	webserverType: string;
+	webserverType: EWebServerType;
 	models: {
 		[key: string]: {
 			middlewares?: IMiddlewareHash;
@@ -42,12 +42,19 @@ export interface IMiddlewareHash {
 	insertMany?: (req: any, res: any, next: Function) => void;
 }
 
-export const buildApi = async (config: IConfigurationRaw = {}) => {
+export enum EWebServerType {
+	EXPRESS = 'express',
+}
+import expressServer from './webservers/express';
+const servers = {
+	[EWebServerType.EXPRESS]: expressServer,
+};
+
+export const buildApi = (config: IConfigurationRaw = {}) => {
 	const defaulted: IConfiguration = _.defaults(config, {
-		webserverType: 'express',
+		webserverType: EWebServerType.EXPRESS,
 		models: {},
 	});
 
-	const webserver = await import(`./webservers/${defaulted.webserverType}`);
-	return webserver(defaulted);
+	return servers[defaulted.webserverType](defaulted) as any;
 };
