@@ -48,10 +48,10 @@ app.use(
 	})
 );
 
-export const server: () => Promise<http.Server> = () =>
+export const server: (port: number) => Promise<http.Server> = (port: number) =>
 	new Promise((resolve, reject) => {
-		const httpServer = app.listen(config.port, () => {
-			console.log(`Example app listening on port ${config.port}!`);
+		const httpServer = app.listen(port, () => {
+			console.log(`Example app listening on port ${port}!`);
 			resolve(httpServer);
 		});
 	});
