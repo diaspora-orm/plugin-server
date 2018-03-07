@@ -1,8 +1,9 @@
+import http from 'http';
 import express from 'express';
 
 const Diaspora = require('diaspora');
 
-const DiasporaServer = require('../index');
+import { buildApi as DiasporaServer } from '../src/diaspora-server';
 const config = require('./config');
 
 export const inMemorySource = Diaspora.createNamedDataSource(
@@ -10,6 +11,7 @@ export const inMemorySource = Diaspora.createNamedDataSource(
 	'inMemory',
 	{}
 );
+
 export const PhoneBook = Diaspora.declareModel('PhoneBook', {
 	sources: ['myDataSource'],
 	attributes: {
@@ -46,10 +48,10 @@ app.use(
 	})
 );
 
-export const server = () =>
-	new Promise((resolve, reject) =>
-		app.listen(config.port, () => {
+export const server: () => Promise<http.Server> = () =>
+	new Promise((resolve, reject) => {
+		const httpServer = app.listen(config.port, () => {
 			console.log(`Example app listening on port ${config.port}!`);
-			resolve();
-		})
-	);
+			resolve(httpServer);
+		});
+	});

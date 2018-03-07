@@ -1,10 +1,12 @@
 import { promisifyAll, promisify } from 'bluebird';
 import _ from 'lodash';
+import request, { Response } from 'request';
+import http from 'http';
 
 const config = require('./config');
 const utils = require('../src/utils');
 
-import request from 'request';
+import { server, PhoneBook, inMemorySource } from './webserver-init';
 
 type Param =
 	| {
@@ -13,18 +15,20 @@ type Param =
 			qs?: object;
 	  }
 	| string;
-const requestApi: {
-	optionsAsync(params: Param): Promise<[any, any]>;
-	getAsync(params: Param): Promise<[any, any]>;
-	deleteAsync(params: Param): Promise<[any, any]>;
-	postAsync(params: Param): Promise<[any, any]>;
-	patchAsync(params: Param): Promise<[any, any]>;
-} = promisifyAll(request) as any;
+const requestApi = promisifyAll(request, {
+	multiArgs: true,
+}) as {
+	optionsAsync(params: Param): Promise<[Response, any]>;
+	getAsync(params: Param): Promise<[Response, any]>;
+	deleteAsync(params: Param): Promise<[Response, any]>;
+	postAsync(params: Param): Promise<[Response, any]>;
+	patchAsync(params: Param): Promise<[Response, any]>;
+};
 
 const compareArrays = (a: any[], b: any[]) => {
 	expect(a).toHaveLength(b.length);
 	_.forEach(a, (item, index) => {
-		expect(a[index]).toContainEqual(b[index]);
+		expect(a[index]).toMatchObject(b[index]);
 	});
 };
 
@@ -182,28 +186,22 @@ describe('Test utilities', () => {
 });
 
 describe('Test basic interactions', () => {
-	let app;
-	let PhoneBook;
-	let inMemorySource;
+	let app: http.Server | undefined;
 
 	beforeAll(async () => {
 		// runs before all tests in this block
-		const initComponents = await import('./webserver-init');
-		console.log(initComponents);
-		app = await initComponents.server();
-		PhoneBook = initComponents.PhoneBook;
-		inMemorySource = initComponents.inMemorySource;
+		app = await server();
 	});
-	afterAll(cb => {
+	afterAll(async () => {
 		// runs after all tests in this block
-		app.close(cb);
+		return new Promise(resolve => app.close(resolve));
 	});
 
 	/*
 	beforeEach( () => {
 		// runs before each test in this block
 	});
-
+	
 	afterEach( () => {
 		// runs after each test in this block
 	});
@@ -211,27 +209,27 @@ describe('Test basic interactions', () => {
 
 	const baseAPI = `http://localhost:${config.port}${config.baseApi}`;
 	// test cases
-	it('Get API index (OPTION)', () => {
-		return requestApi.optionsAsync(baseAPI).then(([res, body]) => {
-			expect(res).toHaveProperty('statusCode', 200);
-			const respJson = JSON.parse(body);
-			utils.prettylog(respJson);
+	it('Get API index (OPTION)', async () => {
+		const [res, body] = await requestApi.optionsAsync(baseAPI);
 
-			expect(_.keys(respJson)).toEqual(
-				expect.arrayContaining(['/PhoneBook/$ID', '/PhoneBooks'])
-			);
-			expect(respJson['/PhoneBook/$ID']).toHaveProperty(
-				'canonicalUrl',
-				`${config.baseApi}/PhoneBook/$ID`
-			);
-			expect(respJson['/PhoneBook/$ID']).toHaveProperty('parameters');
-			expect(respJson['/PhoneBook/$ID']).toHaveProperty('description');
-			expect(respJson['/PhoneBooks']).toHaveProperty(
-				'canonicalUrl',
-				`${config.baseApi}/PhoneBooks`
-			);
-			expect(respJson['/PhoneBooks']).toHaveProperty('description');
-		});
+		expect(res).toHaveProperty('statusCode', 200);
+		const respJson = JSON.parse(body);
+		utils.prettylog(respJson);
+
+		expect(_.keys(respJson)).toEqual(
+			expect.arrayContaining(['/PhoneBook/$ID', '/PhoneBooks'])
+		);
+		expect(respJson['/PhoneBook/$ID']).toHaveProperty(
+			'canonicalUrl',
+			`${config.baseApi}/PhoneBook/$ID`
+		);
+		expect(respJson['/PhoneBook/$ID']).toHaveProperty('parameters');
+		expect(respJson['/PhoneBook/$ID']).toHaveProperty('description');
+		expect(respJson['/PhoneBooks']).toHaveProperty(
+			'canonicalUrl',
+			`${config.baseApi}/PhoneBooks`
+		);
+		expect(respJson['/PhoneBooks']).toHaveProperty('description');
 	});
 
 	describe('Create (POST)', () => {
@@ -244,7 +242,7 @@ describe('Test basic interactions', () => {
 					json: datas[idx],
 				});
 				expect(res).toHaveProperty('statusCode', 201);
-				expect(respJson).toContain(datas[idx]);
+				expect(respJson).toMatchObject(datas[idx]);
 				expect(inMemorySource.store.PhoneBook.items).toHaveLength(prevLen + 1);
 			});
 			it('Validation error', async () => {
@@ -281,8 +279,8 @@ describe('Test basic interactions', () => {
 				});
 				expect(res).toHaveProperty('statusCode', 201);
 				expect(respJson).toHaveLength(2);
-				expect(respJson[0]).toContain(datas[idx]);
-				expect(respJson[1]).toContain(datas[idx + 1]);
+				expect(respJson[0]).toMatchObject(datas[idx]);
+				expect(respJson[1]).toMatchObject(datas[idx + 1]);
 				expect(inMemorySource.store.PhoneBook.items).toHaveLength(prevLen + 2);
 			});
 			it('Validation error', async () => {
@@ -307,6 +305,7 @@ describe('Test basic interactions', () => {
 			return PhoneBook.deleteMany();
 		});
 	});
+
 	describe('Update (PATCH)', () => {
 		const idx1 = 1;
 		const idx2 = 3;
@@ -329,12 +328,12 @@ describe('Test basic interactions', () => {
 					});
 					expect(res).toHaveProperty('statusCode', 200);
 					const patchedData = _.assign({}, datas[idx1], update);
-					expect(respJson).toContainEqual(patchedData);
+					expect(respJson).toMatchObject(patchedData);
 					expect(
 						(await PhoneBook.find({
 							email: datas[idx1].email,
 						})).attributes
-					).toContain(patchedData);
+					).toMatchObject(patchedData);
 					expect(inMemorySource.store.PhoneBook.items).toHaveLength(prevLen);
 				});
 				it('Not found', async () => {
@@ -388,8 +387,8 @@ describe('Test basic interactions', () => {
 					});
 					expect(res).toHaveProperty('statusCode', 200);
 					const patchedData = _.assign({}, datas[idx2], update);
-					expect(respJson).toContainEqual(patchedData);
-					expect((await PhoneBook.find(id)).attributes).toContain(patchedData);
+					expect(respJson).toMatchObject(patchedData);
+					expect((await PhoneBook.find(id)).attributes).toMatchObject(patchedData);
 					expect(inMemorySource.store.PhoneBook.items).toHaveLength(prevLen);
 				});
 				it('Not found', async () => {
@@ -497,12 +496,12 @@ describe('Test basic interactions', () => {
 						},
 					});
 					expect(res).toHaveProperty('statusCode', 200);
-					expect(respJson).toContainEqual(datas[idx1]);
+					expect(respJson).toMatchObject(datas[idx1]);
 					expect(
 						(await PhoneBook.find({
 							email: datas[idx1].email,
 						})).attributes
-					).toContain(datas[idx1]);
+					).toMatchObject(datas[idx1]);
 					expect(inMemorySource.store.PhoneBook.items).toHaveLength(prevLen);
 				});
 				it('Not found', async () => {
@@ -537,8 +536,8 @@ describe('Test basic interactions', () => {
 						json: true,
 					});
 					expect(res).toHaveProperty('statusCode', 200);
-					expect(respJson).toContain(datas[idx1]);
-					expect((await PhoneBook.find({})).attributes).toContain(datas[idx1]);
+					expect(respJson).toMatchObject(datas[idx1]);
+					expect((await PhoneBook.find({})).attributes).toMatchObject(datas[idx1]);
 					expect(inMemorySource.store.PhoneBook.items).toHaveLength(prevLen);
 				});
 			});
@@ -557,8 +556,8 @@ describe('Test basic interactions', () => {
 						json: true,
 					});
 					expect(res).toHaveProperty('statusCode', 200);
-					expect(respJson).toContainEqual(datas[idx2]);
-					expect((await PhoneBook.find(id)).attributes).toContain(datas[idx2]);
+					expect(respJson).toMatchObject(datas[idx2]);
+					expect((await PhoneBook.find(id)).attributes).toMatchObject(datas[idx2]);
 					expect(inMemorySource.store.PhoneBook.items).toHaveLength(prevLen);
 				});
 				it('Not found', async () => {
