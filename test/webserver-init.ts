@@ -1,18 +1,18 @@
-import http from 'http';
 import express from 'express';
+import http from 'http';
 
-const Diaspora = require('diaspora');
+const Diaspora = require( 'diaspora' );
 
 import { buildApi as DiasporaServer } from '../src/diaspora-server';
-const config = require('./config');
+const config = require( './config' );
 
 export const inMemorySource = Diaspora.createNamedDataSource(
 	'myDataSource',
 	'inMemory',
-	{}
+	{},
 );
 
-export const PhoneBook = Diaspora.declareModel('PhoneBook', {
+export const PhoneBook = Diaspora.declareModel( 'PhoneBook', {
 	sources: ['myDataSource'],
 	attributes: {
 		name: {
@@ -27,16 +27,16 @@ export const PhoneBook = Diaspora.declareModel('PhoneBook', {
 			type: 'integer',
 		},
 	},
-});
-/*const Ignored = */ Diaspora.declareModel('Ignored', {
+} );
+Diaspora.declareModel( 'Ignored', {
 	sources: ['myDataSource'],
 	attributes: {},
-});
+} );
 
 const app = express();
 app.use(
 	'/api',
-	DiasporaServer({
+	DiasporaServer( {
 		webserverType: 'express',
 		models: {
 			PhoneBook: {
@@ -45,13 +45,13 @@ app.use(
 			},
 			Ignored: false,
 		},
-	})
+	} ),
 );
 
-export const server: (port: number) => Promise<http.Server> = (port: number) =>
-	new Promise((resolve, reject) => {
-		const httpServer = app.listen(port, () => {
-			console.log(`Example app listening on port ${port}!`);
-			resolve(httpServer);
-		});
-	});
+export const server: ( port: number ) => Promise<http.Server> = ( port: number ) =>
+	new Promise( ( resolve, reject ) => {
+		const httpServer = app.listen( port, () => {
+			console.log( `Example app listening on port ${port}!` );
+			resolve( httpServer );
+		} );
+	} );

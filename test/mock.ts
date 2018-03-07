@@ -17,26 +17,26 @@ export const datas = [
 		{
 			name: 'Mannie Isitt',
 		},
-		DUPLICATE_DATA[0]
+		DUPLICATE_DATA[0],
 	),
 	_.assign(
 		{
 			name: 'Margy Keach',
 		},
-		DUPLICATE_DATA[0]
+		DUPLICATE_DATA[0],
 	),
 	_.assign(
 		{
 			name: 'Orelie Robert',
 			email: 'orobert3@hc360.com',
 		},
-		DUPLICATE_DATA[1]
+		DUPLICATE_DATA[1],
 	),
 	_.assign(
 		{
 			name: 'Vera Jirka',
 		},
-		DUPLICATE_DATA[1]
+		DUPLICATE_DATA[1],
 	),
 	{
 		name: 'Claudia Legh',
