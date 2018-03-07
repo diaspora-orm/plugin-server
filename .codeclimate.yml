@@ -5,6 +5,7 @@ engines:
     config:
       languages:
       - javascript
+      - typescript
   eslint:
     enabled: true
   fixme:
@@ -15,6 +16,9 @@ engines:
     enabled: true
     exclude_paths:
     - "!**.md"
+  tslint:
+    enabled: true
+    config: tslint.json
 checks:
   method-complexity:
     config:
