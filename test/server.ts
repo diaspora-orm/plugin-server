@@ -53,7 +53,7 @@ beforeAll(async () => {
 	app = await server(config.port);
 });
 afterAll(async () => {
+	// Get port: app.address().port
 	// runs after all tests in this block
-	//app.address().port
 	return new Promise(resolve => app.close(resolve));
 });
