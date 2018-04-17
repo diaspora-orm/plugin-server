@@ -1,6 +1,6 @@
 import { promisify, promisifyAll } from 'bluebird';
 import http from 'http';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import request from 'request';
 
 export const config = require( './config' );
@@ -38,7 +38,7 @@ export const compareArrays = ( a: any[], b: any[] ) => {
 
 export const resetDataSource = () =>
 	beforeEach( async () => {
-		await PhoneBook.deleteMany();
+		await PhoneBook.deleteMany( {} );
 		await PhoneBook.insertMany( datas );
 	} );
 
@@ -56,3 +56,6 @@ afterAll( async () => {
 	// runs after all tests in this block
 	return new Promise( ( resolve ) => app.close( resolve ) );
 } );
+
+export const stripIdHash = ( object: object ) => _.omit( object, ['idHash'] );
+export const stripIdHashArr = ( objects: any[] ) => _.map( objects, stripIdHash );

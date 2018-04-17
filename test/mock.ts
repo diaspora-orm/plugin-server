@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 export const DUPLICATE_DATA = [
 	{
@@ -9,7 +9,12 @@ export const DUPLICATE_DATA = [
 	},
 ];
 
-export const datas = [
+export const datas: Array<{
+	name: string;
+	email?: string;
+	phone?: string;
+	id?: string;
+}> = [
 	{
 		name: 'Rozanna Neiland',
 	},
@@ -17,26 +22,26 @@ export const datas = [
 		{
 			name: 'Mannie Isitt',
 		},
-		DUPLICATE_DATA[0],
+		DUPLICATE_DATA[0]
 	),
 	_.assign(
 		{
 			name: 'Margy Keach',
 		},
-		DUPLICATE_DATA[0],
+		DUPLICATE_DATA[0]
 	),
 	_.assign(
 		{
 			name: 'Orelie Robert',
 			email: 'orobert3@hc360.com',
 		},
-		DUPLICATE_DATA[1],
+		DUPLICATE_DATA[1]
 	),
 	_.assign(
 		{
 			name: 'Vera Jirka',
 		},
-		DUPLICATE_DATA[1],
+		DUPLICATE_DATA[1]
 	),
 	{
 		name: 'Claudia Legh',

@@ -1,18 +1,26 @@
 import express from 'express';
 import http from 'http';
+import * as _ from 'lodash';
 
-const Diaspora = require( 'diaspora' );
+import Diaspora from '@diaspora/diaspora/lib';
+import { Adapter, IRawAdapterEntityAttributes } from '@diaspora/diaspora/lib/adapters/base';
+import { InMemoryEntity } from '@diaspora/diaspora/lib/adapters/inMemory';
+import { EntityUid, IRawEntityAttributes } from '@diaspora/diaspora/lib/entities';
 
 import { buildApi as DiasporaServer } from '../src/diaspora-server';
+import { datas } from './mock';
+
 const config = require( './config' );
 
 export const inMemorySource = Diaspora.createNamedDataSource(
 	'myDataSource',
 	'inMemory',
-	{},
+	{}
 );
 
-export const PhoneBook = Diaspora.declareModel( 'PhoneBook', {
+const MODEL_NAME = 'PhoneBook';
+
+export const PhoneBook = Diaspora.declareModel( MODEL_NAME, {
 	sources: ['myDataSource'],
 	attributes: {
 		name: {
@@ -28,6 +36,16 @@ export const PhoneBook = Diaspora.declareModel( 'PhoneBook', {
 		},
 	},
 } );
+
+export const store: { items: any[] } = ( inMemorySource.adapter as any ).store[MODEL_NAME];
+
+export const resetMock = () => {
+	store.items = [];
+	_.forEach( datas, ( entity ) => {
+		store.items.push( InMemoryEntity.setId( _.cloneDeep( entity ), inMemorySource.adapter ) );
+	} );
+};
+
 Diaspora.declareModel( 'Ignored', {
 	sources: ['myDataSource'],
 	attributes: {},
@@ -45,7 +63,7 @@ app.use(
 			},
 			Ignored: false,
 		},
-	} ),
+	} )
 );
 
 export const server: ( port: number ) => Promise<http.Server> = ( port: number ) =>

@@ -1,7 +1,8 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 import { prettylog } from '../../src/utils';
 import { baseAPI, config, requestApi } from '../server';
+import { resetMock } from '../webserver-init';
 
 describe( 'Infos (OPTION)', () => {
 	it( 'Get API index (OPTION)', async () => {
@@ -11,17 +12,18 @@ describe( 'Infos (OPTION)', () => {
 		const respJson = JSON.parse( body );
 
 		expect( _.keys( respJson ) ).toEqual(
-			expect.arrayContaining( ['/PhoneBook/$ID', '/PhoneBooks'] ),
+			expect.arrayContaining( ['/PhoneBook/$ID', '/PhoneBooks'] )
 		);
 		expect( respJson['/PhoneBook/$ID'] ).toHaveProperty(
 			'canonicalUrl',
-			`${config.baseApi}/PhoneBook/$ID`,
+			`${config.baseApi}/PhoneBook/$ID`
 		);
 		expect( respJson['/PhoneBook/$ID'] ).toHaveProperty( 'parameters' );
-		expect( respJson['/PhoneBook/$ID'] ).toHaveProperty( 'description' );
+  expect( respJson['/PhoneBook/$ID'] ).toHaveProperty( 'description' );
+
 		expect( respJson['/PhoneBooks'] ).toHaveProperty(
 			'canonicalUrl',
-			`${config.baseApi}/PhoneBooks`,
+			`${config.baseApi}/PhoneBooks`
 		);
 		expect( respJson['/PhoneBooks'] ).toHaveProperty( 'description' );
 	} );

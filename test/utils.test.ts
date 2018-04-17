@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 import { inspect } from 'util';
 import { configureList, prettylog, respondError } from '../src/utils';
@@ -12,8 +12,8 @@ describe( 'Test utilities', () => {
 					'*': true,
 					b: false,
 				},
-				['a', 'b', 'c'],
-			),
+				['a', 'b', 'c']
+			)
 		).toEqual( {
 			a: true,
 			c: true,
@@ -23,8 +23,8 @@ describe( 'Test utilities', () => {
 				{
 					'/aa?/': true,
 				},
-				['a', 'aa', 'ab', 'aaa', 'b', 'ba', 'c'],
-			),
+				['a', 'aa', 'ab', 'aaa', 'b', 'ba', 'c']
+			)
 		).toEqual( {
 			a: true,
 			aa: true,
@@ -44,8 +44,8 @@ describe( 'Test utilities', () => {
 						last: 'bar',
 					},
 				},
-				['foo', 'fooqux', 'bar', 'barqux', 'foobar', 'qux'],
-			),
+				['foo', 'fooqux', 'bar', 'barqux', 'foobar', 'qux']
+			)
 		).toEqual( {
 			foo: {
 				foo: true,
@@ -96,7 +96,7 @@ describe( 'Test utilities', () => {
 					}
 				},
 			};
-			respondError( pseudoRes as any );
+			respondError( {} as any, pseudoRes as any );
 		} );
 	} );
 	it( 'prettylog', () => {
@@ -110,7 +110,7 @@ describe( 'Test utilities', () => {
 			inspect( datas, {
 				colors: true,
 				depth: 8,
-			} ),
+			} )
 		);
 
 		( global as any ).console = oldConsole;
