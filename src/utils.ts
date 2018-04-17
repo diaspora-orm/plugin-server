@@ -1,24 +1,13 @@
 // TODO: Define interface, and skip this import.
 import express from 'express';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { Minimatch } from 'minimatch';
 import { inspect, InspectOptions } from 'util';
-import { IDiasporaApiRequest } from './webservers/express';
 
-const Diaspora = require( 'diaspora' );
+import Diaspora from '@diaspora/diaspora/lib';
+import { ValidationError } from '@diaspora/diaspora/lib/errors/validationError';
+import { IDiasporaApiRequest, IDiasporaApiRequestDescriptor, IDiasporaApiRequestDescriptorPreParse } from './diaspora-server';
 
-export interface SelectQuery {
-	[key: string]: any;
-}
-export interface Model {
-	[key: string]: any;
-}
-export interface Entity {
-	[key: string]: any;
-}
-export interface Set extends _.LoDashImplicitArrayWrapper<Entity> {
-	length: number;
-}
 export enum HttpVerb {
 	GET = 'GET',
 	DELETE = 'DELETE',
@@ -26,11 +15,32 @@ export enum HttpVerb {
 	POST = 'POST',
 	PUT = 'PUT',
 }
+export enum EHttpStatusCode {
+	Ok = 200,
+	Created = 201,
+	NoContent = 204,
 
-const applySelector = ( oldVal: any, newVal: any ) => {
+	MalformedQuery = 400,
+	NotFound = 404,
+	MethodNotAllowed = 405,
+}
+
+export enum EQueryAction {
+	FIND = 'find',
+	DELETE = 'delete',
+	UPDATE = 'update',
+	INSERT = 'insert',
+	REPLACE = 'replace',
+}
+export enum EQueryNumber {
+	SINGULAR = 'singular',
+	PLURAL = 'plural',
+}
+
+const applySelector = <T1, T2>( oldVal: T1, newVal: T2 ): T2 | ( T1 & T2 ) => {
 	if ( _.isObject( newVal ) ) {
 		if ( _.isObject( oldVal ) ) {
-			return _.assign( oldVal, newVal );
+			return _.assign( {}, oldVal, newVal );
 		} else {
 			return _.clone( newVal );
 		}
@@ -39,12 +49,12 @@ const applySelector = ( oldVal: any, newVal: any ) => {
 	}
 };
 
-export const configureList = (
-	pickers: { [key: string]: object | boolean },
-	set: string[],
+export const configureList = <T extends object>(
+	pickers: { [key: string]: T | boolean },
+	set: string[]
 ) => {
 	// TODO: detail
-	const configurationObject: { [key: string]: any } = {};
+	const configurationObject: { [key: string]: T | undefined | boolean } = {};
 
 	_.forEach( pickers, ( picker, key ) => {
 		// If the key is a regex or a minimatch (check for `*`), this var will be set to a function
@@ -66,7 +76,7 @@ export const configureList = (
 			// Matching is required
 			if ( -1 === set.indexOf( key ) ) {
 				throw new ReferenceError(
-					`Trying to match unexistent key ${key} in ${JSON.stringify( set )}.`,
+					`Trying to match unexistent key ${key} in ${JSON.stringify( set )}.`
 				);
 			}
 			configurationObject[key] = applySelector( configurationObject[key], picker );
@@ -77,7 +87,7 @@ export const configureList = (
 				if ( subMatcher( element ) ) {
 					configurationObject[element] = applySelector(
 						configurationObject[element],
-						picker,
+						picker
 					);
 				}
 			} );
@@ -99,35 +109,43 @@ export interface JsonError {
 }
 
 export const respondError = (
+	req: IDiasporaApiRequest<IDiasporaApiRequestDescriptorPreParse>,
 	res: express.Response,
 	error?: Error,
-	status?: number,
+	status?: number
 ) => {
 	const jsonError: JsonError = _.assign( {}, error );
 	jsonError.message = _.isError( error )
-		? error.message || error.toString()
-		: undefined;
-	if ( error instanceof Diaspora.components.Errors.ValidationError ) {
+	? error.message || error.toString()
+	: undefined;
+
+ const isValidationError = error instanceof ValidationError;
+	if ( isValidationError ) {
 		Diaspora.logger.debug(
 			`Request ${
-				( ( res as any ).req as IDiasporaApiRequest ).diasporaApi.id
+				req.diasporaApi.id
 			} triggered a validation error: message is ${JSON.stringify(
-				jsonError.message,
+				jsonError.message
 			)}`,
-			jsonError,
+			jsonError
 		);
-		res.status( status || 400 ).send( jsonError );
-		return;
 	} else {
 		Diaspora.logger.error(
 			`Request ${_.get(
 				res,
 				'req.diasporaApi.id',
-				'UNKNOWN',
+				'UNKNOWN'
 			)} triggered an error: message is ${JSON.stringify( jsonError.message )}`,
-			jsonError,
+			jsonError
 		);
-		res.status( status || 500 ).send( jsonError );
-		return;
 	}
+	res.status( status || ( isValidationError ? 400 : 500 ) ).send( jsonError );
+};
+
+export const getLoggableDiasporaApi = ( diasporaApi: IDiasporaApiRequestDescriptorPreParse ) => {
+	const diasporaApiParsed = diasporaApi as IDiasporaApiRequestDescriptor;
+	return _.assign( {}, _.omit( diasporaApi, ['id', 'target'] ), {
+		model: diasporaApi.model.name,
+		targetFound: diasporaApiParsed.urlId ? !_.isNil( diasporaApiParsed.target ) : undefined,
+	} );
 };

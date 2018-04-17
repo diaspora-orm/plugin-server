@@ -1,56 +1,95 @@
-import _ from 'lodash';
+import Express, { RequestHandler } from 'express';
+import * as _ from 'lodash';
 
+import { Model } from '@diaspora/diaspora/lib/model';
+
+import { Entity } from '@diaspora/diaspora/lib/entities';
+import { QueryLanguage } from '@diaspora/diaspora/lib/types/queryLanguage';
+import { EQueryAction, EQueryNumber } from './utils';
+import expressServer from './webservers/express';
+
+export interface IDiasporaApiRequestDescriptorPreParse {
+	id: string;
+	number: EQueryNumber;
+	action: EQueryAction;
+	model: Model;
+	body: object | object[] | any;
+}
+export interface IDiasporaApiRequestDescriptor extends IDiasporaApiRequestDescriptorPreParse {
+	where: QueryLanguage.SelectQueryOrCondition | { id: string };
+	options: QueryLanguage.QueryOptions;
+	raw: any;
+	urlId?: string;
+	target?: Entity;
+}
+export interface IDiasporaApiRequest<T extends IDiasporaApiRequestDescriptorPreParse = IDiasporaApiRequestDescriptor> extends Express.Request {
+	diasporaApi: T;
+}
+
+export type IHookFunction<T extends Express.Request> = ( req: T, res: Express.Response, next: Express.NextFunction, model: Model ) => void;
+export type IHookFunctionOrArr<T extends Express.Request> = IHookFunction<T> | Array<IHookFunction<T>>;
+export interface IMiddlewareHash {
+	all?: IHookFunctionOrArr<IDiasporaApiRequest>;
+
+	delete?: IHookFunctionOrArr<IDiasporaApiRequest>;
+	deleteOne?: IHookFunctionOrArr<IDiasporaApiRequest>;
+	deleteMany?: IHookFunctionOrArr<IDiasporaApiRequest>;
+
+	get?: IHookFunctionOrArr<IDiasporaApiRequest>;
+	find?: IHookFunctionOrArr<IDiasporaApiRequest>;
+	findOne?: IHookFunctionOrArr<IDiasporaApiRequest>;
+	findMany?: IHookFunctionOrArr<IDiasporaApiRequest>;
+
+	patch?: IHookFunctionOrArr<IDiasporaApiRequest>;
+	update?: IHookFunctionOrArr<IDiasporaApiRequest>;
+	updateOne?: IHookFunctionOrArr<IDiasporaApiRequest>;
+	updateMany?: IHookFunctionOrArr<IDiasporaApiRequest>;
+
+	put?: IHookFunctionOrArr<IDiasporaApiRequest>;
+	replace?: IHookFunctionOrArr<IDiasporaApiRequest>;
+	replaceOne?: IHookFunctionOrArr<IDiasporaApiRequest>;
+	replaceMany?: IHookFunctionOrArr<IDiasporaApiRequest>;
+
+	post?: IHookFunctionOrArr<IDiasporaApiRequest>;
+	insert?: IHookFunctionOrArr<IDiasporaApiRequest>;
+	insertOne?: IHookFunctionOrArr<IDiasporaApiRequest>;
+	insertMany?: IHookFunctionOrArr<IDiasporaApiRequest>;
+}
+
+export interface IModelConfigurationRaw {
+	singular?: string;
+	plural?: string;
+	middlewares?: IMiddlewareHash;
+}
 export interface IConfigurationRaw {
 	webserverType?: string;
-	models?: {
-		[key: string]: any;
+	models: {
+		[key: string]: IModelConfigurationRaw | boolean;
 	};
+}
+
+
+export interface IModelConfiguration extends IModelConfigurationRaw {
+	singular: string;
+	plural: string;
+	middlewares: IMiddlewareHash;
 }
 export interface IConfiguration extends IConfigurationRaw {
 	webserverType: EWebServerType;
 	models: {
-		[key: string]: {
-			middlewares?: IMiddlewareHash;
-		};
+		[key: string]: IModelConfiguration;
 	};
-}
-export interface IMiddlewareHash {
-	all?: ( req: any, res: any, next: Function ) => void;
-
-	delete?: ( req: any, res: any, next: Function ) => void;
-	deleteOne?: ( req: any, res: any, next: Function ) => void;
-	deleteMany?: ( req: any, res: any, next: Function ) => void;
-
-	get?: ( req: any, res: any, next: Function ) => void;
-	find?: ( req: any, res: any, next: Function ) => void;
-	findOne?: ( req: any, res: any, next: Function ) => void;
-	findMany?: ( req: any, res: any, next: Function ) => void;
-
-	patch?: ( req: any, res: any, next: Function ) => void;
-	update?: ( req: any, res: any, next: Function ) => void;
-	updateOne?: ( req: any, res: any, next: Function ) => void;
-	updateMany?: ( req: any, res: any, next: Function ) => void;
-
-	put?: ( req: any, res: any, next: Function ) => void;
-	replace?: ( req: any, res: any, next: Function ) => void;
-	replaceOne?: ( req: any, res: any, next: Function ) => void;
-	replaceMany?: ( req: any, res: any, next: Function ) => void;
-
-	post?: ( req: any, res: any, next: Function ) => void;
-	insert?: ( req: any, res: any, next: Function ) => void;
-	insertOne?: ( req: any, res: any, next: Function ) => void;
-	insertMany?: ( req: any, res: any, next: Function ) => void;
 }
 
 export enum EWebServerType {
 	EXPRESS = 'express',
 }
-import expressServer from './webservers/express';
+
 const servers = {
 	[EWebServerType.EXPRESS]: expressServer,
 };
 
-export const buildApi = ( config: IConfigurationRaw = {} ) => {
+export const buildApi = ( config: IConfigurationRaw = {models: {}} ) => {
 	const defaulted: IConfiguration = _.defaults( config, {
 		webserverType: EWebServerType.EXPRESS,
 		models: {},

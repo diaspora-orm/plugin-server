@@ -1,24 +1,28 @@
 import bodyParser from 'body-parser';
 import chalk from 'chalk';
-import express, { RequestHandler } from 'express';
-import _ from 'lodash';
+import Express from 'express';
+import * as _ from 'lodash';
 
-const Diaspora = require( 'diaspora' );
+import Diaspora from '@diaspora/diaspora/lib';
 
-import { IConfiguration, IMiddlewareHash } from '../diaspora-server';
+import { Entity, Set } from '@diaspora/diaspora/lib/entities';
+import { Model } from '@diaspora/diaspora/lib/model';
+import { QueryLanguage } from '@diaspora/diaspora/lib/types/queryLanguage';
+import { generateUUID } from '@diaspora/diaspora/lib/utils';
+import { IConfiguration, IConfigurationRaw, IDiasporaApiRequest, IDiasporaApiRequestDescriptor, IDiasporaApiRequestDescriptorPreParse, IHookFunction, IHookFunctionOrArr, IMiddlewareHash, IModelConfiguration } from '../diaspora-server';
 import {
 	configureList,
-	Entity,
+	EHttpStatusCode,
+	EQueryAction,
+	EQueryNumber,
+	getLoggableDiasporaApi,
 	HttpVerb,
-	Model,
 	respondError,
-	SelectQuery,
-	Set,
 } from '../utils';
 
 const QUERY_OPTS = ['skip', 'limit', 'sort', 'page'];
 
-const parseQuery = ( queryObj: SelectQuery ) => {
+const parseQuery = ( queryObj: object ) => {
 	const raw = _.mapValues( queryObj, ( val, key ) => {
 		if ( ['query', 'options'].includes( key ) ) {
 			return JSON.parse( val );
@@ -29,28 +33,27 @@ const parseQuery = ( queryObj: SelectQuery ) => {
 
 	return {
 		raw,
-		options: _.pick( raw, QUERY_OPTS ),
-		where: _.get( raw, 'where', _.omit( raw, QUERY_OPTS ) ),
+		options: _.pick( raw, QUERY_OPTS ) as QueryLanguage.QueryOptions,
+		where: _.get( raw, 'where', _.omit( raw, QUERY_OPTS ) ) as QueryLanguage.SelectQueryOrCondition,
 	};
 };
 
 const setIdFromIdHash = ( entity: Entity ) => {
 	const retVal = entity.toObject();
-	delete retVal.idHash;
-	retVal.id = entity.getId();
+	if ( retVal ) {
+		retVal.id = entity.id;
+	}
 	return retVal;
 };
-const respondMaybeEmptySet = ( res: express.Response, set: Set ) => {
-	if ( 0 === set.length ) {
-		res.status( 204 );
-	}
-	return res.json( set.map( setIdFromIdHash ).value() );
+const respondMaybeEmptySet = ( res: Express.Response, set: Set, responseCode = EHttpStatusCode.Ok ) => {
+	res.status( 0 === set.length ? EHttpStatusCode.NoContent : responseCode );
+	return res.json( set.entities.map( setIdFromIdHash ) );
 };
-const respondMaybeNoEntity = ( res: express.Response, entity?: Entity ) => {
+const respondMaybeNoEntity = ( res: Express.Response, entity: Entity | null, responseCode = EHttpStatusCode.Ok ) => {
 	if ( _.isNil( entity ) ) {
-		return res.status( 204 ).send();
+		return res.status( EHttpStatusCode.NoContent ).send();
 	} else {
-		return res.json( setIdFromIdHash( entity ) );
+		return res.status( responseCode ).json( setIdFromIdHash( entity ) );
 	}
 };
 
@@ -67,75 +70,42 @@ interface SubApiMap {
 	};
 }
 
-export enum EDataAction {
-	FIND = 'find',
-	DELETE = 'delete',
-	UPDATE = 'update',
-	INSERT = 'insert',
-	REPLACE = 'replace',
-}
-
 const HttpVerbQuery = {
-	[HttpVerb.GET]: EDataAction.FIND,
-	[HttpVerb.DELETE]: EDataAction.DELETE,
-	[HttpVerb.PATCH]: EDataAction.UPDATE,
-	[HttpVerb.POST]: EDataAction.INSERT,
-	[HttpVerb.PUT]: EDataAction.REPLACE,
+	[HttpVerb.GET]: EQueryAction.FIND,
+	[HttpVerb.DELETE]: EQueryAction.DELETE,
+	[HttpVerb.PATCH]: EQueryAction.UPDATE,
+	[HttpVerb.POST]: EQueryAction.INSERT,
+	[HttpVerb.PUT]: EQueryAction.REPLACE,
 };
-export enum EQueryNumber {
-	SINGULAR = 'singular',
-	PLURAL = 'plural',
-}
-// Should not be exported
-export interface IDiasporaApiRequest extends express.Request {
-	diasporaApi: {
-		where?: object;
-		options?: object;
-		body: any;
-		id: string;
-		number: EQueryNumber;
-		model: Model;
-		action: EDataAction;
-		raw?: any;
-	};
-}
+
 type IModelRequestApplier = (
 	queryNumber: EQueryNumber,
 	req: IDiasporaApiRequest,
-	res: express.Response,
-	model: Model,
+	res: Express.Response,
+	model: Model
 ) => Promise<any>;
-type IModelRequestHandler = (
-	req: IDiasporaApiRequest,
-	res: express.Response,
-	next: express.NextFunction,
-	model: Model,
-) => Promise<any>;
-type DiasporaApiParamHandler = (
-	req: IDiasporaApiRequest,
-	res: express.Response,
-	next: express.NextFunction,
-) => any;
 
 const deleteHandler: IModelRequestApplier = async (
 	queryNumber,
 	req,
 	res,
-	model,
+	model
 ) => {
 	if ( _.isEmpty( req.diasporaApi.where ) ) {
-		return res.status( 405 ).send( {
+		return res.status( EHttpStatusCode.MalformedQuery ).send( {
 			message: `${req.method} requires a "where" clause`,
 		} );
 	} else {
+		const {where, options} = req.diasporaApi;
 		try {
-			await model[EQueryNumber.SINGULAR === queryNumber ? 'delete' : 'deleteMany'](
-				req.diasporaApi.where,
-				req.diasporaApi.options,
-			);
-			return res.status( 204 ).json();
+			if ( queryNumber === EQueryNumber.SINGULAR ) {
+				await model.delete( where, options );
+			} else {
+				await model.deleteMany( where, options );
+			}
+			return res.status( EHttpStatusCode.NoContent ).json();
 		} catch ( error ) {
-			return respondError( res, error );
+			return respondError( req, res, error );
 		}
 	}
 };
@@ -143,148 +113,137 @@ const findHandler: IModelRequestApplier = async (
 	queryNumber,
 	req,
 	res,
-	model,
+	model
 ) => {
-	const handler =
-		EQueryNumber.SINGULAR === queryNumber
-			? respondMaybeNoEntity
-			: respondMaybeEmptySet;
+	const {where, options} = req.diasporaApi;
 	try {
-		const foundItems = await model[
-			EQueryNumber.SINGULAR === queryNumber ? 'find' : 'findMany'
-		]( req.diasporaApi.where, req.diasporaApi.options );
-		return handler( res, foundItems );
+		if ( queryNumber === EQueryNumber.SINGULAR ) {
+			return respondMaybeNoEntity( res, await model.find( where, options ) );
+		} else {
+			return respondMaybeEmptySet( res, await model.findMany( where, options ) );
+		}
 	} catch ( error ) {
-		return respondError( res, error );
+		return respondError( req, res, error );
 	}
 };
 const insertHandler: IModelRequestApplier = async (
 	queryNumber,
 	req,
 	res,
-	model,
+	model
 ) => {
-	const handler =
-		EQueryNumber.SINGULAR === queryNumber
-			? respondMaybeNoEntity
-			: respondMaybeEmptySet;
+	const {body} = req.diasporaApi;
 	try {
-		const createdItems = await model[
-			EQueryNumber.SINGULAR === queryNumber ? 'spawn' : 'spawnMany'
-		]( req.diasporaApi.body ).persist();
-		res.status( 201 );
-		return handler( res, createdItems );
+		if ( queryNumber === EQueryNumber.SINGULAR ) {
+			return respondMaybeNoEntity( res, await ( model.spawn( body ).persist() ), EHttpStatusCode.Created );
+		} else {
+			return respondMaybeEmptySet( res, await ( model.spawnMany( body ).persist() ), EHttpStatusCode.Created );
+		}
 	} catch ( error ) {
-		return respondError( res, error );
+		return respondError( req, res, error );
 	}
 };
 const updateHandler: IModelRequestApplier = async (
 	queryNumber,
 	req,
 	res,
-	model,
+	model
 ) => {
 	if ( _.isEmpty( req.diasporaApi.where ) ) {
-		return res.status( 405 ).send( {
+		return res.status( EHttpStatusCode.MalformedQuery ).send( {
 			message: `${req.method} requires a "where" clause`,
 		} );
 	} else {
-		const handler =
-			EQueryNumber.SINGULAR === queryNumber
-				? respondMaybeNoEntity
-				: respondMaybeEmptySet;
+		const {where, body, options} = req.diasporaApi;
 		try {
-			const updatedItems = await model[
-				EQueryNumber.SINGULAR === queryNumber ? 'update' : 'updateMany'
-			]( req.diasporaApi.where, req.diasporaApi.body, req.diasporaApi.options );
-			return handler( res, updatedItems );
+			if ( queryNumber === EQueryNumber.SINGULAR ) {
+				return respondMaybeNoEntity( res, await model.update( where, body, options ) );
+			} else {
+				return respondMaybeEmptySet( res, await model.updateMany( where, body, options ) );
+			}
 		} catch ( error ) {
-			return respondError( res, error );
+			return respondError( req, res, error );
 		}
 	}
 };
+
 const replaceHandler: IModelRequestApplier = async (
 	queryNumber,
 	req,
 	res,
-	model,
+	model
 ) => {
 	if ( _.isEmpty( req.diasporaApi.where ) ) {
-		return res.status( 405 ).send( {
+		return res.status( EHttpStatusCode.MalformedQuery ).send( {
 			message: `${req.method} requires a "where" clause`,
 		} );
 	} else {
-		const handler: (
-			res: express.Response,
-			entityOrSet?: Set | Entity,
-		) => Response = ( EQueryNumber.SINGULAR === queryNumber
-			? respondMaybeNoEntity
-			: respondMaybeEmptySet ) as any;
+		const {where, body, options} = req.diasporaApi;
+		const action = ( entity: Entity ) => {
+			entity.replaceAttributes( _.clone( req.diasporaApi.body ) );
+			return entity;
+		};
 		try {
-			const toReplaceItems = await model[
-				EQueryNumber.SINGULAR === queryNumber ? 'find' : 'findMany'
-			]( req.diasporaApi.where, req.diasporaApi.options );
-
-			// Replace with entity.replaceAttributes in next Diaspora version
-			const action = ( entity: Entity ) =>
-				entity.replaceAttributes( _.clone( req.diasporaApi.body ) ).persist();
-
-			let updatedItems: undefined | Entity | Entity[];
-			if ( EQueryNumber.PLURAL === queryNumber ) {
-				updatedItems = new Diaspora.components.Set(
-					model,
-					await Promise.all( toReplaceItems.map( action ).value() ),
-				);
-			} else if ( toReplaceItems ) {
-				updatedItems = await action( toReplaceItems );
+			if ( queryNumber === EQueryNumber.SINGULAR ) {
+				const foundEntity = await model.find( where, options );
+				if ( foundEntity ) {
+					const updatedEntity = action( foundEntity );
+					const persistedEntity = await updatedEntity.persist();
+					return respondMaybeNoEntity( res, persistedEntity );
+				} else {
+					return respondMaybeNoEntity( res, null );
+				}
+			} else {
+				const foundSet = await model.findMany( where, options );
+				const updatedSet = new Set( model, foundSet.entities.map( action ) );
+				const persistedSet = await updatedSet.persist();
+				return respondMaybeEmptySet( res, persistedSet );
 			}
-
-			return handler( res, updatedItems );
 		} catch ( error ) {
-			return respondError( res, error );
+			return respondError( req, res, error );
 		}
 	}
 };
 
-const handlers: { [key: string]: IModelRequestHandler } = {
+const handlers: { [key: string]: IHookFunction<IDiasporaApiRequest> } = {
 	// Singular
 	_delete( req, res, next, model ) {
-		return deleteHandler( EQueryNumber.SINGULAR, req, res, model );
+		deleteHandler( EQueryNumber.SINGULAR, req, res, model );
 	},
 	_get( req, res, next, model ) {
-		return findHandler( EQueryNumber.SINGULAR, req, res, model );
+		findHandler( EQueryNumber.SINGULAR, req, res, model );
 	},
 	_patch( req, res, next, model ) {
-		return updateHandler( EQueryNumber.SINGULAR, req, res, model );
+		updateHandler( EQueryNumber.SINGULAR, req, res, model );
 	},
 	_post( req, res, next, model ) {
-		return insertHandler( EQueryNumber.SINGULAR, req, res, model );
+		insertHandler( EQueryNumber.SINGULAR, req, res, model );
 	},
 	_put( req, res, next, model ) {
-		return replaceHandler( EQueryNumber.SINGULAR, req, res, model );
+		replaceHandler( EQueryNumber.SINGULAR, req, res, model );
 	},
 
 	// Plurals
 	delete( req, res, next, model ) {
-		return deleteHandler( EQueryNumber.PLURAL, req, res, model );
+		deleteHandler( EQueryNumber.PLURAL, req, res, model );
 	},
 	get( req, res, next, model ) {
-		return findHandler( EQueryNumber.PLURAL, req, res, model );
+		findHandler( EQueryNumber.PLURAL, req, res, model );
 	},
 	patch( req, res, next, model ) {
-		return updateHandler( EQueryNumber.PLURAL, req, res, model );
+		updateHandler( EQueryNumber.PLURAL, req, res, model );
 	},
 	post( req, res, next, model ) {
-		return insertHandler( EQueryNumber.PLURAL, req, res, model );
+		insertHandler( EQueryNumber.PLURAL, req, res, model );
 	},
 	put( req, res, next, model ) {
-		return replaceHandler( EQueryNumber.PLURAL, req, res, model );
+		replaceHandler( EQueryNumber.PLURAL, req, res, model );
 	},
 };
 const optionHandler = (
-	configuredModels: Model[],
-	req: express.Request,
-	res: express.Response,
+	configuredModels: IModelConfiguration[],
+	req: Express.Request,
+	res: Express.Response
 ) => {
 	const response: SubApiMap = {};
 	_.forEach( configuredModels, ( apiDesc, modelName ) => {
@@ -308,139 +267,122 @@ const optionHandler = (
 	return res.json( response );
 };
 
+const castToDiasporaApiRequest = async ( request: Express.Request, diasporaApi: IDiasporaApiRequestDescriptorPreParse ): Promise<IDiasporaApiRequestDescriptor> => {
+	const diasporaApiWithParsedQuery = _.assign( diasporaApi, parseQuery( request.query ) );
+	if ( EQueryNumber.SINGULAR === diasporaApiWithParsedQuery.number ) {
+		const id = _.get( request, 'params[1]' );
+		if ( !_.isNil( id ) ) {
+			if ( EQueryAction.INSERT === diasporaApiWithParsedQuery.action ) {
+				throw new URIError( 'POST (insert) to explicit ID is forbidden' );
+			} else {
+				const target = await diasporaApi.model.find( id );
+				if ( _.isNil( target ) ) {
+					throw EHttpStatusCode.NotFound;
+				}
+				return _.assign( diasporaApiWithParsedQuery, {
+					urlId: id,
+					where: { id },
+					target,
+				} );
+			}
+		}
+	}
+	return diasporaApiWithParsedQuery;
+};
+
+const prepareQueryHandling = ( apiNumber: EQueryNumber ): IHookFunction<Express.Request> => {
+	return async ( req, res, next, model ) => {
+		const queryId = generateUUID();
+		Diaspora.logger.verbose(
+			`Received ${chalk.bold.red( req.method )} request ${chalk.bold.yellow(
+				queryId
+			)} on model ${chalk.bold.blue( model.name )}: `,
+			{
+				absPath: _.get(
+					req,
+					'_parsedOriginalUrl.path',
+					_.get( req, '_parsedUrl.path' )
+				),
+				path: req.path,
+				apiNumber,
+				body: req.body,
+				query: req.query,
+			}
+		);
+		const preParseParams = {
+			id: queryId,
+			number: apiNumber,
+			action: HttpVerbQuery[req.method as HttpVerb],
+			model,
+			body: req.body,
+		};
+		try {
+			const diasporaApi = await castToDiasporaApiRequest( req, preParseParams );
+			const reqExtended = _.assign( req, {diasporaApi} );
+			Diaspora.logger.debug(
+				`DiasporaAPI params for request ${chalk.bold.yellow( queryId )}: `,
+				getLoggableDiasporaApi( diasporaApi )
+			);
+			return next();
+		} catch ( error ) {
+			const catchReq = _.assign( req, {diasporaApi: preParseParams} );
+			if ( error instanceof URIError ) {
+				return respondError( catchReq, res, error, EHttpStatusCode.MethodNotAllowed );
+			} else if ( typeof error === 'number' ) {
+				return res.status( error ).send();
+			} else {
+				return respondError( catchReq, res, error, EHttpStatusCode.MalformedQuery );
+			}
+		}
+	};
+};
+
+const getRelevantHandlers = (
+	middlewares: IMiddlewareHash,
+	apiNumber: EQueryNumber,
+	actionName: EQueryAction,
+	methodName: HttpVerb
+) => {
+	const action: 'find' | 'delete' | 'update' | 'insert' | 'replace' = actionName.toLowerCase() as any;
+	const method: 'get' | 'delete' | 'patch' | 'post' | 'put' = methodName.toLowerCase() as any;
+
+	return [
+		middlewares[method],
+		middlewares[action],
+		( middlewares as any )[action + ( EQueryNumber.SINGULAR === apiNumber ? 'One' : 'Many' )],
+		( handlers as any )[( EQueryNumber.SINGULAR === apiNumber ? '_' : '' ) + method],
+	] as Array<_.Many<IHookFunction<IDiasporaApiRequest> | undefined>>;
+};
+
 const bind = (
-	newRouter: express.Router,
+	newRouter: Express.Router,
 	apiNumber: EQueryNumber,
 	route: string,
 	model: Model,
-	middlewares: IMiddlewareHash,
+	middlewares: IMiddlewareHash
 ) => {
-	const prefix = EQueryNumber.SINGULAR === apiNumber ? '_' : '';
-	const partialize = ( methods: Array<DiasporaApiParamHandler | undefined> ) =>
-		_( methods )
-			.compact()
-			.map( ( func ) => _.ary( func, 4 ) )
-			.map( ( func ) => _.partialRight( func, model ) )
-			.value();
+	const partialize = ( methods: Array<_.Many<IHookFunction<IDiasporaApiRequest> | undefined>> ) =>
+	_.chain( methods )
+	.flatten()
+	.compact()
+	.map( ( func ) => _.ary( func, 4 ) )
+	.map( ( func ) => _.partialRight( func, model ) )
+	.value();
+
 	newRouter
-		.route( route )
-		.all(
-			partialize( [
-				async ( req, res, next ) => {
-					const queryId = Diaspora.components.Utils.generateUUID();
-					Diaspora.logger.verbose(
-						`Received ${chalk.bold.red( req.method )} request ${chalk.bold.yellow(
-							queryId,
-						)} on model ${chalk.bold.blue( model.name )}: `,
-						{
-							absPath: _.get(
-								req,
-								'_parsedOriginalUrl.path',
-								_.get( req, '_parsedUrl.path' ),
-							),
-							path: req.path,
-							apiNumber,
-							body: req.body,
-							query: req.query,
-						},
-					);
-					req.diasporaApi = {
-						id: queryId,
-						number: apiNumber,
-						action: HttpVerbQuery[req.method as HttpVerb],
-						model,
-						body: req.body,
-					};
-					try {
-						_.assign( req.diasporaApi, parseQuery( req.query ) );
-					} catch ( error ) {
-						return respondError( res, error, 400 );
-					}
-					delete req.diasporaApi.raw;
-					if ( 'singular' === req.diasporaApi.number ) {
-						const id = _.get( req, 'params[1]' );
-						if ( !_.isNil( id ) ) {
-							if ( 'insert' === req.diasporaApi.action ) {
-								respondError(
-									res,
-									new Error( 'POST (insert) to explicit ID is forbidden' ),
-									405,
-								);
-							} else {
-								const target = await model.find( id );
-								if ( _.isNil( target ) ) {
-									return res.status( 404 ).send();
-								}
-								_.assign( req.diasporaApi, {
-									urlId: id,
-									where: { id },
-									target,
-								} );
-							}
-						}
-					}
-					Diaspora.logger.debug(
-						`DiasporaAPI params for request ${chalk.bold.yellow( queryId )}: `,
-						req.diasporaApi,
-					);
-					return next();
-				},
-				middlewares.all,
-			] ),
-		)
-		.delete(
-			partialize( [
-				middlewares.delete,
-				( middlewares as any )[
-					`delete${EQueryNumber.SINGULAR === apiNumber ? 'One' : 'Many'}`
-				],
-				handlers[`${prefix}delete`],
-			] ),
-		)
-		.get(
-			partialize( [
-				middlewares.get,
-				middlewares.find,
-				( middlewares as any )[
-					`find${EQueryNumber.SINGULAR === apiNumber ? 'One' : 'Many'}`
-				],
-				handlers[`${prefix}get`],
-			] ),
-		)
-		.patch(
-			partialize( [
-				middlewares.patch,
-				middlewares.update,
-				( middlewares as any )[
-					`update${EQueryNumber.SINGULAR === apiNumber ? 'One' : 'Many'}`
-				],
-				handlers[`${prefix}patch`],
-			] ),
-		)
-		.post(
-			partialize( [
-				middlewares.post,
-				middlewares.insert,
-				( middlewares as any )[
-					`insert${EQueryNumber.SINGULAR === apiNumber ? 'One' : 'Many'}`
-				],
-				handlers[`${prefix}post`],
-			] ),
-		)
-		.put(
-			partialize( [
-				middlewares.put,
-				middlewares.replace,
-				( middlewares as any )[
-					`replace${EQueryNumber.SINGULAR === apiNumber ? 'One' : 'Many'}`
-				],
-				handlers[`${prefix}put`],
-			] ),
-		)
-		.options();
+	.route( route )
+	.all( partialize( [
+		prepareQueryHandling( apiNumber ),
+		middlewares.all,
+	] ) )
+	.delete( partialize( getRelevantHandlers( middlewares, apiNumber, EQueryAction.DELETE, HttpVerb.DELETE ) ) )
+	.get( partialize( getRelevantHandlers( middlewares, apiNumber, EQueryAction.FIND, HttpVerb.GET ) ) )
+	.patch( partialize( getRelevantHandlers( middlewares, apiNumber, EQueryAction.UPDATE, HttpVerb.PATCH ) ) )
+	.post( partialize( getRelevantHandlers( middlewares, apiNumber, EQueryAction.INSERT, HttpVerb.POST ) ) )
+	.put( partialize( getRelevantHandlers( middlewares, apiNumber, EQueryAction.REPLACE, HttpVerb.PUT ) ) );
 };
 
-export default ( configHash: IConfiguration ) => {
+export default ( configHash: IConfigurationRaw ) => {
 	// Get only models authorized
 	const allModels = _.keys( Diaspora.models );
 	const configuredModels = ( () => {
@@ -451,7 +393,7 @@ export default ( configHash: IConfiguration ) => {
 				throw new ReferenceError(
 					`Tried to configure Diaspora Server with unknown model. Original message: ${
 						error.message
-					}`,
+					}`
 				);
 			} else {
 				throw error;
@@ -460,12 +402,12 @@ export default ( configHash: IConfiguration ) => {
 	} )();
 
 	// Create the subrouter
-	const newRouter = express.Router();
+	const newRouter = Express.Router();
 	// parse application/x-www-form-urlencoded
 	newRouter.use(
 		bodyParser.urlencoded( {
 			extended: false,
-		} ),
+		} )
 	);
 	// parse application/json
 	newRouter.use( bodyParser.json() );
@@ -475,29 +417,29 @@ export default ( configHash: IConfiguration ) => {
 		if ( true === apiDesc ) {
 			apiDesc = {};
 		}
-		_.defaults( apiDesc, {
+		const defaulted = _.defaults( apiDesc, {
 			singular: modelName.toLowerCase(),
 			plural: `${modelName.toLowerCase()}s`,
 			middlewares: {},
-		} );
+		} ) as IModelConfiguration;
 		Diaspora.logger.verbose( `Exposing ${modelName}`, apiDesc );
 		const model = Diaspora.models[modelName];
 
 		bind(
 			newRouter,
 			EQueryNumber.SINGULAR,
-			`/${apiDesc.singular}(/*)?`,
+			`/${defaulted.singular}(/*)?`,
 			model,
-			apiDesc.middlewares,
+			defaulted.middlewares
 		);
 		bind(
 			newRouter,
 			EQueryNumber.PLURAL,
-			`/${apiDesc.plural}`,
+			`/${defaulted.plural}`,
 			model,
-			apiDesc.middlewares,
+			defaulted.middlewares
 		);
 	} );
 	newRouter.options( '', _.partial( optionHandler, configuredModels ) );
-	return newRouter as RequestHandler;
+	return newRouter as Express.RequestHandler;
 };
