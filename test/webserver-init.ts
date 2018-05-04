@@ -2,10 +2,8 @@ import express from 'express';
 import http from 'http';
 import * as _ from 'lodash';
 
-import Diaspora from '@diaspora/diaspora/lib';
-import { Adapter, IRawAdapterEntityAttributes } from '@diaspora/diaspora/lib/adapters/base';
+import { Diaspora } from '@diaspora/diaspora';
 import { InMemoryEntity } from '@diaspora/diaspora/lib/adapters/inMemory';
-import { EntityUid, IRawEntityAttributes } from '@diaspora/diaspora/lib/entities';
 
 import { buildApi as DiasporaServer } from '../src/diaspora-server';
 import { datas } from './mock';
