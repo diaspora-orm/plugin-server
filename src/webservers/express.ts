@@ -3,12 +3,10 @@ import chalk from 'chalk';
 import Express from 'express';
 import * as _ from 'lodash';
 
-import Diaspora from '@diaspora/diaspora/lib';
+import { Diaspora, Entities, Model, QueryLanguage } from '@diaspora/diaspora';
 
-import { Entity, Set } from '@diaspora/diaspora/lib/entities';
-import { Model } from '@diaspora/diaspora/lib/model';
-import { QueryLanguage } from '@diaspora/diaspora/lib/types/queryLanguage';
 import { generateUUID } from '@diaspora/diaspora/lib/utils';
+
 import { IConfiguration, IConfigurationRaw, IDiasporaApiRequest, IDiasporaApiRequestDescriptor, IDiasporaApiRequestDescriptorPreParse, IHookFunction, IHookFunctionOrArr, IMiddlewareHash, IModelConfiguration } from '../diaspora-server';
 import {
 	configureList,
@@ -38,18 +36,18 @@ const parseQuery = ( queryObj: object ) => {
 	};
 };
 
-const setIdFromIdHash = ( entity: Entity ) => {
+const setIdFromIdHash = ( entity: Entities.Entity ) => {
 	const retVal = entity.toObject();
 	if ( retVal ) {
 		retVal.id = entity.id;
 	}
 	return retVal;
 };
-const respondMaybeEmptySet = ( res: Express.Response, set: Set, responseCode = EHttpStatusCode.Ok ) => {
+const respondMaybeEmptySet = ( res: Express.Response, set: Entities.Set, responseCode = EHttpStatusCode.Ok ) => {
 	res.status( 0 === set.length ? EHttpStatusCode.NoContent : responseCode );
 	return res.json( set.entities.map( setIdFromIdHash ) );
 };
-const respondMaybeNoEntity = ( res: Express.Response, entity: Entity | null, responseCode = EHttpStatusCode.Ok ) => {
+const respondMaybeNoEntity = ( res: Express.Response, entity: Entities.Entity | null, responseCode = EHttpStatusCode.Ok ) => {
 	if ( _.isNil( entity ) ) {
 		return res.status( EHttpStatusCode.NoContent ).send();
 	} else {
@@ -179,7 +177,7 @@ const replaceHandler: IModelRequestApplier = async (
 		} );
 	} else {
 		const {where, body, options} = req.diasporaApi;
-		const action = ( entity: Entity ) => {
+		const action = ( entity: Entities.Entity ) => {
 			entity.replaceAttributes( _.clone( req.diasporaApi.body ) );
 			return entity;
 		};
@@ -195,7 +193,7 @@ const replaceHandler: IModelRequestApplier = async (
 				}
 			} else {
 				const foundSet = await model.findMany( where, options );
-				const updatedSet = new Set( model, foundSet.entities.map( action ) );
+				const updatedSet = new Entities.Set( model, foundSet.entities.map( action ) );
 				const persistedSet = await updatedSet.persist();
 				return respondMaybeEmptySet( res, persistedSet );
 			}

@@ -4,8 +4,7 @@ import * as _ from 'lodash';
 import { Minimatch } from 'minimatch';
 import { inspect, InspectOptions } from 'util';
 
-import Diaspora from '@diaspora/diaspora/lib';
-import { ValidationError } from '@diaspora/diaspora/lib/errors/validationError';
+import { Diaspora, Errors } from '@diaspora/diaspora';
 import { IDiasporaApiRequest, IDiasporaApiRequestDescriptor, IDiasporaApiRequestDescriptorPreParse } from './diaspora-server';
 
 export enum HttpVerb {
@@ -119,7 +118,7 @@ export const respondError = (
 	? error.message || error.toString()
 	: undefined;
 
- const isValidationError = error instanceof ValidationError;
+ const isValidationError = error instanceof Errors.ValidationError;
 	if ( isValidationError ) {
 		Diaspora.logger.debug(
 			`Request ${

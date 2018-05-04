@@ -1,10 +1,7 @@
 import Express, { RequestHandler } from 'express';
 import * as _ from 'lodash';
 
-import { Model } from '@diaspora/diaspora/lib/model';
-
-import { Entity } from '@diaspora/diaspora/lib/entities';
-import { QueryLanguage } from '@diaspora/diaspora/lib/types/queryLanguage';
+import { Entities, QueryLanguage, Model } from '@diaspora/diaspora';
 import { EQueryAction, EQueryNumber } from './utils';
 import expressServer from './webservers/express';
 
@@ -20,7 +17,7 @@ export interface IDiasporaApiRequestDescriptor extends IDiasporaApiRequestDescri
 	options: QueryLanguage.QueryOptions;
 	raw: any;
 	urlId?: string;
-	target?: Entity;
+	target?: Entities.Entity;
 }
 export interface IDiasporaApiRequest<T extends IDiasporaApiRequestDescriptorPreParse = IDiasporaApiRequestDescriptor> extends Express.Request {
 	diasporaApi: T;
