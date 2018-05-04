@@ -1,15 +1,15 @@
 {
-	"name": "diaspora-server",
+	"name": "@diaspora/plugin-server",
 	"version": "0.1.0",
 	"description": "A webserver module for Diaspora",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/GerkinDev/diaspora-server.git"
+		"url": "git+https://github.com/diaspora-orm/plugin-server.git"
 	},
 	"bugs": {
-		"url": "https://github.com/GerkinDev/diaspora-server/issues"
+		"url": "https://github.com/diaspora-orm/plugin-server/issues"
 	},
-	"homepage": "https://github.com/GerkinDev/diaspora-server#readme",
+	"homepage": "https://github.com/diaspora-orm/plugin-server#readme",
 	"license": "GPL-3.0",
 	"keywords": [
 		"ORM",
