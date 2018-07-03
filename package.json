@@ -18,9 +18,8 @@
 		"API",
 		"RESTFULL"
 	],
-	"main": "dist/diaspora-server.umd.js",
-	"module": "dist/diaspora-server.es5.js",
-	"typings": "dist/types/diaspora-server.d.ts",
+	"main": "lib/diaspora-server.js",
+	"typings": "lib/diaspora-server.d.ts",
 	"files": [
 		"dist"
 	],
@@ -31,9 +30,9 @@
 	"scripts": {
 		"lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
 		"lint:fix": "tslint --fix -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
-		"doc": "typedoc --out dist/docs --target es6 --theme minimal --mode file src",
-		"prebuild": "rimraf dist",
-		"build": "tsc --module commonjs --outDir dist/lib && rollup -c rollup.config.ts && npm run doc",
+		"doc": "npx typedoc --out dist/docs --target es6 --theme minimal --mode file --json doc.json src",
+		"prebuild": "rimraf lib",
+		"build": "npx tsc --module commonjs --outDir lib && npm run doc",
 		"start": "rollup -c rollup.config.ts -w",
 		"test": "jest --runInBand",
 		"test:watch": "jest --watch --runInBand",
