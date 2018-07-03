@@ -1,14 +1,12 @@
-import express from 'express';
+import express = require( 'express' );
 import http from 'http';
 import * as _ from 'lodash';
 
 import { Diaspora } from '@diaspora/diaspora';
-import { InMemoryEntity } from '@diaspora/diaspora/lib/adapters/inMemory';
+import { InMemoryEntity } from '@diaspora/diaspora/dist/lib/adapters/inMemory';
 
 import { buildApi as DiasporaServer } from '../src/diaspora-server';
 import { datas } from './mock';
-
-const config = require( './config' );
 
 export const inMemorySource = Diaspora.createNamedDataSource(
 	'myDataSource',
@@ -48,7 +46,6 @@ Diaspora.declareModel( 'Ignored', {
 	sources: ['myDataSource'],
 	attributes: {},
 } );
-
 const app = express();
 app.use(
 	'/api',

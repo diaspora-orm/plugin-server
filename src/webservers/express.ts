@@ -1,13 +1,13 @@
-import bodyParser from 'body-parser';
+import bodyParser = require( 'body-parser' );
 import chalk from 'chalk';
-import Express from 'express';
-import * as _ from 'lodash';
+import express = require( 'express' );
+import _ = require( 'lodash' );
 
-import { Diaspora, Entities, Model, QueryLanguage } from '@diaspora/diaspora';
+import { Diaspora, Entities, Model, QueryLanguage } from '@diaspora/diaspora/dist/lib/index';
 
-import { generateUUID } from '@diaspora/diaspora/lib/utils';
+import { generateUUID } from '@diaspora/diaspora/dist/lib/utils';
 
-import { IConfiguration, IConfigurationRaw, IDiasporaApiRequest, IDiasporaApiRequestDescriptor, IDiasporaApiRequestDescriptorPreParse, IHookFunction, IHookFunctionOrArr, IMiddlewareHash, IModelConfiguration } from '../diaspora-server';
+import { IConfigurationRaw, IDiasporaApiRequest, IDiasporaApiRequestDescriptor, IDiasporaApiRequestDescriptorPreParse, IHookFunction, IHookFunctionOrArr, IMiddlewareHash, IModelConfiguration } from '../diaspora-server';
 import {
 	configureList,
 	EHttpStatusCode,
@@ -17,7 +17,6 @@ import {
 	HttpVerb,
 	respondError,
 } from '../utils';
-
 const QUERY_OPTS = ['skip', 'limit', 'sort', 'page'];
 
 const parseQuery = ( queryObj: object ) => {
@@ -28,7 +27,7 @@ const parseQuery = ( queryObj: object ) => {
 			return val;
 		}
 	} );
-
+	
 	return {
 		raw,
 		options: _.pick( raw, QUERY_OPTS ) as QueryLanguage.QueryOptions,
@@ -43,11 +42,11 @@ const setIdFromIdHash = ( entity: Entities.Entity ) => {
 	}
 	return retVal;
 };
-const respondMaybeEmptySet = ( res: Express.Response, set: Entities.Set, responseCode = EHttpStatusCode.Ok ) => {
+const respondMaybeEmptySet = ( res: express.Response, set: Entities.Set, responseCode = EHttpStatusCode.Ok ) => {
 	res.status( 0 === set.length ? EHttpStatusCode.NoContent : responseCode );
 	return res.json( set.entities.map( setIdFromIdHash ) );
 };
-const respondMaybeNoEntity = ( res: Express.Response, entity: Entities.Entity | null, responseCode = EHttpStatusCode.Ok ) => {
+const respondMaybeNoEntity = ( res: express.Response, entity: Entities.Entity | null, responseCode = EHttpStatusCode.Ok ) => {
 	if ( _.isNil( entity ) ) {
 		return res.status( EHttpStatusCode.NoContent ).send();
 	} else {
@@ -79,7 +78,7 @@ const HttpVerbQuery = {
 type IModelRequestApplier = (
 	queryNumber: EQueryNumber,
 	req: IDiasporaApiRequest,
-	res: Express.Response,
+	res: express.Response,
 	model: Model
 ) => Promise<any>;
 
@@ -133,9 +132,9 @@ const insertHandler: IModelRequestApplier = async (
 	const {body} = req.diasporaApi;
 	try {
 		if ( queryNumber === EQueryNumber.SINGULAR ) {
-			return respondMaybeNoEntity( res, await ( model.spawn( body ).persist() ), EHttpStatusCode.Created );
+			return respondMaybeNoEntity( res, await ( ( await model.spawn( body ) ).persist() ), EHttpStatusCode.Created );
 		} else {
-			return respondMaybeEmptySet( res, await ( model.spawnMany( body ).persist() ), EHttpStatusCode.Created );
+			return respondMaybeEmptySet( res, await ( ( await model.spawnMany( body ) ).persist() ), EHttpStatusCode.Created );
 		}
 	} catch ( error ) {
 		return respondError( req, res, error );
@@ -177,7 +176,7 @@ const replaceHandler: IModelRequestApplier = async (
 		} );
 	} else {
 		const {where, body, options} = req.diasporaApi;
-		const action = ( entity: Entities.Entity ) => {
+		const replaceEntity = ( entity: Entities.Entity ) => {
 			entity.replaceAttributes( _.clone( req.diasporaApi.body ) );
 			return entity;
 		};
@@ -185,7 +184,7 @@ const replaceHandler: IModelRequestApplier = async (
 			if ( queryNumber === EQueryNumber.SINGULAR ) {
 				const foundEntity = await model.find( where, options );
 				if ( foundEntity ) {
-					const updatedEntity = action( foundEntity );
+					const updatedEntity = replaceEntity( foundEntity );
 					const persistedEntity = await updatedEntity.persist();
 					return respondMaybeNoEntity( res, persistedEntity );
 				} else {
@@ -193,7 +192,7 @@ const replaceHandler: IModelRequestApplier = async (
 				}
 			} else {
 				const foundSet = await model.findMany( where, options );
-				const updatedSet = new Entities.Set( model, foundSet.entities.map( action ) );
+				const updatedSet = new Entities.Set( model, foundSet.entities.map( replaceEntity ) );
 				const persistedSet = await updatedSet.persist();
 				return respondMaybeEmptySet( res, persistedSet );
 			}
@@ -220,7 +219,7 @@ const handlers: { [key: string]: IHookFunction<IDiasporaApiRequest> } = {
 	_put( req, res, next, model ) {
 		replaceHandler( EQueryNumber.SINGULAR, req, res, model );
 	},
-
+	
 	// Plurals
 	delete( req, res, next, model ) {
 		deleteHandler( EQueryNumber.PLURAL, req, res, model );
@@ -240,8 +239,8 @@ const handlers: { [key: string]: IHookFunction<IDiasporaApiRequest> } = {
 };
 const optionHandler = (
 	configuredModels: IModelConfiguration[],
-	req: Express.Request,
-	res: Express.Response
+	req: express.Request,
+	res: express.Response
 ) => {
 	const response: SubApiMap = {};
 	_.forEach( configuredModels, ( apiDesc, modelName ) => {
@@ -265,7 +264,7 @@ const optionHandler = (
 	return res.json( response );
 };
 
-const castToDiasporaApiRequest = async ( request: Express.Request, diasporaApi: IDiasporaApiRequestDescriptorPreParse ): Promise<IDiasporaApiRequestDescriptor> => {
+const castToDiasporaApiRequest = async ( request: express.Request, diasporaApi: IDiasporaApiRequestDescriptorPreParse ): Promise<IDiasporaApiRequestDescriptor> => {
 	const diasporaApiWithParsedQuery = _.assign( diasporaApi, parseQuery( request.query ) );
 	if ( EQueryNumber.SINGULAR === diasporaApiWithParsedQuery.number ) {
 		const id = _.get( request, 'params[1]' );
@@ -288,7 +287,7 @@ const castToDiasporaApiRequest = async ( request: Express.Request, diasporaApi: 
 	return diasporaApiWithParsedQuery;
 };
 
-const prepareQueryHandling = ( apiNumber: EQueryNumber ): IHookFunction<Express.Request> => {
+const prepareQueryHandling = ( apiNumber: EQueryNumber ): IHookFunction<express.Request> => {
 	return async ( req, res, next, model ) => {
 		const queryId = generateUUID();
 		Diaspora.logger.verbose(
@@ -343,7 +342,7 @@ const getRelevantHandlers = (
 ) => {
 	const action: 'find' | 'delete' | 'update' | 'insert' | 'replace' = actionName.toLowerCase() as any;
 	const method: 'get' | 'delete' | 'patch' | 'post' | 'put' = methodName.toLowerCase() as any;
-
+	
 	return [
 		middlewares[method],
 		middlewares[action],
@@ -353,7 +352,7 @@ const getRelevantHandlers = (
 };
 
 const bind = (
-	newRouter: Express.Router,
+	newRouter: express.Router,
 	apiNumber: EQueryNumber,
 	route: string,
 	model: Model,
@@ -366,7 +365,7 @@ const bind = (
 	.map( ( func ) => _.ary( func, 4 ) )
 	.map( ( func ) => _.partialRight( func, model ) )
 	.value();
-
+	
 	newRouter
 	.route( route )
 	.all( partialize( [
@@ -398,9 +397,9 @@ export default ( configHash: IConfigurationRaw ) => {
 			}
 		}
 	} )();
-
+	
 	// Create the subrouter
-	const newRouter = Express.Router();
+	const newRouter = express.Router();
 	// parse application/x-www-form-urlencoded
 	newRouter.use(
 		bodyParser.urlencoded( {
@@ -409,7 +408,7 @@ export default ( configHash: IConfigurationRaw ) => {
 	);
 	// parse application/json
 	newRouter.use( bodyParser.json() );
-
+	
 	// Configure router
 	_.forEach( configuredModels, ( apiDesc, modelName ) => {
 		if ( true === apiDesc ) {
@@ -422,7 +421,7 @@ export default ( configHash: IConfigurationRaw ) => {
 		} ) as IModelConfiguration;
 		Diaspora.logger.verbose( `Exposing ${modelName}`, apiDesc );
 		const model = Diaspora.models[modelName];
-
+		
 		bind(
 			newRouter,
 			EQueryNumber.SINGULAR,
@@ -439,5 +438,5 @@ export default ( configHash: IConfigurationRaw ) => {
 		);
 	} );
 	newRouter.options( '', _.partial( optionHandler, configuredModels ) );
-	return newRouter as Express.RequestHandler;
+	return newRouter as express.RequestHandler;
 };

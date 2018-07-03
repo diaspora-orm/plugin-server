@@ -1,13 +1,12 @@
-import { promisify, promisifyAll } from 'bluebird';
+import { promisifyAll } from 'bluebird';
 import http from 'http';
 import * as _ from 'lodash';
-import request from 'request';
+import request = require( 'request' );
 
 export const config = require( './config' );
-const utils = require( '../src/utils' );
 
-import { datas, DUPLICATE_DATA } from './mock';
-import { inMemorySource, PhoneBook, server } from './webserver-init';
+import { datas } from './mock';
+import { PhoneBook, server } from './webserver-init';
 
 interface IParamObject {
 	url: string;
