@@ -1,3 +1,7 @@
+# [0.2.0-alpha.2](https://github.com/diaspora-orm/plugin-server/compare/v0.2.0-alpha.1...v0.2.0-alpha.2) (2018-07-03)
+
+
+
 # [0.2.0-alpha.1](https://github.com/diaspora-orm/plugin-server/compare/v0.1.0...v0.2.0-alpha.1) (2018-07-03)
 
 
