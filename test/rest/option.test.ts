@@ -1,8 +1,6 @@
 import * as _ from 'lodash';
 
-import { prettylog } from '../../src/utils';
 import { baseAPI, config, requestApi } from '../server';
-import { resetMock } from '../webserver-init';
 
 describe( 'Infos (OPTION)', () => {
 	it( 'Get API index (OPTION)', async () => {

@@ -2,13 +2,12 @@ import * as _ from 'lodash';
 
 import { EHttpStatusCode } from '../../src/utils';
 import { datas, DUPLICATE_DATA } from '../mock';
-import { baseAPI, compareArrays, requestApi, stripIdHash } from '../server';
-import { inMemorySource, PhoneBook, resetMock, store } from '../webserver-init';
+import { baseAPI, requestApi, stripIdHash } from '../server';
+import { resetMock, store } from '../webserver-init';
+
 
 beforeEach( resetMock );
 describe( 'Replace (PUT)', () => {
-	const idx1 = 1;
-	const idx2 = 0;
 	const update = {
 		name: 'Josey Passey',
 		phone: '332-83-8304',

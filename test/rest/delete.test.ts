@@ -1,7 +1,7 @@
 import { EHttpStatusCode } from '../../src/utils';
-import { datas, DUPLICATE_DATA } from '../mock';
+import { DUPLICATE_DATA } from '../mock';
 import { baseAPI, requestApi } from '../server';
-import { inMemorySource, PhoneBook, resetMock, store } from '../webserver-init';
+import { resetMock, store } from '../webserver-init';
 
 beforeEach( resetMock );
 describe( 'Delete (DELETE)', () => {

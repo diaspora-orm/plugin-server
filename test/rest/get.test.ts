@@ -2,8 +2,8 @@ import * as _ from 'lodash';
 
 import { EHttpStatusCode } from '../../src/utils';
 import { datas } from '../mock';
-import { baseAPI, compareArrays, requestApi, stripIdHash, stripIdHashArr } from '../server';
-import { inMemorySource, PhoneBook, resetMock, store } from '../webserver-init';
+import { baseAPI, requestApi, stripIdHash } from '../server';
+import { resetMock, store } from '../webserver-init';
 
 
 beforeEach( resetMock );
