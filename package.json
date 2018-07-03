@@ -21,7 +21,8 @@
 	"main": "lib/diaspora-server.js",
 	"typings": "lib/diaspora-server.d.ts",
 	"files": [
-		"dist"
+		"docs",
+		"lib"
 	],
 	"author": "Gerkin <nihilivin@gmail.com>",
 	"engines": {
@@ -30,7 +31,7 @@
 	"scripts": {
 		"lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
 		"lint:fix": "tslint --fix -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
-		"doc": "npx typedoc --out dist/docs --target es6 --theme minimal --mode file --json doc.json src",
+		"doc": "npx typedoc --out docs --target es6 --theme minimal --mode file --json doc.json src",
 		"prebuild": "rimraf lib",
 		"build": "npx tsc --module commonjs --outDir lib && npm run doc",
 		"start": "rollup -c rollup.config.ts -w",
