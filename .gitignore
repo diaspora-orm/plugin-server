@@ -11,3 +11,7 @@ compiled
 .rpt2_cache
 
 test-report\.html
+
+lib/
+
+doc\.json
