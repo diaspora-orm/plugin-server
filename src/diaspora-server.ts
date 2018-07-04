@@ -1,4 +1,4 @@
-import Express, { RequestHandler } from 'express';
+import Express from 'express';
 import * as _ from 'lodash';
 
 import { Entities, QueryLanguage, Model } from '@diaspora/diaspora';
@@ -60,9 +60,7 @@ export interface IModelConfigurationRaw {
 }
 export interface IConfigurationRaw {
 	webserverType?: string;
-	models: {
-		[key: string]: IModelConfigurationRaw | boolean;
-	};
+	models: _.Dictionary<IModelConfigurationRaw | boolean>;
 }
 
 
@@ -70,12 +68,11 @@ export interface IModelConfiguration extends IModelConfigurationRaw {
 	singular: string;
 	plural: string;
 	middlewares: IMiddlewareHash;
+	model: Model;
 }
 export interface IConfiguration extends IConfigurationRaw {
 	webserverType: EWebServerType;
-	models: {
-		[key: string]: IModelConfiguration;
-	};
+	models: _.Dictionary<IModelConfiguration>;
 }
 
 export enum EWebServerType {

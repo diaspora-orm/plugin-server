@@ -1,28 +1,8 @@
 // TODO: Define interface, and skip this import.
-import express from 'express';
 import * as _ from 'lodash';
 import { Minimatch } from 'minimatch';
 import { inspect, InspectOptions } from 'util';
 
-import { Diaspora, Errors } from '@diaspora/diaspora';
-import { IDiasporaApiRequest, IDiasporaApiRequestDescriptor, IDiasporaApiRequestDescriptorPreParse } from './diaspora-server';
-
-export enum HttpVerb {
-	GET = 'GET',
-	DELETE = 'DELETE',
-	PATCH = 'PATCH',
-	POST = 'POST',
-	PUT = 'PUT',
-}
-export enum EHttpStatusCode {
-	Ok = 200,
-	Created = 201,
-	NoContent = 204,
-
-	MalformedQuery = 400,
-	NotFound = 404,
-	MethodNotAllowed = 405,
-}
 
 export enum EQueryAction {
 	FIND = 'find',
@@ -106,45 +86,3 @@ export const prettylog = ( object: any, config: InspectOptions = {} ) => {
 export interface JsonError {
 	message?: string;
 }
-
-export const respondError = (
-	req: IDiasporaApiRequest<IDiasporaApiRequestDescriptorPreParse>,
-	res: express.Response,
-	error?: Error,
-	status?: number
-) => {
-	const jsonError: JsonError = _.assign( {}, error );
-	jsonError.message = _.isError( error )
-	? error.message || error.toString()
-	: undefined;
-
- const isValidationError = error instanceof Errors.ValidationError;
-	if ( isValidationError ) {
-		Diaspora.logger.debug(
-			`Request ${
-				req.diasporaApi.id
-			} triggered a validation error: message is ${JSON.stringify(
-				jsonError.message
-			)}`,
-			jsonError
-		);
-	} else {
-		Diaspora.logger.error(
-			`Request ${_.get(
-				res,
-				'req.diasporaApi.id',
-				'UNKNOWN'
-			)} triggered an error: message is ${JSON.stringify( jsonError.message )}`,
-			jsonError
-		);
-	}
-	res.status( status || ( isValidationError ? 400 : 500 ) ).send( jsonError );
-};
-
-export const getLoggableDiasporaApi = ( diasporaApi: IDiasporaApiRequestDescriptorPreParse ) => {
-	const diasporaApiParsed = diasporaApi as IDiasporaApiRequestDescriptor;
-	return _.assign( {}, _.omit( diasporaApi, ['id', 'target'] ), {
-		model: diasporaApi.model.name,
-		targetFound: diasporaApiParsed.urlId ? !_.isNil( diasporaApiParsed.target ) : undefined,
-	} );
-};
