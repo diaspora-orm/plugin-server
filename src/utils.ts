@@ -5,7 +5,7 @@ import { inspect, InspectOptions } from 'util';
 
 
 /**
- * Name of the Diaspora actions doable. Combined with {@link EQueryNumber}, it defines the method to call on the model.
+ * Name of the Diaspora actions doable. Combined with {@link EQueryPlurality}, it defines the method to call on the model.
  */
 export enum EQueryAction {
 	FIND = 'find',
@@ -18,7 +18,7 @@ export enum EQueryAction {
 /**
  * Types of actions to do. Combined with {@link EQueryAction}, it defines the method to call on the model.
  */
-export enum EQueryNumber {
+export enum EQueryPlurality {
 	SINGULAR = 'singular',
 	PLURAL = 'plural',
 }
@@ -35,10 +35,7 @@ const applySelector = <T1, T2>( oldVal: T1, newVal: T2 ): T2 | ( T1 & T2 ) => {
 	}
 };
 
-export const configureList = <T extends object>(
-	pickers: { [key: string]: T | boolean },
-	set: string[]
-) => {
+export const configureList = <T extends object>( pickers: { [key: string]: T | boolean }, set: string[] ) => {
 	// TODO: detail
 	const configurationObject: { [key: string]: T | undefined | boolean } = {};
 

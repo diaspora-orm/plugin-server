@@ -2,12 +2,11 @@ import Express from 'express';
 import * as _ from 'lodash';
 
 import { Entities, QueryLanguage, Model } from '@diaspora/diaspora';
-import { EQueryAction, EQueryNumber } from './utils';
-import expressServer from './webservers/express';
+import { EQueryAction, EQueryPlurality } from './utils';
 
 export interface IDiasporaApiRequestDescriptorPreParse {
 	id: string;
-	number: EQueryNumber;
+	number: EQueryPlurality;
 	action: EQueryAction;
 	model: Model;
 	body: object | object[] | any;
@@ -71,26 +70,7 @@ export interface IModelConfiguration extends IModelConfigurationRaw {
 	model: Model;
 }
 export interface IConfiguration extends IConfigurationRaw {
-	webserverType: EWebServerType;
 	models: _.Dictionary<IModelConfiguration>;
 }
 
-/**
- * Defines the API types available.
- */
-export enum EWebServerType {
-	EXPRESS = 'express',
-}
-
-const servers = {
-	[EWebServerType.EXPRESS]: expressServer,
-};
-
-export const buildApi = ( config: IConfigurationRaw = {models: {}} ) => {
-	const defaulted: IConfiguration = _.defaults( config, {
-		webserverType: EWebServerType.EXPRESS,
-		models: {},
-	} );
-
-	return servers[defaulted.webserverType]( defaulted ) as any;
-};
+export { ExpressApiGenerator } from './webservers/express';

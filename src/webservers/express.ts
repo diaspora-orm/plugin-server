@@ -3,12 +3,12 @@ import chalk from 'chalk';
 import express = require( 'express' );
 import _ = require( 'lodash' );
 
-import { Diaspora, Entities, Model, Errors } from '@diaspora/diaspora/dist/lib/index';
+import { Diaspora, Entities, Model, Errors } from '@diaspora/diaspora';
 
 import { generateUUID } from '@diaspora/diaspora/dist/lib/utils';
 
-import { IConfigurationRaw, IDiasporaApiRequest, IDiasporaApiRequestDescriptor, IDiasporaApiRequestDescriptorPreParse, IHookFunction, IMiddlewareHash, IModelConfiguration } from '../diaspora-server';
-import { EQueryAction, EQueryNumber, JsonError } from '../utils';
+import { IConfigurationRaw, IDiasporaApiRequest, IDiasporaApiRequestDescriptor, IDiasporaApiRequestDescriptorPreParse, IHookFunction, IMiddlewareHash, IModelConfiguration } from '../index';
+import { EQueryAction, EQueryPlurality, JsonError } from '../utils';
 import { ApiGenerator } from '../apiGenerator';
 
 /**
@@ -48,7 +48,7 @@ export const HttpVerbQuery = {
 };
 
 type IModelRequestApplier = (
-	queryNumber: EQueryNumber,
+	queryNumber: EQueryPlurality,
 	req: IDiasporaApiRequest,
 	res: express.Response,
 	model: Model
@@ -61,7 +61,7 @@ type IModelRequestApplier = (
  * 
  * @author Gerkin
  */
-export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
+export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 	public constructor( configHash: IConfigurationRaw ){
 		// Init with the subrouter
 		super( configHash, express.Router() );
@@ -75,12 +75,12 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 		// Configure router
 		_.forEach( this._modelsConfiguration, ( apiDesc, modelName ) => {
 			this.bind(
-				EQueryNumber.SINGULAR,
+				EQueryPlurality.SINGULAR,
 				`/${apiDesc.singular}(/*)?`,
 				modelName
 			);
 			this.bind(
-				EQueryNumber.PLURAL,
+				EQueryPlurality.PLURAL,
 				`/${apiDesc.plural}`,
 				modelName
 			);
@@ -98,7 +98,7 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 	 */
 	protected static respondMaybeEmptySet( res: express.Response, set: Entities.Set, responseCode = EHttpStatusCode.Ok ) {
 		res.status( 0 === set.length ? EHttpStatusCode.NoContent : responseCode );
-		return res.json( set.entities.map( ExpressDiasporaServer.setIdFromIdHash ) );
+		return res.json( set.entities.map( ExpressApiGenerator.setIdFromIdHash ) );
 	}
 	
 	/**
@@ -113,7 +113,7 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 		if ( _.isNil( entity ) ) {
 			return res.status( EHttpStatusCode.NoContent ).send();
 		} else {
-			return res.status( responseCode ).json( ExpressDiasporaServer.setIdFromIdHash( entity ) );
+			return res.status( responseCode ).json( ExpressApiGenerator.setIdFromIdHash( entity ) );
 		}
 	}
 	
@@ -126,8 +126,8 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 	 * @author Gerkin
 	 */
 	protected static async castToDiasporaApiRequest ( request: express.Request, diasporaApi: IDiasporaApiRequestDescriptorPreParse ): Promise<IDiasporaApiRequestDescriptor>{
-		const diasporaApiWithParsedQuery = _.assign( diasporaApi, ExpressDiasporaServer.parseQuery( request.query ) );
-		if ( EQueryNumber.SINGULAR === diasporaApiWithParsedQuery.number ) {
+		const diasporaApiWithParsedQuery = _.assign( diasporaApi, ExpressApiGenerator.parseQuery( request.query ) );
+		if ( EQueryPlurality.SINGULAR === diasporaApiWithParsedQuery.number ) {
 			const id = _.get( request, 'params[1]' );
 			if ( !_.isNil( id ) ) {
 				if ( EQueryAction.INSERT === diasporaApiWithParsedQuery.action ) {
@@ -212,7 +212,7 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 	 * @returns The Hook function to add to the router.
 	 * @author Gerkin
 	 */
-	protected prepareQueryHandling( apiNumber: EQueryNumber ): IHookFunction<express.Request>{
+	protected prepareQueryHandling( apiNumber: EQueryPlurality ): IHookFunction<express.Request>{
 		return async ( req, res, next, model ) => {
 			const queryId = generateUUID();
 			Diaspora.logger.verbose(
@@ -239,21 +239,21 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 				body: req.body,
 			};
 			try {
-				const diasporaApi = await ExpressDiasporaServer.castToDiasporaApiRequest( req, preParseParams );
+				const diasporaApi = await ExpressApiGenerator.castToDiasporaApiRequest( req, preParseParams );
 				_.assign( req, {diasporaApi} );
 				Diaspora.logger.debug(
 					`DiasporaAPI params for request ${chalk.bold.yellow( queryId )}: `,
-					ExpressDiasporaServer.getLoggableDiasporaApi( diasporaApi )
+					ExpressApiGenerator.getLoggableDiasporaApi( diasporaApi )
 				);
 				return next();
 			} catch ( error ) {
 				const catchReq = _.assign( req, {diasporaApi: preParseParams} );
 				if ( error instanceof URIError ) {
-					return ExpressDiasporaServer.respondError( catchReq, res, error, EHttpStatusCode.MethodNotAllowed );
+					return ExpressApiGenerator.respondError( catchReq, res, error, EHttpStatusCode.MethodNotAllowed );
 				} else if ( typeof error === 'number' ) {
 					return res.status( error ).send();
 				} else {
-					return ExpressDiasporaServer.respondError( catchReq, res, error, EHttpStatusCode.MalformedQuery );
+					return ExpressApiGenerator.respondError( catchReq, res, error, EHttpStatusCode.MalformedQuery );
 				}
 			}
 		};
@@ -272,14 +272,14 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 		} else {
 			const {where, options} = req.diasporaApi;
 			try {
-				if ( queryNumber === EQueryNumber.SINGULAR ) {
+				if ( queryNumber === EQueryPlurality.SINGULAR ) {
 					await model.delete( where, options );
 				} else {
 					await model.deleteMany( where, options );
 				}
 				return res.status( EHttpStatusCode.NoContent ).json();
 			} catch ( error ) {
-				return ExpressDiasporaServer.respondError( req, res, error );
+				return ExpressApiGenerator.respondError( req, res, error );
 			}
 		}
 	};
@@ -293,13 +293,13 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 	protected static findHandler: IModelRequestApplier = async function( queryNumber, req, res, model ) {
 		const {where, options} = req.diasporaApi;
 		try {
-			if ( queryNumber === EQueryNumber.SINGULAR ) {
-				return ExpressDiasporaServer.respondMaybeNoEntity( res, await model.find( where, options ) );
+			if ( queryNumber === EQueryPlurality.SINGULAR ) {
+				return ExpressApiGenerator.respondMaybeNoEntity( res, await model.find( where, options ) );
 			} else {
-				return ExpressDiasporaServer.respondMaybeEmptySet( res, await model.findMany( where, options ) );
+				return ExpressApiGenerator.respondMaybeEmptySet( res, await model.findMany( where, options ) );
 			}
 		} catch ( error ) {
-			return ExpressDiasporaServer.respondError( req, res, error );
+			return ExpressApiGenerator.respondError( req, res, error );
 		}
 	};
 
@@ -312,13 +312,13 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 	protected static insertHandler: IModelRequestApplier = async function( queryNumber, req, res, model ) {
 		const {body} = req.diasporaApi;
 		try {
-			if ( queryNumber === EQueryNumber.SINGULAR ) {
-				return ExpressDiasporaServer.respondMaybeNoEntity( res, await ( model.spawn( body ).persist() ), EHttpStatusCode.Created );
+			if ( queryNumber === EQueryPlurality.SINGULAR ) {
+				return ExpressApiGenerator.respondMaybeNoEntity( res, await ( model.spawn( body ).persist() ), EHttpStatusCode.Created );
 			} else {
-				return ExpressDiasporaServer.respondMaybeEmptySet( res, await ( model.spawnMany( body ).persist() ), EHttpStatusCode.Created );
+				return ExpressApiGenerator.respondMaybeEmptySet( res, await ( model.spawnMany( body ).persist() ), EHttpStatusCode.Created );
 			}
 		} catch ( error ) {
-			return ExpressDiasporaServer.respondError( req, res, error );
+			return ExpressApiGenerator.respondError( req, res, error );
 		}
 	};
 	
@@ -336,13 +336,13 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 		} else {
 			const {where, body, options} = req.diasporaApi;
 			try {
-				if ( queryNumber === EQueryNumber.SINGULAR ) {
-					return ExpressDiasporaServer.respondMaybeNoEntity( res, await model.update( where, body, options ) );
+				if ( queryNumber === EQueryPlurality.SINGULAR ) {
+					return ExpressApiGenerator.respondMaybeNoEntity( res, await model.update( where, body, options ) );
 				} else {
-					return ExpressDiasporaServer.respondMaybeEmptySet( res, await model.updateMany( where, body, options ) );
+					return ExpressApiGenerator.respondMaybeEmptySet( res, await model.updateMany( where, body, options ) );
 				}
 			} catch ( error ) {
-				return ExpressDiasporaServer.respondError( req, res, error );
+				return ExpressApiGenerator.respondError( req, res, error );
 			}
 		}
 	};
@@ -365,23 +365,23 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 				return entity;
 			};
 			try {
-				if ( queryNumber === EQueryNumber.SINGULAR ) {
+				if ( queryNumber === EQueryPlurality.SINGULAR ) {
 					const foundEntity = await model.find( where, options );
 					if ( foundEntity ) {
 						const updatedEntity = replaceEntity( foundEntity );
 						const persistedEntity = await updatedEntity.persist();
-						return ExpressDiasporaServer.respondMaybeNoEntity( res, persistedEntity );
+						return ExpressApiGenerator.respondMaybeNoEntity( res, persistedEntity );
 					} else {
-						return ExpressDiasporaServer.respondMaybeNoEntity( res, null );
+						return ExpressApiGenerator.respondMaybeNoEntity( res, null );
 					}
 				} else {
 					const foundSet = await model.findMany( where, options );
 					const updatedSet = new Entities.Set( model, foundSet.entities.map( replaceEntity ) );
 					const persistedSet = await updatedSet.persist();
-					return ExpressDiasporaServer.respondMaybeEmptySet( res, persistedSet );
+					return ExpressApiGenerator.respondMaybeEmptySet( res, persistedSet );
 				}
 			} catch ( error ) {
-				return ExpressDiasporaServer.respondError( req, res, error );
+				return ExpressApiGenerator.respondError( req, res, error );
 			}
 		}
 	};
@@ -394,37 +394,37 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 	protected static handlers: { [key: string]: IHookFunction<IDiasporaApiRequest> } = {
 		// Singular
 		_delete( req, res, next, model ) {
-			return ExpressDiasporaServer.deleteHandler( EQueryNumber.SINGULAR, req, res, model );
+			return ExpressApiGenerator.deleteHandler( EQueryPlurality.SINGULAR, req, res, model );
 		},
 		
 		_get( req, res, next, model ) {
-			return ExpressDiasporaServer.findHandler( EQueryNumber.SINGULAR, req, res, model );
+			return ExpressApiGenerator.findHandler( EQueryPlurality.SINGULAR, req, res, model );
 		},
 		_patch( req, res, next, model ) {
-			return ExpressDiasporaServer.updateHandler( EQueryNumber.SINGULAR, req, res, model );
+			return ExpressApiGenerator.updateHandler( EQueryPlurality.SINGULAR, req, res, model );
 		},
 		_post( req, res, next, model ) {
-			return ExpressDiasporaServer.insertHandler( EQueryNumber.SINGULAR, req, res, model );
+			return ExpressApiGenerator.insertHandler( EQueryPlurality.SINGULAR, req, res, model );
 		},
 		_put( req, res, next, model ) {
-			return ExpressDiasporaServer.replaceHandler( EQueryNumber.SINGULAR, req, res, model );
+			return ExpressApiGenerator.replaceHandler( EQueryPlurality.SINGULAR, req, res, model );
 		},
 		
 		// Plurals
 		delete( req, res, next, model ) {
-			return ExpressDiasporaServer.deleteHandler( EQueryNumber.PLURAL, req, res, model );
+			return ExpressApiGenerator.deleteHandler( EQueryPlurality.PLURAL, req, res, model );
 		},
 		get( req, res, next, model ) {
-			return ExpressDiasporaServer.findHandler( EQueryNumber.PLURAL, req, res, model );
+			return ExpressApiGenerator.findHandler( EQueryPlurality.PLURAL, req, res, model );
 		},
 		patch( req, res, next, model ) {
-			return ExpressDiasporaServer.updateHandler( EQueryNumber.PLURAL, req, res, model );
+			return ExpressApiGenerator.updateHandler( EQueryPlurality.PLURAL, req, res, model );
 		},
 		post( req, res, next, model ) {
-			return ExpressDiasporaServer.insertHandler( EQueryNumber.PLURAL, req, res, model );
+			return ExpressApiGenerator.insertHandler( EQueryPlurality.PLURAL, req, res, model );
 		},
 		put( req, res, next, model ) {
-			return ExpressDiasporaServer.replaceHandler( EQueryNumber.PLURAL, req, res, model );
+			return ExpressApiGenerator.replaceHandler( EQueryPlurality.PLURAL, req, res, model );
 		},
 	};
 
@@ -436,7 +436,7 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 	 * @param modelName - Name of the model that is targetted.
 	 * @author Gerkin
 	 */
-	protected bind( apiNumber: EQueryNumber, route: string, modelName: string ){
+	protected bind( apiNumber: EQueryPlurality, route: string, modelName: string ){
 		const modelApi = this._modelsConfiguration[modelName];
 		const partialize = ( methods: Array<_.Many<IHookFunction<IDiasporaApiRequest> | undefined>> ) =>
 		_.chain( methods )
@@ -469,8 +469,8 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 	 */
 	protected optionsHandler( req: express.Request, res: express.Response ) {
 		return res.json( _.mapValues( this._modelsConfiguration, apiDesc => ( {
-			[`/${apiDesc.singular}/$ID`]: this.generateApiMap( apiDesc, EQueryNumber.SINGULAR, req.baseUrl ),
-			[`/${apiDesc.plural}`]: this.generateApiMap( apiDesc, EQueryNumber.PLURAL, req.baseUrl ),
+			[`/${apiDesc.singular}/$ID`]: this.generateApiMap( apiDesc, EQueryPlurality.SINGULAR, req.baseUrl ),
+			[`/${apiDesc.plural}`]: this.generateApiMap( apiDesc, EQueryPlurality.PLURAL, req.baseUrl ),
 		} ) ) );
 	}
 
@@ -482,10 +482,10 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 	 * @param baseUrl     - Base URL of the endpoint (usually taken from the express request).
 	 * @returns Object containing the API map.
 	 */
-	protected generateApiMap( modelApi: IModelConfiguration, queryNumber: EQueryNumber, baseUrl: string ){
+	protected generateApiMap( modelApi: IModelConfiguration, queryNumber: EQueryPlurality, baseUrl: string ){
 		const singularRouteName = `/${modelApi.plural}`;
 		const pluralRouteName = `/${modelApi.singular}/$ID`;
-		return queryNumber === EQueryNumber.PLURAL ? {
+		return queryNumber === EQueryPlurality.PLURAL ? {
 				path: singularRouteName,
 				description: `Base API to query on SEVERAL items of ${modelApi.model.name}`,
 				canonicalUrl: `${baseUrl}${singularRouteName}`,
@@ -510,7 +510,7 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 	 * @param actionName - Action done by the handlers to get.
 	 * @param methodName - HTTP verb that matches the handlers to get.
 	 */
-	protected getRelevantHandlers ( modelApi: IModelConfiguration, apiNumber: EQueryNumber, actionName: EQueryAction, methodName: HttpVerb ){
+	protected getRelevantHandlers ( modelApi: IModelConfiguration, apiNumber: EQueryPlurality, actionName: EQueryAction, methodName: HttpVerb ){
 		const action: 'find' | 'delete' | 'update' | 'insert' | 'replace' = actionName.toLowerCase() as any;
 		const method: 'get' | 'delete' | 'patch' | 'post' | 'put' = methodName.toLowerCase() as any;
 		const middlewares = modelApi.middlewares;
@@ -518,13 +518,8 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 		return [
 			middlewares[method],
 			middlewares[action],
-			( middlewares as any )[action + ( EQueryNumber.SINGULAR === apiNumber ? 'One' : 'Many' )],
-			( ExpressDiasporaServer.handlers as any )[( EQueryNumber.SINGULAR === apiNumber ? '_' : '' ) + method],
+			( middlewares as any )[action + ( EQueryPlurality.SINGULAR === apiNumber ? 'One' : 'Many' )],
+			( ExpressApiGenerator.handlers as any )[( EQueryPlurality.SINGULAR === apiNumber ? '_' : '' ) + method],
 		] as Array<_.Many<IHookFunction<IDiasporaApiRequest> | undefined>>;
 	}
 }
-
-export default ( configHash: IConfigurationRaw ) => {
-	const expressDiasporaServer = new ExpressDiasporaServer( configHash );
-	return expressDiasporaServer.middleware as express.RequestHandler;
-};
