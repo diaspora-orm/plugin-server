@@ -313,9 +313,9 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 		const {body} = req.diasporaApi;
 		try {
 			if ( queryNumber === EQueryNumber.SINGULAR ) {
-				return ExpressDiasporaServer.respondMaybeNoEntity( res, await ( ( await model.spawn( body ) ).persist() ), EHttpStatusCode.Created );
+				return ExpressDiasporaServer.respondMaybeNoEntity( res, await ( model.spawn( body ).persist() ), EHttpStatusCode.Created );
 			} else {
-				return ExpressDiasporaServer.respondMaybeEmptySet( res, await ( ( await model.spawnMany( body ) ).persist() ), EHttpStatusCode.Created );
+				return ExpressDiasporaServer.respondMaybeEmptySet( res, await ( model.spawnMany( body ).persist() ), EHttpStatusCode.Created );
 			}
 		} catch ( error ) {
 			return ExpressDiasporaServer.respondError( req, res, error );
@@ -394,37 +394,37 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 	protected static handlers: { [key: string]: IHookFunction<IDiasporaApiRequest> } = {
 		// Singular
 		_delete( req, res, next, model ) {
-			ExpressDiasporaServer.deleteHandler( EQueryNumber.SINGULAR, req, res, model );
+			return ExpressDiasporaServer.deleteHandler( EQueryNumber.SINGULAR, req, res, model );
 		},
 		
 		_get( req, res, next, model ) {
-			ExpressDiasporaServer.findHandler( EQueryNumber.SINGULAR, req, res, model );
+			return ExpressDiasporaServer.findHandler( EQueryNumber.SINGULAR, req, res, model );
 		},
 		_patch( req, res, next, model ) {
-			ExpressDiasporaServer.updateHandler( EQueryNumber.SINGULAR, req, res, model );
+			return ExpressDiasporaServer.updateHandler( EQueryNumber.SINGULAR, req, res, model );
 		},
 		_post( req, res, next, model ) {
-			ExpressDiasporaServer.insertHandler( EQueryNumber.SINGULAR, req, res, model );
+			return ExpressDiasporaServer.insertHandler( EQueryNumber.SINGULAR, req, res, model );
 		},
 		_put( req, res, next, model ) {
-			ExpressDiasporaServer.replaceHandler( EQueryNumber.SINGULAR, req, res, model );
+			return ExpressDiasporaServer.replaceHandler( EQueryNumber.SINGULAR, req, res, model );
 		},
 		
 		// Plurals
 		delete( req, res, next, model ) {
-			ExpressDiasporaServer.deleteHandler( EQueryNumber.PLURAL, req, res, model );
+			return ExpressDiasporaServer.deleteHandler( EQueryNumber.PLURAL, req, res, model );
 		},
 		get( req, res, next, model ) {
-			ExpressDiasporaServer.findHandler( EQueryNumber.PLURAL, req, res, model );
+			return ExpressDiasporaServer.findHandler( EQueryNumber.PLURAL, req, res, model );
 		},
 		patch( req, res, next, model ) {
-			ExpressDiasporaServer.updateHandler( EQueryNumber.PLURAL, req, res, model );
+			return ExpressDiasporaServer.updateHandler( EQueryNumber.PLURAL, req, res, model );
 		},
 		post( req, res, next, model ) {
-			ExpressDiasporaServer.insertHandler( EQueryNumber.PLURAL, req, res, model );
+			return ExpressDiasporaServer.insertHandler( EQueryNumber.PLURAL, req, res, model );
 		},
 		put( req, res, next, model ) {
-			ExpressDiasporaServer.replaceHandler( EQueryNumber.PLURAL, req, res, model );
+			return ExpressDiasporaServer.replaceHandler( EQueryNumber.PLURAL, req, res, model );
 		},
 	};
 
