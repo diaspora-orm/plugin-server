@@ -1,5 +1,4 @@
-// TODO: Define interface, and skip this import.
-import * as _ from 'lodash';
+import { isObject, assign, clone, forEach, isNil, pickBy, defaults } from 'lodash';
 import { Minimatch } from 'minimatch';
 import { inspect, InspectOptions } from 'util';
 
@@ -24,11 +23,11 @@ export enum EQueryPlurality {
 }
 
 const applySelector = <T1, T2>( oldVal: T1, newVal: T2 ): T2 | ( T1 & T2 ) => {
-	if ( _.isObject( newVal ) ) {
-		if ( _.isObject( oldVal ) ) {
-			return _.assign( {}, oldVal, newVal );
+	if ( isObject( newVal ) ) {
+		if ( isObject( oldVal ) ) {
+			return assign( {}, oldVal, newVal );
 		} else {
-			return _.clone( newVal );
+			return clone( newVal );
 		}
 	} else {
 		return newVal;
@@ -36,17 +35,16 @@ const applySelector = <T1, T2>( oldVal: T1, newVal: T2 ): T2 | ( T1 & T2 ) => {
 };
 
 export const configureList = <T extends object>( pickers: { [key: string]: T | boolean }, set: string[] ) => {
-	// TODO: detail
 	const configurationObject: { [key: string]: T | undefined | boolean } = {};
 
-	_.forEach( pickers, ( picker, key ) => {
+	forEach( pickers, ( picker, key ) => {
 		// If the key is a regex or a minimatch (check for `*`), this var will be set to a function
 		let matcher: ( ( name: string ) => boolean ) | false = false;
 
 		if ( key.startsWith( '/' ) && key.endsWith( '/' ) ) {
 			const regex = new RegExp( key.slice( 1 ).slice( 0, -1 ) );
 			matcher = ( name: string ) => {
-				return !_.isNil( name.match( regex ) );
+				return !isNil( name.match( regex ) );
 			};
 		} else if ( key.includes( '*' ) ) {
 			const mm = new Minimatch( key, {} );
@@ -66,7 +64,7 @@ export const configureList = <T extends object>( pickers: { [key: string]: T | b
 		} else {
 			const subMatcher = matcher;
 			// Matching is optionnal
-			_.forEach( set, ( element ) => {
+			forEach( set, ( element ) => {
 				if ( subMatcher( element ) ) {
 					configurationObject[element] = applySelector(
 						configurationObject[element],
@@ -76,11 +74,11 @@ export const configureList = <T extends object>( pickers: { [key: string]: T | b
 			} );
 		}
 	} );
-	return _.pickBy( configurationObject );
+	return pickBy( configurationObject );
 };
 
 export const prettylog = ( object: any, config: InspectOptions = {} ) => {
-	config = _.defaults( config, {
+	config = defaults( config, {
 		colors: true,
 		depth: 8,
 	} );

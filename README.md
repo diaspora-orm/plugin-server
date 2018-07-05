@@ -11,9 +11,9 @@ Fancy badges:
 [![GitHub commit activity the past year](https://img.shields.io/github/commit-activity/y/diaspora-orm/plugin-server.svg)](https://github.com/diaspora-orm/plugin-server)
 [![license](https://img.shields.io/github/license/diaspora/plugin-server.svg)](https://github.com/diaspora-orm/plugin-server)
 
-## Getting started:
+## Getting started
 
-### Installation:
+### Installation
 
 In order to run this plugin, you need to install both the Diaspora Server plugin & [Diaspora](https://www.npmjs.com/package/@diaspora/diaspora) itself.
 
@@ -21,7 +21,7 @@ In order to run this plugin, you need to install both the Diaspora Server plugin
 npm install @diaspora/plugin-server @diaspora/diaspora
 ```
 
-### Configuration:
+### Configuration
 
 ```ts
 import { Diaspora } from '@diaspora/diaspora';
@@ -73,7 +73,7 @@ In your model configuration, you can use following middlewares:
 
 Each middleware will be called as a standard Express middleware (eg with `req`, `res` & `next`). You can use them to customize the behavior of Diaspora Server.
 
-### Getting further:
+### Getting further
 
 Diaspora Server uses the same Diaspora module than your app, both sharing models & the web server.
 
