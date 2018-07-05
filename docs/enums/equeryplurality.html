@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>EQueryNumber | @diaspora/plugin-server</title>
+	<title>EQueryPlurality | @diaspora/plugin-server</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -909,21 +909,94 @@ img { max-width: 100%; }
 </header>
 <nav class="tsd-navigation secondary">
 	<ul>
+		<li class=" tsd-kind-enum">
+			<a href="ehttpstatuscode.html" class="tsd-kind-icon">EHttp<wbr>Status<wbr>Code</a>
+		</li>
+		<li class=" tsd-kind-enum">
+			<a href="equeryaction.html" class="tsd-kind-icon">EQuery<wbr>Action</a>
+		</li>
 		<li class="current tsd-kind-enum">
-			<a href="equerynumber.html" class="tsd-kind-icon">EQuery<wbr>Number</a>
+			<a href="equeryplurality.html" class="tsd-kind-icon">EQuery<wbr>Plurality</a>
 			<ul>
 				<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-					<a href="equerynumber.html#plural" class="tsd-kind-icon">PLURAL</a>
+					<a href="equeryplurality.html#plural" class="tsd-kind-icon">PLURAL</a>
 				</li>
 				<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-					<a href="equerynumber.html#singular" class="tsd-kind-icon">SINGULAR</a>
+					<a href="equeryplurality.html#singular" class="tsd-kind-icon">SINGULAR</a>
 				</li>
 			</ul>
+		</li>
+		<li class=" tsd-kind-enum">
+			<a href="httpverb.html" class="tsd-kind-icon">Http<wbr>Verb</a>
+		</li>
+		<li class=" tsd-kind-class tsd-has-type-parameter">
+			<a href="../classes/apigenerator.html" class="tsd-kind-icon">Api<wbr>Generator</a>
+		</li>
+		<li class=" tsd-kind-class">
+			<a href="../classes/expressapigenerator.html" class="tsd-kind-icon">Express<wbr>Api<wbr>Generator</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/iconfiguration.html" class="tsd-kind-icon">IConfiguration</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/iconfigurationraw.html" class="tsd-kind-icon">IConfiguration<wbr>Raw</a>
+		</li>
+		<li class=" tsd-kind-interface tsd-has-type-parameter">
+			<a href="../interfaces/idiasporaapirequest.html" class="tsd-kind-icon">IDiaspora<wbr>Api<wbr>Request</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-kind-icon">IDiaspora<wbr>Api<wbr>Request<wbr>Descriptor</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/idiasporaapirequestdescriptorpreparse.html" class="tsd-kind-icon">IDiaspora<wbr>Api<wbr>Request<wbr>Descriptor<wbr>Pre<wbr>Parse</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/imiddlewarehash.html" class="tsd-kind-icon">IMiddleware<wbr>Hash</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/imodelconfiguration.html" class="tsd-kind-icon">IModel<wbr>Configuration</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/imodelconfigurationraw.html" class="tsd-kind-icon">IModel<wbr>Configuration<wbr>Raw</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/jsonerror.html" class="tsd-kind-icon">Json<wbr>Error</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+			<a href="../globals.html#ihookfunction" class="tsd-kind-icon">IHook<wbr>Function</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+			<a href="../globals.html#ihookfunctionorarr" class="tsd-kind-icon">IHook<wbr>Function<wbr>OrArr</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-is-not-exported">
+			<a href="../globals.html#imodelrequestapplier" class="tsd-kind-icon">IModel<wbr>Request<wbr>Applier</a>
+		</li>
+		<li class=" tsd-kind-variable tsd-is-not-exported">
+			<a href="../globals.html#query_opts" class="tsd-kind-icon">QUERY_<wbr>OPTS</a>
+		</li>
+		<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-not-exported">
+			<a href="../globals.html#applyselector" class="tsd-kind-icon">apply<wbr>Selector</a>
+		</li>
+		<li class=" tsd-kind-function tsd-has-type-parameter">
+			<a href="../globals.html#configurelist" class="tsd-kind-icon">configure<wbr>List</a>
+		</li>
+		<li class=" tsd-kind-function">
+			<a href="../globals.html#prettylog" class="tsd-kind-icon">prettylog</a>
+		</li>
+		<li class=" tsd-kind-object-literal">
+			<a href="../globals.html#httpverbquery" class="tsd-kind-icon">Http<wbr>Verb<wbr>Query</a>
 		</li>
 	</ul>
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<section class="tsd-panel tsd-comment">
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Types of actions to do. Combined with <a href="equeryaction.html">EQueryAction</a>, it defines the method to call on the model.</p>
+				</div>
+			</div>
+		</section>
 		<section class="tsd-panel-group tsd-index-group">
 			<h2>Index</h2>
 			<section class="tsd-panel tsd-index-panel">
@@ -931,8 +1004,8 @@ img { max-width: 100%; }
 					<section class="tsd-index-section ">
 						<h3>Enumeration members</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="equerynumber.html#plural" class="tsd-kind-icon">PLURAL</a></li>
-							<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="equerynumber.html#singular" class="tsd-kind-icon">SINGULAR</a></li>
+							<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="equeryplurality.html#plural" class="tsd-kind-icon">PLURAL</a></li>
+							<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="equeryplurality.html#singular" class="tsd-kind-icon">SINGULAR</a></li>
 						</ul>
 					</section>
 				</div>
@@ -946,7 +1019,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">PLURAL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;&quot;plural&quot;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/0c7b152/src/utils.ts#L36">utils.ts:36</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/utils.ts#L22">utils.ts:22</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -956,7 +1029,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">SINGULAR<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;&quot;singular&quot;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/0c7b152/src/utils.ts#L35">utils.ts:35</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/utils.ts#L21">utils.ts:21</a></li>
 					</ul>
 				</aside>
 			</section>

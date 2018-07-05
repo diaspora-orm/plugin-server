@@ -33,7 +33,7 @@
 		"lint:fix": "tslint --fix -t codeFrame 'src/**/*.ts' 'test/**/*.ts' -p tsconfig.json || true",
 		"doc": "npx typedoc --out docs --target es6 --theme minimal --mode file --json doc.json src",
 		"prebuild": "rimraf lib",
-		"build": "npx tsc --module commonjs --outDir lib && npm run doc",
+		"build": "npx tsc --module commonjs --outDir lib",
 		"start": "rollup -c rollup.config.ts -w",
 		"test": "cd node_modules/typedoc; npm i typescript@2.9.2; cd ../../; jest --runInBand",
 		"test:watch": "jest --watch --runInBand",
@@ -45,7 +45,7 @@
 		"semantic-release-prepare": "ts-node tools/semantic-release-prepare",
 		"precommit": "lint-staged",
 		"conventional-changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
-		"version": "npm run conventional-changelog && git add CHANGELOG.md",
+		"version": "npm run conventional-changelog && git add CHANGELOG.md && npm run doc && git add docs",
 		"prepack": "npm run build"
 	},
 	"lint-staged": {

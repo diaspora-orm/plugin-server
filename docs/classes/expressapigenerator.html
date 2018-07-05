@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>EWebServerType | @diaspora/plugin-server</title>
+	<title>ExpressApiGenerator | @diaspora/plugin-server</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -909,42 +909,1408 @@ img { max-width: 100%; }
 </header>
 <nav class="tsd-navigation secondary">
 	<ul>
-		<li class="current tsd-kind-enum">
-			<a href="ewebservertype.html" class="tsd-kind-icon">EWeb<wbr>Server<wbr>Type</a>
+		<li class=" tsd-kind-enum">
+			<a href="../enums/ehttpstatuscode.html" class="tsd-kind-icon">EHttp<wbr>Status<wbr>Code</a>
+		</li>
+		<li class=" tsd-kind-enum">
+			<a href="../enums/equeryaction.html" class="tsd-kind-icon">EQuery<wbr>Action</a>
+		</li>
+		<li class=" tsd-kind-enum">
+			<a href="../enums/equeryplurality.html" class="tsd-kind-icon">EQuery<wbr>Plurality</a>
+		</li>
+		<li class=" tsd-kind-enum">
+			<a href="../enums/httpverb.html" class="tsd-kind-icon">Http<wbr>Verb</a>
+		</li>
+		<li class=" tsd-kind-class tsd-has-type-parameter">
+			<a href="apigenerator.html" class="tsd-kind-icon">Api<wbr>Generator</a>
+		</li>
+		<li class="current tsd-kind-class">
+			<a href="expressapigenerator.html" class="tsd-kind-icon">Express<wbr>Api<wbr>Generator</a>
 			<ul>
-				<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-					<a href="ewebservertype.html#express" class="tsd-kind-icon">EXPRESS</a>
+				<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+					<a href="expressapigenerator.html#constructor" class="tsd-kind-icon">constructor</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a href="expressapigenerator.html#_middleware" class="tsd-kind-icon">_middleware</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a href="expressapigenerator.html#_modelsconfiguration" class="tsd-kind-icon">_models<wbr>Configuration</a>
+				</li>
+				<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited">
+					<a href="expressapigenerator.html#middleware" class="tsd-kind-icon">middleware</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a href="expressapigenerator.html#bind" class="tsd-kind-icon">bind</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a href="expressapigenerator.html#generateapimap" class="tsd-kind-icon">generate<wbr>Api<wbr>Map</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a href="expressapigenerator.html#getrelevanthandlers" class="tsd-kind-icon">get<wbr>Relevant<wbr>Handlers</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a href="expressapigenerator.html#optionshandler" class="tsd-kind-icon">options<wbr>Handler</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a href="expressapigenerator.html#preparequeryhandling" class="tsd-kind-icon">prepare<wbr>Query<wbr>Handling</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a href="expressapigenerator.html#casttodiasporaapirequest" class="tsd-kind-icon">cast<wbr>ToDiaspora<wbr>Api<wbr>Request</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a href="expressapigenerator.html#deletehandler" class="tsd-kind-icon">delete<wbr>Handler</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a href="expressapigenerator.html#findhandler" class="tsd-kind-icon">find<wbr>Handler</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a href="expressapigenerator.html#getloggablediasporaapi" class="tsd-kind-icon">get<wbr>Loggable<wbr>Diaspora<wbr>Api</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a href="expressapigenerator.html#inserthandler" class="tsd-kind-icon">insert<wbr>Handler</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+					<a href="expressapigenerator.html#parsequery" class="tsd-kind-icon">parse<wbr>Query</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a href="expressapigenerator.html#replacehandler" class="tsd-kind-icon">replace<wbr>Handler</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a href="expressapigenerator.html#responderror" class="tsd-kind-icon">respond<wbr>Error</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a href="expressapigenerator.html#respondmaybeemptyset" class="tsd-kind-icon">respond<wbr>Maybe<wbr>Empty<wbr>Set</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a href="expressapigenerator.html#respondmaybenoentity" class="tsd-kind-icon">respond<wbr>Maybe<wbr>NoEntity</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+					<a href="expressapigenerator.html#setidfromidhash" class="tsd-kind-icon">set<wbr>IdFrom<wbr>IdHash</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a href="expressapigenerator.html#updatehandler" class="tsd-kind-icon">update<wbr>Handler</a>
+				</li>
+				<li class=" tsd-kind-object-literal tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<a href="expressapigenerator.html#handlers" class="tsd-kind-icon">handlers</a>
 				</li>
 			</ul>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/iconfiguration.html" class="tsd-kind-icon">IConfiguration</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/iconfigurationraw.html" class="tsd-kind-icon">IConfiguration<wbr>Raw</a>
+		</li>
+		<li class=" tsd-kind-interface tsd-has-type-parameter">
+			<a href="../interfaces/idiasporaapirequest.html" class="tsd-kind-icon">IDiaspora<wbr>Api<wbr>Request</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-kind-icon">IDiaspora<wbr>Api<wbr>Request<wbr>Descriptor</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/idiasporaapirequestdescriptorpreparse.html" class="tsd-kind-icon">IDiaspora<wbr>Api<wbr>Request<wbr>Descriptor<wbr>Pre<wbr>Parse</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/imiddlewarehash.html" class="tsd-kind-icon">IMiddleware<wbr>Hash</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/imodelconfiguration.html" class="tsd-kind-icon">IModel<wbr>Configuration</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/imodelconfigurationraw.html" class="tsd-kind-icon">IModel<wbr>Configuration<wbr>Raw</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/jsonerror.html" class="tsd-kind-icon">Json<wbr>Error</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+			<a href="../globals.html#ihookfunction" class="tsd-kind-icon">IHook<wbr>Function</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+			<a href="../globals.html#ihookfunctionorarr" class="tsd-kind-icon">IHook<wbr>Function<wbr>OrArr</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-is-not-exported">
+			<a href="../globals.html#imodelrequestapplier" class="tsd-kind-icon">IModel<wbr>Request<wbr>Applier</a>
+		</li>
+		<li class=" tsd-kind-variable tsd-is-not-exported">
+			<a href="../globals.html#query_opts" class="tsd-kind-icon">QUERY_<wbr>OPTS</a>
+		</li>
+		<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-not-exported">
+			<a href="../globals.html#applyselector" class="tsd-kind-icon">apply<wbr>Selector</a>
+		</li>
+		<li class=" tsd-kind-function tsd-has-type-parameter">
+			<a href="../globals.html#configurelist" class="tsd-kind-icon">configure<wbr>List</a>
+		</li>
+		<li class=" tsd-kind-function">
+			<a href="../globals.html#prettylog" class="tsd-kind-icon">prettylog</a>
+		</li>
+		<li class=" tsd-kind-object-literal">
+			<a href="../globals.html#httpverbquery" class="tsd-kind-icon">Http<wbr>Verb<wbr>Query</a>
 		</li>
 	</ul>
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<section class="tsd-panel tsd-comment">
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Generates a new RESTful API using express.
+					This API responds to all verbs declared in <a href="../enums/httpverb.html">HttpVerb</a>.</p>
+					<blockquote>
+						<p><em>Note:</em> the middleware router is already bound with bodyParser urlencoded &amp; json.</p>
+					</blockquote>
+				</div>
+				<dl class="tsd-comment-tags">
+					<dt>author</dt>
+					<dd><p>Gerkin</p>
+					</dd>
+				</dl>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-hierarchy">
+			<h3>Hierarchy</h3>
+			<ul class="tsd-hierarchy">
+				<li>
+					<a href="apigenerator.html" class="tsd-signature-type">ApiGenerator</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">express.Router</span><span class="tsd-signature-symbol">&gt;</span>
+					<ul class="tsd-hierarchy">
+						<li>
+							<span class="target">ExpressApiGenerator</span>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</section>
 		<section class="tsd-panel-group tsd-index-group">
 			<h2>Index</h2>
 			<section class="tsd-panel tsd-index-panel">
 				<div class="tsd-index-content">
 					<section class="tsd-index-section ">
-						<h3>Enumeration members</h3>
+						<h3>Constructors</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="ewebservertype.html#express" class="tsd-kind-icon">EXPRESS</a></li>
+							<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="expressapigenerator.html#constructor" class="tsd-kind-icon">constructor</a></li>
+						</ul>
+					</section>
+					<section class="tsd-index-section tsd-is-inherited tsd-is-private-protected">
+						<h3>Properties</h3>
+						<ul class="tsd-index-list">
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="expressapigenerator.html#_middleware" class="tsd-kind-icon">_middleware</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="expressapigenerator.html#_modelsconfiguration" class="tsd-kind-icon">_models<wbr>Configuration</a></li>
+						</ul>
+					</section>
+					<section class="tsd-index-section tsd-is-inherited">
+						<h3>Accessors</h3>
+						<ul class="tsd-index-list">
+							<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited"><a href="expressapigenerator.html#middleware" class="tsd-kind-icon">middleware</a></li>
+						</ul>
+					</section>
+					<section class="tsd-index-section ">
+						<h3>Methods</h3>
+						<ul class="tsd-index-list">
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="expressapigenerator.html#bind" class="tsd-kind-icon">bind</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="expressapigenerator.html#generateapimap" class="tsd-kind-icon">generate<wbr>Api<wbr>Map</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="expressapigenerator.html#getrelevanthandlers" class="tsd-kind-icon">get<wbr>Relevant<wbr>Handlers</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="expressapigenerator.html#optionshandler" class="tsd-kind-icon">options<wbr>Handler</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="expressapigenerator.html#preparequeryhandling" class="tsd-kind-icon">prepare<wbr>Query<wbr>Handling</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="expressapigenerator.html#casttodiasporaapirequest" class="tsd-kind-icon">cast<wbr>ToDiaspora<wbr>Api<wbr>Request</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="expressapigenerator.html#deletehandler" class="tsd-kind-icon">delete<wbr>Handler</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="expressapigenerator.html#findhandler" class="tsd-kind-icon">find<wbr>Handler</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="expressapigenerator.html#getloggablediasporaapi" class="tsd-kind-icon">get<wbr>Loggable<wbr>Diaspora<wbr>Api</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="expressapigenerator.html#inserthandler" class="tsd-kind-icon">insert<wbr>Handler</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="expressapigenerator.html#parsequery" class="tsd-kind-icon">parse<wbr>Query</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="expressapigenerator.html#replacehandler" class="tsd-kind-icon">replace<wbr>Handler</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="expressapigenerator.html#responderror" class="tsd-kind-icon">respond<wbr>Error</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="expressapigenerator.html#respondmaybeemptyset" class="tsd-kind-icon">respond<wbr>Maybe<wbr>Empty<wbr>Set</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="expressapigenerator.html#respondmaybenoentity" class="tsd-kind-icon">respond<wbr>Maybe<wbr>NoEntity</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="expressapigenerator.html#setidfromidhash" class="tsd-kind-icon">set<wbr>IdFrom<wbr>IdHash</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="expressapigenerator.html#updatehandler" class="tsd-kind-icon">update<wbr>Handler</a></li>
+						</ul>
+					</section>
+					<section class="tsd-index-section tsd-is-private-protected">
+						<h3>Object literals</h3>
+						<ul class="tsd-index-list">
+							<li class="tsd-kind-object-literal tsd-parent-kind-class tsd-is-protected tsd-is-static"><a href="expressapigenerator.html#handlers" class="tsd-kind-icon">handlers</a></li>
 						</ul>
 					</section>
 				</div>
 			</section>
 		</section>
 		<section class="tsd-panel-group tsd-member-group ">
-			<h2>Enumeration members</h2>
-			<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-				<a name="express" class="tsd-anchor"></a>
-				<h3>EXPRESS</h3>
-				<div class="tsd-signature tsd-kind-icon">EXPRESS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;&quot;express&quot;</span></div>
+			<h2>Constructors</h2>
+			<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+				<a name="constructor" class="tsd-anchor"></a>
+				<h3>constructor</h3>
+				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Express<wbr>Api<wbr>Generator<span class="tsd-signature-symbol">(</span>configHash<span class="tsd-signature-symbol">: </span><a href="../interfaces/iconfigurationraw.html" class="tsd-signature-type">IConfigurationRaw</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="expressapigenerator.html" class="tsd-signature-type">ExpressApiGenerator</a></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Overrides <a href="apigenerator.html">ApiGenerator</a>.<a href="apigenerator.html#constructor">constructor</a></p>
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L64">webservers/express.ts:64</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>configHash: <a href="../interfaces/iconfigurationraw.html" class="tsd-signature-type">IConfigurationRaw</a></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="expressapigenerator.html" class="tsd-signature-type">ExpressApiGenerator</a></h4>
+					</li>
+				</ul>
+			</section>
+		</section>
+		<section class="tsd-panel-group tsd-member-group tsd-is-inherited tsd-is-private-protected">
+			<h2>Properties</h2>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+				<a name="_middleware" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagProtected">Protected</span> _middleware</h3>
+				<div class="tsd-signature tsd-kind-icon">_middleware<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">express.Router</span></div>
 				<aside class="tsd-sources">
+					<p>Inherited from <a href="apigenerator.html">ApiGenerator</a>.<a href="apigenerator.html#_middleware">_middleware</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/0c7b152/src/diaspora-server.ts#L82">diaspora-server.ts:82</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/apiGenerator.ts#L22">apiGenerator.ts:22</a></li>
 					</ul>
 				</aside>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Instance of the middleware to be used by the application</p>
+					</div>
+					<dl class="tsd-comment-tags">
+						<dt>se</dt>
+						<dd><p><a href="apigenerator.html#middleware">ApiGenerator.middleware</a></p>
+						</dd>
+						<dt>author</dt>
+						<dd><p>Gerkin</p>
+						</dd>
+					</dl>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+				<a name="_modelsconfiguration" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagProtected">Protected</span> _models<wbr>Configuration</h3>
+				<div class="tsd-signature tsd-kind-icon">_models<wbr>Configuration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">_.Dictionary</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/imodelconfiguration.html" class="tsd-signature-type">IModelConfiguration</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<aside class="tsd-sources">
+					<p>Inherited from <a href="apigenerator.html">ApiGenerator</a>.<a href="apigenerator.html#_modelsconfiguration">_modelsConfiguration</a></p>
+					<ul>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/apiGenerator.ts#L38">apiGenerator.ts:38</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Dictionary containing each configured models settings.</p>
+					</div>
+					<dl class="tsd-comment-tags">
+						<dt>author</dt>
+						<dd><p>Gerkin</p>
+						</dd>
+					</dl>
+				</div>
+			</section>
+		</section>
+		<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
+			<h2>Accessors</h2>
+			<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited">
+				<a name="middleware" class="tsd-anchor"></a>
+				<h3>middleware</h3>
+				<div class="tsd-signature tsd-kind-icon">middleware<span class="tsd-signature-symbol">:</span> </div>
+				<aside class="tsd-sources">
+					<p>Inherited from <a href="apigenerator.html">ApiGenerator</a>.<a href="apigenerator.html#middleware">middleware</a></p>
+					<ul>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/apiGenerator.ts#L29">apiGenerator.ts:29</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Public getter to retrieve the middleware instance usable by application</p>
+					</div>
+					<dl class="tsd-comment-tags">
+						<dt>se</dt>
+						<dd><p><a href="apigenerator.html#middleware">ApiGenerator.middleware</a></p>
+						</dd>
+						<dt>author</dt>
+						<dd><p>Gerkin</p>
+						</dd>
+					</dl>
+				</div>
+			</section>
+		</section>
+		<section class="tsd-panel-group tsd-member-group ">
+			<h2>Methods</h2>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+				<a name="bind" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagProtected">Protected</span> bind</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<li class="tsd-signature tsd-kind-icon">bind<span class="tsd-signature-symbol">(</span>apiNumber<span class="tsd-signature-symbol">: </span><a href="../enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a>, route<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, modelName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L439">webservers/express.ts:439</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Binds the instance router with each route verbs.</p>
+							</div>
+							<dl class="tsd-comment-tags">
+								<dt>author</dt>
+								<dd><p>Gerkin</p>
+								</dd>
+							</dl>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>apiNumber: <a href="../enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Number of entities that this router will bind.</p>
+								</div>
+							</li>
+							<li>
+								<h5>route: <span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Path to the API endpoint</p>
+								</div>
+							</li>
+							<li>
+								<h5>modelName: <span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Name of the model that is targetted.</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+				<a name="generateapimap" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagProtected">Protected</span> generate<wbr>Api<wbr>Map</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<li class="tsd-signature tsd-kind-icon">generate<wbr>Api<wbr>Map<span class="tsd-signature-symbol">(</span>modelApi<span class="tsd-signature-symbol">: </span><a href="../interfaces/imodelconfiguration.html" class="tsd-signature-type">IModelConfiguration</a>, queryNumber<span class="tsd-signature-symbol">: </span><a href="../enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a>, baseUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L485">webservers/express.ts:485</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Generates the API map of the specified endpoint. This is usually used with the <code>options</code> verb.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>modelApi: <a href="../interfaces/imodelconfiguration.html" class="tsd-signature-type">IModelConfiguration</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Model api configuration to answer to</p>
+								</div>
+							</li>
+							<li>
+								<h5>queryNumber: <a href="../enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>The action number to get map for.</p>
+								</div>
+							</li>
+							<li>
+								<h5>baseUrl: <span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Base URL of the endpoint (usually taken from the express request).</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span>
+							<span class="tsd-signature-symbol"> | </span>
+							<span class="tsd-signature-type">object</span>
+						</h4>
+						<p>Object containing the API map.</p>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+				<a name="getrelevanthandlers" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagProtected">Protected</span> get<wbr>Relevant<wbr>Handlers</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Relevant<wbr>Handlers<span class="tsd-signature-symbol">(</span>modelApi<span class="tsd-signature-symbol">: </span><a href="../interfaces/imodelconfiguration.html" class="tsd-signature-type">IModelConfiguration</a>, apiNumber<span class="tsd-signature-symbol">: </span><a href="../enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a>, actionName<span class="tsd-signature-symbol">: </span><a href="../enums/equeryaction.html" class="tsd-signature-type">EQueryAction</a>, methodName<span class="tsd-signature-symbol">: </span><a href="../enums/httpverb.html" class="tsd-signature-type">HttpVerb</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L513">webservers/express.ts:513</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Gets the handler to use with the provided query configuration. This is used at initialization for short binding.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>modelApi: <a href="../interfaces/imodelconfiguration.html" class="tsd-signature-type">IModelConfiguration</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Description of the API to bind</p>
+								</div>
+							</li>
+							<li>
+								<h5>apiNumber: <a href="../enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Numbering of the API.</p>
+								</div>
+							</li>
+							<li>
+								<h5>actionName: <a href="../enums/equeryaction.html" class="tsd-signature-type">EQueryAction</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Action done by the handlers to get.</p>
+								</div>
+							</li>
+							<li>
+								<h5>methodName: <a href="../enums/httpverb.html" class="tsd-signature-type">HttpVerb</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>HTTP verb that matches the handlers to get.</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+				<a name="optionshandler" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagProtected">Protected</span> options<wbr>Handler</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<li class="tsd-signature tsd-kind-icon">options<wbr>Handler<span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">express.Request</span>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">express.Response</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Response</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L470">webservers/express.ts:470</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Respond to the request with a map of the API.</p>
+							</div>
+							<dl class="tsd-comment-tags">
+								<dt>author</dt>
+								<dd><p>Gerkin</p>
+								</dd>
+							</dl>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>req: <span class="tsd-signature-type">express.Request</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>express request to answer to with API map.</p>
+								</div>
+							</li>
+							<li>
+								<h5>res: <span class="tsd-signature-type">express.Response</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>express response which we are responding to.</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Response</span></h4>
+						<p>Returns the answered response.</p>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+				<a name="preparequeryhandling" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagProtected">Protected</span> prepare<wbr>Query<wbr>Handling</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<li class="tsd-signature tsd-kind-icon">prepare<wbr>Query<wbr>Handling<span class="tsd-signature-symbol">(</span>apiNumber<span class="tsd-signature-symbol">: </span><a href="../enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#ihookfunction" class="tsd-signature-type">IHookFunction</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">express.Request</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L215">webservers/express.ts:215</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Parse the query and triggers the Diaspora call. This is the main middleware function of this server</p>
+							</div>
+							<dl class="tsd-comment-tags">
+								<dt>author</dt>
+								<dd><p>Gerkin</p>
+								</dd>
+							</dl>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>apiNumber: <a href="../enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Indicates the type of the query, saying if we are targetting a single or several entitie(s)</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="../globals.html#ihookfunction" class="tsd-signature-type">IHookFunction</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">express.Request</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						<p>The Hook function to add to the router.</p>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+				<a name="casttodiasporaapirequest" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> cast<wbr>ToDiaspora<wbr>Api<wbr>Request</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<li class="tsd-signature tsd-kind-icon">cast<wbr>ToDiaspora<wbr>Api<wbr>Request<span class="tsd-signature-symbol">(</span>request<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">express.Request</span>, diasporaApi<span class="tsd-signature-symbol">: </span><a href="../interfaces/idiasporaapirequestdescriptorpreparse.html" class="tsd-signature-type">IDiasporaApiRequestDescriptorPreParse</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L128">webservers/express.ts:128</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Retrieves data handled by Diaspora and add them to the request.</p>
+							</div>
+							<dl class="tsd-comment-tags">
+								<dt>author</dt>
+								<dd><p>Gerkin</p>
+								</dd>
+							</dl>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>request: <span class="tsd-signature-type">express.Request</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Request to parse.</p>
+								</div>
+							</li>
+							<li>
+								<h5>diasporaApi: <a href="../interfaces/idiasporaapirequestdescriptorpreparse.html" class="tsd-signature-type">IDiasporaApiRequestDescriptorPreParse</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Diaspora API description targeted by the request.</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						<p>The express request transformed.</p>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+				<a name="deletehandler" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> delete<wbr>Handler</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<li class="tsd-signature tsd-kind-icon">delete<wbr>Handler<span class="tsd-signature-symbol">(</span>queryNumber<span class="tsd-signature-symbol">: </span><a href="../enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a>, req<span class="tsd-signature-symbol">: </span><a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Response</span>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Response</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L267">webservers/express.ts:267</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Generic <code>delete</code> handler that can be called by middlewares.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>queryNumber: <a href="../enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a></h5>
+							</li>
+							<li>
+								<h5>req: <a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span></h5>
+							</li>
+							<li>
+								<h5>res: <span class="tsd-signature-type">Response</span></h5>
+							</li>
+							<li>
+								<h5>model: <span class="tsd-signature-type">Model</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Response</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+				<a name="findhandler" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> find<wbr>Handler</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<li class="tsd-signature tsd-kind-icon">find<wbr>Handler<span class="tsd-signature-symbol">(</span>queryNumber<span class="tsd-signature-symbol">: </span><a href="../enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a>, req<span class="tsd-signature-symbol">: </span><a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Response</span>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Response</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L293">webservers/express.ts:293</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Generic <code>find</code> handler that can be called by middlewares.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>queryNumber: <a href="../enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a></h5>
+							</li>
+							<li>
+								<h5>req: <a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span></h5>
+							</li>
+							<li>
+								<h5>res: <span class="tsd-signature-type">Response</span></h5>
+							</li>
+							<li>
+								<h5>model: <span class="tsd-signature-type">Model</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Response</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+				<a name="getloggablediasporaapi" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> get<wbr>Loggable<wbr>Diaspora<wbr>Api</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Loggable<wbr>Diaspora<wbr>Api<span class="tsd-signature-symbol">(</span>diasporaApi<span class="tsd-signature-symbol">: </span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L201">webservers/express.ts:201</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Gets the loggable version of the request.</p>
+							</div>
+							<dl class="tsd-comment-tags">
+								<dt>author</dt>
+								<dd><p>Gerkin</p>
+								</dd>
+							</dl>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>diasporaApi: <a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Request descriptor to log.</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span>
+							<span class="tsd-signature-symbol"> &amp; </span>
+							<span class="tsd-signature-type">object</span>
+						</h4>
+						<p>Object containing a description of the Diaspora request.</p>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+				<a name="inserthandler" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> insert<wbr>Handler</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<li class="tsd-signature tsd-kind-icon">insert<wbr>Handler<span class="tsd-signature-symbol">(</span>queryNumber<span class="tsd-signature-symbol">: </span><a href="../enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a>, req<span class="tsd-signature-symbol">: </span><a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Response</span>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Response</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L312">webservers/express.ts:312</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Generic <code>insert</code> handler that can be called by middlewares.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>queryNumber: <a href="../enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a></h5>
+							</li>
+							<li>
+								<h5>req: <a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span></h5>
+							</li>
+							<li>
+								<h5>res: <span class="tsd-signature-type">Response</span></h5>
+							</li>
+							<li>
+								<h5>model: <span class="tsd-signature-type">Model</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Response</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+				<a name="parsequery" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> parse<wbr>Query</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+					<li class="tsd-signature tsd-kind-icon">parse<wbr>Query<span class="tsd-signature-symbol">(</span>queryObj<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Inherited from <a href="apigenerator.html">ApiGenerator</a>.<a href="apigenerator.html#parsequery">parseQuery</a></p>
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/apiGenerator.ts#L85">apiGenerator.ts:85</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Parse a query string to separate options from search clause.</p>
+							</div>
+							<dl class="tsd-comment-tags">
+								<dt>author</dt>
+								<dd><p>Gerkin</p>
+								</dd>
+							</dl>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>queryObj: <span class="tsd-signature-type">object</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Query string to parse</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
+						<p>A hash with options &amp; search clause separated</p>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>options<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">QueryOptions</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>raw<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>where<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SelectQuery</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">SelectQueryCondition</span></h5>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+				<a name="replacehandler" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> replace<wbr>Handler</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<li class="tsd-signature tsd-kind-icon">replace<wbr>Handler<span class="tsd-signature-symbol">(</span>queryNumber<span class="tsd-signature-symbol">: </span><a href="../enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a>, req<span class="tsd-signature-symbol">: </span><a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Response</span>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Response</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L356">webservers/express.ts:356</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Generic <code>update</code> handler that can be called by middlewares. it has the particularity of fully replacing entities attributes, keeping only IDs.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>queryNumber: <a href="../enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a></h5>
+							</li>
+							<li>
+								<h5>req: <a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span></h5>
+							</li>
+							<li>
+								<h5>res: <span class="tsd-signature-type">Response</span></h5>
+							</li>
+							<li>
+								<h5>model: <span class="tsd-signature-type">Model</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Response</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+				<a name="responderror" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> respond<wbr>Error</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<li class="tsd-signature tsd-kind-icon">respond<wbr>Error<span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptorpreparse.html" class="tsd-signature-type">IDiasporaApiRequestDescriptorPreParse</a><span class="tsd-signature-symbol">&gt;</span>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">express.Response</span>, error<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Error</span>, status<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L160">webservers/express.ts:160</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Respond to the request with an error code</p>
+							</div>
+							<dl class="tsd-comment-tags">
+								<dt>author</dt>
+								<dd><p>Gerkin</p>
+								</dd>
+							</dl>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>req: <a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptorpreparse.html" class="tsd-signature-type">IDiasporaApiRequestDescriptorPreParse</a><span class="tsd-signature-symbol">&gt;</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Parsed request to answer to</p>
+								</div>
+							</li>
+							<li>
+								<h5>res: <span class="tsd-signature-type">express.Response</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>express response object related to the request</p>
+								</div>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> error: <span class="tsd-signature-type">Error</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Error to return to the client.</p>
+								</div>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> status: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Status code to answer with. If not provided, it is guessed depending on the error.</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+				<a name="respondmaybeemptyset" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> respond<wbr>Maybe<wbr>Empty<wbr>Set</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<li class="tsd-signature tsd-kind-icon">respond<wbr>Maybe<wbr>Empty<wbr>Set<span class="tsd-signature-symbol">(</span>res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">express.Response</span>, set<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Set</span>, responseCode<span class="tsd-signature-symbol">?: </span><a href="../enums/ehttpstatuscode.html" class="tsd-signature-type">EHttpStatusCode</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Response</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L99">webservers/express.ts:99</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Responds to the request with either an empty array or the set</p>
+							</div>
+							<dl class="tsd-comment-tags">
+								<dt>author</dt>
+								<dd><p>Gerkin</p>
+								</dd>
+							</dl>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>res: <span class="tsd-signature-type">express.Response</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>The express response to respond to.</p>
+								</div>
+							</li>
+							<li>
+								<h5>set: <span class="tsd-signature-type">Set</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>The set to send to the client.</p>
+								</div>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> responseCode: <a href="../enums/ehttpstatuscode.html" class="tsd-signature-type">EHttpStatusCode</a><span class="tsd-signature-symbol"> =&nbsp;EHttpStatusCode.Ok</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>The HTTP status code to send.</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Response</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+				<a name="respondmaybenoentity" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> respond<wbr>Maybe<wbr>NoEntity</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<li class="tsd-signature tsd-kind-icon">respond<wbr>Maybe<wbr>NoEntity<span class="tsd-signature-symbol">(</span>res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">express.Response</span>, entity<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Entity</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, responseCode<span class="tsd-signature-symbol">?: </span><a href="../enums/ehttpstatuscode.html" class="tsd-signature-type">EHttpStatusCode</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Response</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L112">webservers/express.ts:112</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Responds to the request with either undefined or the entity</p>
+							</div>
+							<dl class="tsd-comment-tags">
+								<dt>author</dt>
+								<dd><p>Gerkin</p>
+								</dd>
+							</dl>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>res: <span class="tsd-signature-type">express.Response</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>The express response to respond to.</p>
+								</div>
+							</li>
+							<li>
+								<h5>entity: <span class="tsd-signature-type">Entity</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>The entity to send to the client.</p>
+								</div>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> responseCode: <a href="../enums/ehttpstatuscode.html" class="tsd-signature-type">EHttpStatusCode</a><span class="tsd-signature-symbol"> =&nbsp;EHttpStatusCode.Ok</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>The HTTP status code to send.</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Response</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+				<a name="setidfromidhash" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> set<wbr>IdFrom<wbr>IdHash</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
+					<li class="tsd-signature tsd-kind-icon">set<wbr>IdFrom<wbr>IdHash<span class="tsd-signature-symbol">(</span>entity<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Entity</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">IRawEntityAttributes</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Inherited from <a href="apigenerator.html">ApiGenerator</a>.<a href="apigenerator.html#setidfromidhash">setIdFromIdHash</a></p>
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/apiGenerator.ts#L108">apiGenerator.ts:108</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Adds the ID of the entity to the JSON to send to the client. This property is usually not stored in the entity&#39;s attributes hash, so we manually add it here.</p>
+							</div>
+							<dl class="tsd-comment-tags">
+								<dt>author</dt>
+								<dd><p>Gerkin</p>
+								</dd>
+							</dl>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>entity: <span class="tsd-signature-type">Entity</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Entity to cast to JSON with ID</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">null</span>
+							<span class="tsd-signature-symbol"> | </span>
+							<span class="tsd-signature-type">IRawEntityAttributes</span>
+						</h4>
+						<p>The entity attributes, with the ID defined.</p>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+				<a name="updatehandler" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> update<wbr>Handler</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-static">
+					<li class="tsd-signature tsd-kind-icon">update<wbr>Handler<span class="tsd-signature-symbol">(</span>queryNumber<span class="tsd-signature-symbol">: </span><a href="../enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a>, req<span class="tsd-signature-symbol">: </span><a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Response</span>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Response</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L331">webservers/express.ts:331</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Generic <code>update</code> handler that can be called by middlewares.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>queryNumber: <a href="../enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a></h5>
+							</li>
+							<li>
+								<h5>req: <a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span></h5>
+							</li>
+							<li>
+								<h5>res: <span class="tsd-signature-type">Response</span></h5>
+							</li>
+							<li>
+								<h5>model: <span class="tsd-signature-type">Model</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Response</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+		</section>
+		<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
+			<h2>Object literals</h2>
+			<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-class tsd-is-protected tsd-is-static">
+				<a name="handlers" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagProtected">Protected</span> handlers</h3>
+				<div class="tsd-signature tsd-kind-icon">handlers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L394">webservers/express.ts:394</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Hash of espress middlewares to bind to router.</p>
+					</div>
+					<dl class="tsd-comment-tags">
+						<dt>author</dt>
+						<dd><p>Gerkin</p>
+						</dd>
+					</dl>
+				</div>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+					<a name="handlers._delete" class="tsd-anchor"></a>
+					<h3>_delete</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+						<li class="tsd-signature tsd-kind-icon">_delete<span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Response</span>, next<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NextFunction</span>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L396">webservers/express.ts:396</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>req: <a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>res: <span class="tsd-signature-type">Response</span></h5>
+								</li>
+								<li>
+									<h5>next: <span class="tsd-signature-type">NextFunction</span></h5>
+								</li>
+								<li>
+									<h5>model: <span class="tsd-signature-type">Model</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+					<a name="handlers._get" class="tsd-anchor"></a>
+					<h3>_get</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+						<li class="tsd-signature tsd-kind-icon">_get<span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Response</span>, next<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NextFunction</span>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L400">webservers/express.ts:400</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>req: <a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>res: <span class="tsd-signature-type">Response</span></h5>
+								</li>
+								<li>
+									<h5>next: <span class="tsd-signature-type">NextFunction</span></h5>
+								</li>
+								<li>
+									<h5>model: <span class="tsd-signature-type">Model</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+					<a name="handlers._patch" class="tsd-anchor"></a>
+					<h3>_patch</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+						<li class="tsd-signature tsd-kind-icon">_patch<span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Response</span>, next<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NextFunction</span>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L403">webservers/express.ts:403</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>req: <a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>res: <span class="tsd-signature-type">Response</span></h5>
+								</li>
+								<li>
+									<h5>next: <span class="tsd-signature-type">NextFunction</span></h5>
+								</li>
+								<li>
+									<h5>model: <span class="tsd-signature-type">Model</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+					<a name="handlers._post" class="tsd-anchor"></a>
+					<h3>_post</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+						<li class="tsd-signature tsd-kind-icon">_post<span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Response</span>, next<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NextFunction</span>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L406">webservers/express.ts:406</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>req: <a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>res: <span class="tsd-signature-type">Response</span></h5>
+								</li>
+								<li>
+									<h5>next: <span class="tsd-signature-type">NextFunction</span></h5>
+								</li>
+								<li>
+									<h5>model: <span class="tsd-signature-type">Model</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+					<a name="handlers._put" class="tsd-anchor"></a>
+					<h3>_put</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+						<li class="tsd-signature tsd-kind-icon">_put<span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Response</span>, next<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NextFunction</span>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L409">webservers/express.ts:409</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>req: <a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>res: <span class="tsd-signature-type">Response</span></h5>
+								</li>
+								<li>
+									<h5>next: <span class="tsd-signature-type">NextFunction</span></h5>
+								</li>
+								<li>
+									<h5>model: <span class="tsd-signature-type">Model</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+					<a name="handlers.delete" class="tsd-anchor"></a>
+					<h3>delete</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+						<li class="tsd-signature tsd-kind-icon">delete<span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Response</span>, next<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NextFunction</span>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L414">webservers/express.ts:414</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>req: <a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>res: <span class="tsd-signature-type">Response</span></h5>
+								</li>
+								<li>
+									<h5>next: <span class="tsd-signature-type">NextFunction</span></h5>
+								</li>
+								<li>
+									<h5>model: <span class="tsd-signature-type">Model</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+					<a name="handlers.get" class="tsd-anchor"></a>
+					<h3>get</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+						<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Response</span>, next<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NextFunction</span>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L417">webservers/express.ts:417</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>req: <a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>res: <span class="tsd-signature-type">Response</span></h5>
+								</li>
+								<li>
+									<h5>next: <span class="tsd-signature-type">NextFunction</span></h5>
+								</li>
+								<li>
+									<h5>model: <span class="tsd-signature-type">Model</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+					<a name="handlers.patch" class="tsd-anchor"></a>
+					<h3>patch</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+						<li class="tsd-signature tsd-kind-icon">patch<span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Response</span>, next<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NextFunction</span>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L420">webservers/express.ts:420</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>req: <a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>res: <span class="tsd-signature-type">Response</span></h5>
+								</li>
+								<li>
+									<h5>next: <span class="tsd-signature-type">NextFunction</span></h5>
+								</li>
+								<li>
+									<h5>model: <span class="tsd-signature-type">Model</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+					<a name="handlers.post" class="tsd-anchor"></a>
+					<h3>post</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+						<li class="tsd-signature tsd-kind-icon">post<span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Response</span>, next<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NextFunction</span>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L423">webservers/express.ts:423</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>req: <a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>res: <span class="tsd-signature-type">Response</span></h5>
+								</li>
+								<li>
+									<h5>next: <span class="tsd-signature-type">NextFunction</span></h5>
+								</li>
+								<li>
+									<h5>model: <span class="tsd-signature-type">Model</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+					<a name="handlers.put" class="tsd-anchor"></a>
+					<h3>put</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+						<li class="tsd-signature tsd-kind-icon">put<span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Response</span>, next<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NextFunction</span>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L426">webservers/express.ts:426</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>req: <a href="../interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/idiasporaapirequestdescriptor.html" class="tsd-signature-type">IDiasporaApiRequestDescriptor</a><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>res: <span class="tsd-signature-type">Response</span></h5>
+								</li>
+								<li>
+									<h5>next: <span class="tsd-signature-type">NextFunction</span></h5>
+								</li>
+								<li>
+									<h5>model: <span class="tsd-signature-type">Model</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
 			</section>
 		</section>
 		<footer class="with-border-bottom">
