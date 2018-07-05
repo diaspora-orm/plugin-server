@@ -75,6 +75,9 @@ export interface IConfiguration extends IConfigurationRaw {
 	models: _.Dictionary<IModelConfiguration>;
 }
 
+/**
+ * Defines the API types available.
+ */
 export enum EWebServerType {
 	EXPRESS = 'express',
 }

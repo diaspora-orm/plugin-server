@@ -6,14 +6,37 @@ import { configureList } from './utils';
 
 const QUERY_OPTS = ['skip', 'limit', 'sort', 'page'];
 
-export abstract class ApiGenerator<T>{
+/**
+ * Base class that generates a middleware, to interact with Diaspora models
+ * 
+ * @author Gerkin
+ */
+export abstract class ApiGenerator<T> {
 
 	protected _middleware: T;
+	/**
+	 * Instance of the middleware to be used by the application
+	 * 
+	 * @se {@link ApiGenerator.middleware}
+	 * @author Gerkin
+	 */
+	/**
+	 * Public getter to retrieve the middleware instance usable by application
+	 * 
+	 * @se {@link ApiGenerator.middleware}
+	 * @author Gerkin
+	 */
 	public get middleware() {
 		return this._middleware;
 	}
 
 	protected _modelsConfiguration: _.Dictionary<IModelConfiguration>;
+	/**
+	 * Dictionary containing each configured models settings.
+	 * 
+	 * @author Gerkin
+	 */
+	protected readonly _modelsConfiguration: _.Dictionary<IModelConfiguration>;
 
 	protected constructor( configHash: IConfigurationRaw ){
 		// Get only models authorized
@@ -51,6 +74,13 @@ export abstract class ApiGenerator<T>{
 		} );
 	}
 
+	/**
+	 * Parse a query string to separate options from search clause.
+	 * 
+	 * @param queryObj - Query string to parse
+	 * @returns A hash with options & search clause separated
+	 * @author Gerkin
+	 */
 	public static parseQuery( queryObj: object ){
 		const raw = _.mapValues( queryObj, ( val, key ) => {
 			if ( ['query', 'options'].includes( key ) ) {
@@ -66,6 +96,14 @@ export abstract class ApiGenerator<T>{
 			where: _.get( raw, 'where', _.omit( raw, QUERY_OPTS ) ) as QueryLanguage.SelectQueryOrCondition,
 		};
 	}
+
+	/**
+	 * Adds the ID of the entity to the JSON to send to the client. This property is usually not stored in the entity's attributes hash, so we manually add it here.
+	 * 
+	 * @param entity - Entity to cast to JSON with ID
+	 * @returns The entity attributes, with the ID defined.
+	 * @author Gerkin
+	 */
 	public static setIdFromIdHash( entity: Entities.Entity ){
 		const retVal = entity.toObject();
 		if ( retVal ) {

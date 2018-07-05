@@ -4,6 +4,9 @@ import { Minimatch } from 'minimatch';
 import { inspect, InspectOptions } from 'util';
 
 
+/**
+ * Name of the Diaspora actions doable. Combined with {@link EQueryNumber}, it defines the method to call on the model.
+ */
 export enum EQueryAction {
 	FIND = 'find',
 	DELETE = 'delete',
@@ -11,6 +14,10 @@ export enum EQueryAction {
 	INSERT = 'insert',
 	REPLACE = 'replace',
 }
+
+/**
+ * Types of actions to do. Combined with {@link EQueryAction}, it defines the method to call on the model.
+ */
 export enum EQueryNumber {
 	SINGULAR = 'singular',
 	PLURAL = 'plural',

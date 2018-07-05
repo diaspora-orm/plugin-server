@@ -11,6 +11,11 @@ import { IConfigurationRaw, IDiasporaApiRequest, IDiasporaApiRequestDescriptor, 
 import { EQueryAction, EQueryNumber, JsonError } from '../utils';
 import { ApiGenerator } from '../apiGenerator';
 
+/**
+ * Lists all HTTP verbs used by this webserver
+ * 
+ * @author Gerkin
+ */
 export enum HttpVerb {
 	GET = 'GET',
 	DELETE = 'DELETE',
@@ -18,6 +23,12 @@ export enum HttpVerb {
 	POST = 'POST',
 	PUT = 'PUT',
 }
+
+/**
+ * Lists all HTTP status codes used by this webserver
+ * 
+ * @author Gerkin
+ */
 export enum EHttpStatusCode {
 	Ok = 200,
 	Created = 201,
@@ -56,7 +67,11 @@ type IModelRequestApplier = (
 ) => Promise<any>;
 
 /**
+ * Generates a new RESTful API using express.
+ * This API responds to all verbs declared in {@link HttpVerb}.
  * > *Note:* the middleware router is already bound with bodyParser urlencoded & json.
+ * 
+ * @author Gerkin
  */
 export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 	public constructor( configHash: IConfigurationRaw ){
@@ -85,10 +100,27 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 		this._middleware.options( '', this.optionsHandler.bind( this ) );
 	}
 	
+	/**
+	 * Responds to the request with either an empty array or the set
+	 * 
+	 * @param res          - The express response to respond to.
+	 * @param set          - The set to send to the client.
+	 * @param responseCode - The HTTP status code to send.
+	 * @author Gerkin
+	 */
 	protected static respondMaybeEmptySet( res: express.Response, set: Entities.Set, responseCode = EHttpStatusCode.Ok ) {
 		res.status( 0 === set.length ? EHttpStatusCode.NoContent : responseCode );
 		return res.json( set.entities.map( ExpressDiasporaServer.setIdFromIdHash ) );
 	}
+	
+	/**
+	 * Responds to the request with either undefined or the entity
+	 * 
+	 * @param res          - The express response to respond to.
+	 * @param entity       - The entity to send to the client.
+	 * @param responseCode - The HTTP status code to send.
+	 * @author Gerkin
+	 */
 	protected static respondMaybeNoEntity ( res: express.Response, entity: Entities.Entity | null, responseCode = EHttpStatusCode.Ok ) {
 		if ( _.isNil( entity ) ) {
 			return res.status( EHttpStatusCode.NoContent ).send();
@@ -97,6 +129,14 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 		}
 	}
 	
+	/**
+	 * Retrieves data handled by Diaspora and add them to the request.
+	 * 
+	 * @param request     - Request to parse.
+	 * @param diasporaApi - Diaspora API description targeted by the request.
+	 * @returns The express request transformed.
+	 * @author Gerkin
+	 */
 	protected static async castToDiasporaApiRequest ( request: express.Request, diasporaApi: IDiasporaApiRequestDescriptorPreParse ): Promise<IDiasporaApiRequestDescriptor>{
 		const diasporaApiWithParsedQuery = _.assign( diasporaApi, ExpressDiasporaServer.parseQuery( request.query ) );
 		if ( EQueryNumber.SINGULAR === diasporaApiWithParsedQuery.number ) {
@@ -119,6 +159,16 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 		}
 		return diasporaApiWithParsedQuery;
 	}
+
+	/**
+	 * Respond to the request with an error code
+	 * 
+	 * @param req    - Parsed request to answer to
+	 * @param res    - express response object related to the request
+	 * @param error  - Error to return to the client.
+	 * @param status - Status code to answer with. If not provided, it is guessed depending on the error.
+	 * @author Gerkin
+	 */
 	protected static respondError(
 		req: IDiasporaApiRequest<IDiasporaApiRequestDescriptorPreParse>,
 		res: express.Response,
@@ -155,12 +205,26 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 	
 	protected static getLoggableDiasporaApi( diasporaApi: IDiasporaApiRequestDescriptorPreParse ){
 		const diasporaApiParsed = diasporaApi as IDiasporaApiRequestDescriptor;
+	/**
+	 * Gets the loggable version of the request.
+	 * 
+	 * @param diasporaApi - Request descriptor to log.
+	 * @returns Object containing a description of the Diaspora request.
+	 * @author Gerkin
+	 */
 		return _.assign( {}, _.omit( diasporaApi, ['id', 'target'] ), {
 			model: diasporaApi.model.name,
 			targetFound: diasporaApiParsed.urlId ? !_.isNil( diasporaApiParsed.target ) : undefined,
 		} );
 	}
 
+	/**
+	 * Parse the query and triggers the Diaspora call. This is the main middleware function of this server
+	 * 
+	 * @param apiNumber - Indicates the type of the query, saying if we are targetting a single or several entitie(s)
+	 * @returns The Hook function to add to the router.
+	 * @author Gerkin
+	 */
 	protected prepareQueryHandling( apiNumber: EQueryNumber ): IHookFunction<express.Request>{
 		return async ( req, res, next, model ) => {
 			const queryId = generateUUID();
@@ -208,6 +272,11 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 		};
 	}
 
+	/**
+	 * Generic `delete` handler that can be called by middlewares.
+	 * 
+	 * @author Gerkin
+	 */
 	protected static deleteHandler: IModelRequestApplier = async function( queryNumber, req, res, model ) {
 		if ( _.isEmpty( req.diasporaApi.where ) ) {
 			return res.status( EHttpStatusCode.MalformedQuery ).send( {
@@ -228,6 +297,12 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 		}
 	};
 	
+
+	/**
+	 * Generic `find` handler that can be called by middlewares.
+	 * 
+	 * @author Gerkin
+	 */
 	protected static findHandler: IModelRequestApplier = async function( queryNumber, req, res, model ) {
 		const {where, options} = req.diasporaApi;
 		try {
@@ -240,6 +315,13 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 			return ExpressDiasporaServer.respondError( req, res, error );
 		}
 	};
+
+
+	/**
+	 * Generic `insert` handler that can be called by middlewares.
+	 * 
+	 * @author Gerkin
+	 */
 	protected static insertHandler: IModelRequestApplier = async function( queryNumber, req, res, model ) {
 		const {body} = req.diasporaApi;
 		try {
@@ -253,6 +335,12 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 		}
 	};
 	
+
+	/**
+	 * Generic `update` handler that can be called by middlewares.
+	 * 
+	 * @author Gerkin
+	 */
 	protected static updateHandler: IModelRequestApplier = async function( queryNumber, req, res, model ) {
 		if ( _.isEmpty( req.diasporaApi.where ) ) {
 			return res.status( EHttpStatusCode.MalformedQuery ).send( {
@@ -272,6 +360,12 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 		}
 	};
 	
+
+	/**
+	 * Generic `update` handler that can be called by middlewares. it has the particularity of fully replacing entities attributes, keeping only IDs.
+	 * 
+	 * @author Gerkin
+	 */
 	protected static replaceHandler: IModelRequestApplier = async function( queryNumber, req, res, model ){
 		if ( _.isEmpty( req.diasporaApi.where ) ) {
 			return res.status( EHttpStatusCode.MalformedQuery ).send( {
@@ -305,6 +399,11 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 		}
 	};
 	
+	/**
+	 * Hash of espress middlewares to bind to router.
+	 * 
+	 * @author Gerkin
+	 */
 	protected static handlers: { [key: string]: IHookFunction<IDiasporaApiRequest> } = {
 		// Singular
 		_delete( req, res, next, model ) {
@@ -342,6 +441,14 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 		},
 	};
 
+	/**
+	 * Binds the instance router with each route verbs.
+	 * 
+	 * @param apiNumber - Number of entities that this router will bind.
+	 * @param route     - Path to the API endpoint
+	 * @param modelName - Name of the model that is targetted.
+	 * @author Gerkin
+	 */
 	protected bind( apiNumber: EQueryNumber, route: string, modelName: string ){
 		const modelApi = this._modelsConfiguration[modelName];
 		const partialize = ( methods: Array<_.Many<IHookFunction<IDiasporaApiRequest> | undefined>> ) =>
@@ -365,6 +472,14 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 		.put( partialize( this.getRelevantHandlers( modelApi, apiNumber, EQueryAction.REPLACE, HttpVerb.PUT ) ) );
 	}
 
+	/**
+	 * Respond to the request with a map of the API.
+	 * 
+	 * @param req - express request to answer to with API map.
+	 * @param res - express response which we are responding to.
+	 * @returns Returns the answered response.
+	 * @author Gerkin
+	 */
 	protected optionsHandler( req: express.Request, res: express.Response ) {
 		return res.json( _.mapValues( this._modelsConfiguration, apiDesc => ( {
 			[`/${apiDesc.singular}/$ID`]: this.generateApiMap( apiDesc, EQueryNumber.SINGULAR, req.baseUrl ),
@@ -372,6 +487,14 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 		} ) ) );
 	}
 
+	/**
+	 * Generates the API map of the specified endpoint. This is usually used with the `options` verb.
+	 * 
+	 * @param modelApi    - Model api configuration to answer to
+	 * @param queryNumber - The action number to get map for.
+	 * @param baseUrl     - Base URL of the endpoint (usually taken from the express request).
+	 * @returns Object containing the API map.
+	 */
 	protected generateApiMap( modelApi: IModelConfiguration, queryNumber: EQueryNumber, baseUrl: string ){
 		const singularRouteName = `/${modelApi.plural}`;
 		const pluralRouteName = `/${modelApi.singular}/$ID`;
@@ -392,6 +515,14 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 		};
 	}
 	
+	/**
+	 * Gets the handler to use with the provided query configuration. This is used at initialization for short binding.
+	 * 
+	 * @param modelApi   - Description of the API to bind
+	 * @param apiNumber  - Numbering of the API.
+	 * @param actionName - Action done by the handlers to get.
+	 * @param methodName - HTTP verb that matches the handlers to get.
+	 */
 	protected getRelevantHandlers ( modelApi: IModelConfiguration, apiNumber: EQueryNumber, actionName: EQueryAction, methodName: HttpVerb ){
 		const action: 'find' | 'delete' | 'update' | 'insert' | 'replace' = actionName.toLowerCase() as any;
 		const method: 'get' | 'delete' | 'patch' | 'post' | 'put' = methodName.toLowerCase() as any;
