@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
 
-import { EHttpStatusCode } from '../../src/utils';
 import { baseAPI, requestApi } from '../server';
 import { resetMock, store } from '../webserver-init';
+import { EHttpStatusCode } from '../../src/webservers/express';
 
 beforeEach( resetMock );
 describe( 'Create (POST)', () => {

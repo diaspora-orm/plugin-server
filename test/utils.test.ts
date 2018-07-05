@@ -1,8 +1,9 @@
 import * as _ from 'lodash';
 
 import { inspect } from 'util';
-import { configureList, prettylog, respondError } from '../src/utils';
+import { configureList, prettylog } from '../src/utils';
 import { datas } from './mock';
+import { ExpressApiGenerator } from '../src/webservers/express';
 
 describe( 'Test utilities', () => {
 	it( 'configureList', () => {
@@ -96,7 +97,7 @@ describe( 'Test utilities', () => {
 					}
 				},
 			};
-			respondError( {} as any, pseudoRes as any );
+			( ExpressApiGenerator as any ).respondError( {} as any, pseudoRes as any );
 		} );
 	} );
 	it( 'prettylog', () => {

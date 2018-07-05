@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 
-import { EHttpStatusCode } from '../../src/utils';
 import { datas } from '../mock';
 import { baseAPI, requestApi } from '../server';
 import { resetMock, store } from '../webserver-init';
+import { EHttpStatusCode } from '../../src/webservers/express';
 
 beforeEach( resetMock );
 describe( 'Update (PATCH)', () => {

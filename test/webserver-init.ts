@@ -5,8 +5,8 @@ import * as _ from 'lodash';
 import { Diaspora } from '@diaspora/diaspora';
 import { InMemoryEntity } from '@diaspora/diaspora/dist/lib/adapters/inMemory';
 
-import { buildApi as DiasporaServer } from '../src/diaspora-server';
 import { datas } from './mock';
+import { ExpressApiGenerator } from '../src/index';
 
 export const inMemorySource = Diaspora.createNamedDataSource(
 	'myDataSource',
@@ -47,19 +47,17 @@ Diaspora.declareModel( 'Ignored', {
 	attributes: {},
 } );
 const app = express();
-app.use(
-	'/api',
-	DiasporaServer( {
-		webserverType: 'express',
-		models: {
-			PhoneBook: {
-				singular: 'PhoneBook',
-				plural: 'PhoneBooks',
-			},
-			Ignored: false,
+const apiGenerator = new ExpressApiGenerator( {
+	webserverType: 'express',
+	models: {
+		PhoneBook: {
+			singular: 'PhoneBook',
+			plural: 'PhoneBooks',
 		},
-	} )
-);
+		Ignored: false,
+	},
+} );
+app.use( '/api', apiGenerator.middleware );
 
 export const server: ( port: number ) => Promise<http.Server> = ( port: number ) =>
 	new Promise( ( resolve, reject ) => {
