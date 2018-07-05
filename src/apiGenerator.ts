@@ -13,13 +13,13 @@ const QUERY_OPTS = ['skip', 'limit', 'sort', 'page'];
  */
 export abstract class ApiGenerator<T> {
 
-	protected _middleware: T;
 	/**
 	 * Instance of the middleware to be used by the application
 	 * 
 	 * @se {@link ApiGenerator.middleware}
 	 * @author Gerkin
 	 */
+	protected readonly _middleware: T;
 	/**
 	 * Public getter to retrieve the middleware instance usable by application
 	 * 
@@ -30,7 +30,6 @@ export abstract class ApiGenerator<T> {
 		return this._middleware;
 	}
 
-	protected _modelsConfiguration: _.Dictionary<IModelConfiguration>;
 	/**
 	 * Dictionary containing each configured models settings.
 	 * 
@@ -38,7 +37,7 @@ export abstract class ApiGenerator<T> {
 	 */
 	protected readonly _modelsConfiguration: _.Dictionary<IModelConfiguration>;
 
-	protected constructor( configHash: IConfigurationRaw ){
+	protected constructor( configHash: IConfigurationRaw, middleware: T ){
 		// Get only models authorized
 		const allModels = _.keys( Diaspora.models );
 		const configuredModels = ( () => {
@@ -73,6 +72,7 @@ export abstract class ApiGenerator<T> {
 			const modelConfiguration = _.assign( defaulted, {model} ) as IModelConfiguration;
 			return modelConfiguration;
 		} );
+		this._middleware = middleware;
 	}
 
 	/**

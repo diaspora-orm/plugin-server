@@ -63,10 +63,10 @@ type IModelRequestApplier = (
  */
 export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 	public constructor( configHash: IConfigurationRaw ){
-		super( configHash );
+		// Init with the subrouter
+		super( configHash, express.Router() );
 		
-		// Create the subrouter
-		this._middleware = express.Router()
+		this._middleware
 		// parse application/x-www-form-urlencoded
 		.use( bodyParser.urlencoded( { extended: false } ) )
 		// parse application/json
@@ -191,8 +191,6 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 		res.status( status || ( isValidationError ? 400 : 500 ) ).send( jsonError );
 	}
 	
-	protected static getLoggableDiasporaApi( diasporaApi: IDiasporaApiRequestDescriptorPreParse ){
-		const diasporaApiParsed = diasporaApi as IDiasporaApiRequestDescriptor;
 	/**
 	 * Gets the loggable version of the request.
 	 * 
