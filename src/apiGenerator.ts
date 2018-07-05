@@ -48,7 +48,7 @@ export abstract class ApiGenerator<T> {
 					throw new ReferenceError(
 						`Tried to configure Diaspora Server with unknown model. Original message: ${
 							error.message
-						}.${allModels.length === 0 ? '\nSee http://www.foo.bar for more infos.' : ''}`
+						}.${allModels.length === 0 ? '\nSee https://goo.gl/Auj3DB for more infos.' : ''}`
 					);
 				} else {
 					throw error;
