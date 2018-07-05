@@ -46,18 +46,6 @@ export const HttpVerbQuery = {
 	[HttpVerb.POST]: EQueryAction.INSERT,
 	[HttpVerb.PUT]: EQueryAction.REPLACE,
 };
-interface SubApiMap {
-	[key: string]: {
-		description: string;
-		parameters?: {
-			[key: string]: {
-				optional: boolean;
-				description: string;
-			};
-		};
-		canonicalUrl: string;
-	};
-}
 
 type IModelRequestApplier = (
 	queryNumber: EQueryNumber,
@@ -212,9 +200,10 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 	 * @returns Object containing a description of the Diaspora request.
 	 * @author Gerkin
 	 */
+	protected static getLoggableDiasporaApi( diasporaApi: IDiasporaApiRequestDescriptor ){
 		return _.assign( {}, _.omit( diasporaApi, ['id', 'target'] ), {
 			model: diasporaApi.model.name,
-			targetFound: diasporaApiParsed.urlId ? !_.isNil( diasporaApiParsed.target ) : undefined,
+			targetFound: diasporaApi.urlId ? !_.isNil( diasporaApi.target ) : undefined,
 		} );
 	}
 
@@ -253,7 +242,7 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 			};
 			try {
 				const diasporaApi = await ExpressDiasporaServer.castToDiasporaApiRequest( req, preParseParams );
-				const reqExtended = _.assign( req, {diasporaApi} );
+				_.assign( req, {diasporaApi} );
 				Diaspora.logger.debug(
 					`DiasporaAPI params for request ${chalk.bold.yellow( queryId )}: `,
 					ExpressDiasporaServer.getLoggableDiasporaApi( diasporaApi )
@@ -372,7 +361,7 @@ export class ExpressDiasporaServer extends ApiGenerator<express.Router> {
 				message: `${req.method} requires a "where" clause`,
 			} );
 		} else {
-			const {where, body, options} = req.diasporaApi;
+			const {where, options} = req.diasporaApi;
 			const replaceEntity = ( entity: Entities.Entity ) => {
 				entity.replaceAttributes( _.clone( req.diasporaApi.body ) );
 				return entity;

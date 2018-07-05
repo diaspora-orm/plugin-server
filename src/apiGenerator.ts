@@ -61,13 +61,14 @@ export abstract class ApiGenerator<T> {
 		
 		// Configure router
 		this._modelsConfiguration = _.mapValues( configuredModels, ( apiDesc, modelName ) => {
-			const defaultedApiDest = apiDesc === true ? {} : apiDesc;
-			const defaulted = _.defaults( apiDesc, {
+			const defaultedApiDesc = apiDesc === true ? {} : apiDesc;
+
+			const defaulted = _.defaults( defaultedApiDesc, {
 				singular: modelName.toLowerCase(),
 				plural: `${modelName.toLowerCase()}s`,
 				middlewares: {},
 			} );
-			Diaspora.logger.verbose( `Exposing ${modelName}`, apiDesc );
+			Diaspora.logger.verbose( `Exposing ${modelName}`, defaultedApiDesc );
 			const model = Diaspora.models[modelName];
 			const modelConfiguration = _.assign( defaulted, {model} ) as IModelConfiguration;
 			return modelConfiguration;
