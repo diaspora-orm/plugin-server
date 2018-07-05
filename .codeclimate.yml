@@ -16,9 +16,9 @@ engines:
     enabled: true
     exclude_paths:
     - "!**.md"
-  tslint:
-    enabled: true
-    config: tslint.json
+#  tslint:
+#    enabled: true
+#    config: tslint.json
 checks:
   method-complexity:
     config:
@@ -27,6 +27,7 @@ exclude_paths:
 - "dist/"
 - "build/"
 - "node_modules/"
+- "lib/"
 - "test/"
 - "doc/"
 - "script/"

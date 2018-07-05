@@ -4,31 +4,32 @@ branches:
     - master
     - staging
     - /^greenkeeper/.*$/
+node_js:
+  - "10"
+  - "9"
+  - "8"
+os:
+  - linux
+  - osx
+matrix:
+  include:
+  - node_js: "lts/*"
+    os: linux
+    env: CC_SAMPLE=true
+  - node_js: "lts/*"
+    os: osx
 cache:
   yarn: true
   directories:
     - node_modules
 notifications:
   email: false
-node_js:
-  - node
 before_script:
-  - |
-    if [ ! -z $CC_TEST_REPORTER_ID ]; then
-      curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-      chmod +x ./cc-test-reporter
-      ./cc-test-reporter before-build
-    fi
+    curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+    chmod +x ./cc-test-reporter
+    if [ "$CC_SAMPLE" = "true" ]; then ./cc-test-reporter before-build; fi
 script:
   - npm run test:prod && npm run build
 after_script:
   - |
-    if [ ! -z $CC_TEST_REPORTER_ID ]; then
-      ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
-    fi
-after_success:
-  - npm run report-coverage
-  - npm run deploy-docs
-  - npm run changelog
-  - npm run semantic-release
-  - git stash && git checkout -B develop && git stash pop && git add .
+    if [ "$CC_SAMPLE" = "true" ]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi

@@ -1,7 +1,7 @@
 import _ = require( 'lodash' );
 
 import { QueryLanguage, Entities, Diaspora } from '@diaspora/diaspora';
-import { IModelConfiguration, IConfigurationRaw } from './diaspora-server';
+import { IModelConfiguration, IConfigurationRaw } from './index';
 import { configureList } from './utils';
 
 const QUERY_OPTS = ['skip', 'limit', 'sort', 'page'];
