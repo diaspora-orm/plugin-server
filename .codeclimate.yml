@@ -29,7 +29,7 @@ exclude_paths:
 - "node_modules/"
 - "lib/"
 - "test/"
-- "doc/"
+- "docs/"
 - "script/"
 - "Gruntfile.js"
 - "LICENSE"
