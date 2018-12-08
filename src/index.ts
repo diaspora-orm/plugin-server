@@ -1,76 +1,76 @@
 import Express from 'express';
 import * as _ from 'lodash';
 
-import { Entities, QueryLanguage, Model } from '@diaspora/diaspora';
+import { QueryLanguage, Model, Entity } from '@diaspora/diaspora';
 import { EQueryAction, EQueryPlurality } from './utils';
 
-export interface IDiasporaApiRequestDescriptorPreParse {
+export interface IDiasporaApiRequestDescriptorPreParse<TModel> {
 	id: string;
 	number: EQueryPlurality;
 	action: EQueryAction;
-	model: Model;
+	model: Model<TModel>;
 	body: object | object[] | any;
 }
-export interface IDiasporaApiRequestDescriptor extends IDiasporaApiRequestDescriptorPreParse {
+export interface IDiasporaApiRequestDescriptor<TModel> extends IDiasporaApiRequestDescriptorPreParse<TModel> {
 	where: QueryLanguage.SelectQueryOrCondition | { id: string };
-	options: QueryLanguage.QueryOptions;
+	options: QueryLanguage.IQueryOptions;
 	raw: any;
 	urlId?: string;
-	target?: Entities.Entity;
+	target?: Entity<TModel>;
 }
-export interface IDiasporaApiRequest<T extends IDiasporaApiRequestDescriptorPreParse = IDiasporaApiRequestDescriptor> extends Express.Request {
+export interface IDiasporaApiRequest<TModel, T extends IDiasporaApiRequestDescriptorPreParse<TModel> = IDiasporaApiRequestDescriptor<TModel>> extends Express.Request {
 	diasporaApi: T;
 }
 
-export type IHookFunction<T extends Express.Request> = ( req: T, res: Express.Response, next: Express.NextFunction, model: Model ) => void;
-export type IHookFunctionOrArr<T extends Express.Request> = IHookFunction<T> | Array<IHookFunction<T>>;
-export interface IMiddlewareHash {
-	all?: IHookFunctionOrArr<IDiasporaApiRequest>;
+export type THookFunction<TModel, T extends Express.Request> = ( req: T, res: Express.Response, next: Express.NextFunction, model: Model<TModel> ) => void;
+export type IHookFunctionOrArr<TModel, T extends Express.Request> = THookFunction<TModel, T> | Array<THookFunction<TModel, T>>;
+export interface IMiddlewareHash<TModel> {
+	all?: IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean;
 
-	delete?: IHookFunctionOrArr<IDiasporaApiRequest>;
-	deleteOne?: IHookFunctionOrArr<IDiasporaApiRequest>;
-	deleteMany?: IHookFunctionOrArr<IDiasporaApiRequest>;
+	delete?: IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean;
+	deleteOne?: IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean;
+	deleteMany?: IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean;
 
-	get?: IHookFunctionOrArr<IDiasporaApiRequest>;
-	find?: IHookFunctionOrArr<IDiasporaApiRequest>;
-	findOne?: IHookFunctionOrArr<IDiasporaApiRequest>;
-	findMany?: IHookFunctionOrArr<IDiasporaApiRequest>;
+	get?: IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean;
+	find?: IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean;
+	findOne?: IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean;
+	findMany?: IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean;
 
-	patch?: IHookFunctionOrArr<IDiasporaApiRequest>;
-	update?: IHookFunctionOrArr<IDiasporaApiRequest>;
-	updateOne?: IHookFunctionOrArr<IDiasporaApiRequest>;
-	updateMany?: IHookFunctionOrArr<IDiasporaApiRequest>;
+	patch?: IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean;
+	update?: IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean;
+	updateOne?: IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean;
+	updateMany?: IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean;
 
-	put?: IHookFunctionOrArr<IDiasporaApiRequest>;
-	replace?: IHookFunctionOrArr<IDiasporaApiRequest>;
-	replaceOne?: IHookFunctionOrArr<IDiasporaApiRequest>;
-	replaceMany?: IHookFunctionOrArr<IDiasporaApiRequest>;
+	put?: IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean;
+	replace?: IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean;
+	replaceOne?: IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean;
+	replaceMany?: IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean;
 
-	post?: IHookFunctionOrArr<IDiasporaApiRequest>;
-	insert?: IHookFunctionOrArr<IDiasporaApiRequest>;
-	insertOne?: IHookFunctionOrArr<IDiasporaApiRequest>;
-	insertMany?: IHookFunctionOrArr<IDiasporaApiRequest>;
+	post?: IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean;
+	insert?: IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean;
+	insertOne?: IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean;
+	insertMany?: IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean;
 }
 
-export interface IModelConfigurationRaw {
+export interface IModelConfigurationRaw<TModel> {
 	singular?: string;
 	plural?: string;
-	middlewares?: IMiddlewareHash;
+	middlewares?: IMiddlewareHash<TModel>;
 }
 export interface IConfigurationRaw {
 	webserverType?: string;
-	models: _.Dictionary<IModelConfigurationRaw | boolean>;
+	models: _.Dictionary<IModelConfigurationRaw<any> | boolean>;
 }
 
 
-export interface IModelConfiguration extends IModelConfigurationRaw {
+export interface IModelConfiguration<TModel> extends IModelConfigurationRaw<TModel> {
 	singular: string;
 	plural: string;
-	middlewares: IMiddlewareHash;
-	model: Model;
+	middlewares: IMiddlewareHash<TModel>;
+	model: Model<TModel>;
 }
 export interface IConfiguration extends IConfigurationRaw {
-	models: _.Dictionary<IModelConfiguration>;
+	models: _.Dictionary<IModelConfiguration<any>>;
 }
 
 export { ExpressApiGenerator } from './webservers/express';

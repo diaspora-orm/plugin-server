@@ -86,5 +86,7 @@ export const prettylog = ( object: any, config: InspectOptions = {} ) => {
 };
 
 export interface JsonError {
-	message?: string;
+	message: string;
+	name: string;
+	validationErrors?: Array<string|undefined>;
 }

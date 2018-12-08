@@ -1,28 +1,30 @@
 import _ = require( 'lodash' );
 
-import { QueryLanguage, Entities, Diaspora } from '@diaspora/diaspora';
 import { IModelConfiguration, IConfigurationRaw } from './index';
 import { configureList } from './utils';
+import { ApiSyntaxError } from './errors/apiSyntaxError';
+import { ApiResponseError } from './errors/apiResponseError';
+import { Diaspora, QueryLanguage, Entity } from '@diaspora/diaspora';
 
 const QUERY_OPTS = ['skip', 'limit', 'sort', 'page'];
 
 /**
  * Base class that generates a middleware, to interact with Diaspora models
- * 
+ *
  * @author Gerkin
  */
 export abstract class ApiGenerator<T> {
 
 	/**
 	 * Instance of the middleware to be used by the application
-	 * 
+	 *
 	 * @se {@link ApiGenerator.middleware}
 	 * @author Gerkin
 	 */
 	protected readonly _middleware: T;
 	/**
 	 * Public getter to retrieve the middleware instance usable by application
-	 * 
+	 *
 	 * @se {@link ApiGenerator.middleware}
 	 * @author Gerkin
 	 */
@@ -32,10 +34,10 @@ export abstract class ApiGenerator<T> {
 
 	/**
 	 * Dictionary containing each configured models settings.
-	 * 
+	 *
 	 * @author Gerkin
 	 */
-	protected readonly _modelsConfiguration: _.Dictionary<IModelConfiguration>;
+	protected readonly _modelsConfiguration: _.Dictionary<IModelConfiguration<any>>;
 
 	protected constructor( configHash: IConfigurationRaw, middleware: T ){
 		// Get only models authorized
@@ -55,9 +57,10 @@ export abstract class ApiGenerator<T> {
 				}
 			}
 		} )();
-		
-	
-		
+		console.log( configuredModels );
+
+
+
 		// Configure router
 		this._modelsConfiguration = _.mapValues( configuredModels, ( apiDesc, modelName ) => {
 			const defaultedApiDesc = apiDesc === true ? {} : apiDesc;
@@ -69,7 +72,7 @@ export abstract class ApiGenerator<T> {
 			} );
 			Diaspora.logger.verbose( `Exposing ${modelName}`, defaultedApiDesc );
 			const model = Diaspora.models[modelName];
-			const modelConfiguration = _.assign( defaulted, {model} ) as IModelConfiguration;
+			const modelConfiguration = _.assign( defaulted, {model} ) as IModelConfiguration<any>;
 			return modelConfiguration;
 		} );
 		this._middleware = middleware;
@@ -77,7 +80,7 @@ export abstract class ApiGenerator<T> {
 
 	/**
 	 * Parse a query string to separate options from search clause.
-	 * 
+	 *
 	 * @param queryObj - Query string to parse
 	 * @returns A hash with options & search clause separated
 	 * @author Gerkin
@@ -85,30 +88,34 @@ export abstract class ApiGenerator<T> {
 	public static parseQuery( queryObj: object ){
 		const raw = _.mapValues( queryObj, ( val, key ) => {
 			if ( ['query', 'options'].includes( key ) ) {
+				try{
 				return JSON.parse( val );
+				} catch ( error ){
+					throw ApiResponseError.MalformedQuery( new ApiSyntaxError( 'Invalid syntax parsing query', error ) );
+				}
 			} else {
 				return val;
 			}
 		} );
-		
+
 		return {
 			raw,
-			options: _.pick( raw, QUERY_OPTS ) as QueryLanguage.QueryOptions,
+			options: _.pick( raw, QUERY_OPTS ) as QueryLanguage.IQueryOptions,
 			where: _.get( raw, 'where', _.omit( raw, QUERY_OPTS ) ) as QueryLanguage.SelectQueryOrCondition,
 		};
 	}
 
 	/**
 	 * Adds the ID of the entity to the JSON to send to the client. This property is usually not stored in the entity's attributes hash, so we manually add it here.
-	 * 
+	 *
 	 * @param entity - Entity to cast to JSON with ID
 	 * @returns The entity attributes, with the ID defined.
 	 * @author Gerkin
 	 */
-	public static setIdFromIdHash( entity: Entities.Entity ){
-		const retVal = entity.toObject();
+	protected static setIdFromIdHash<TModel>( entity: Entity<TModel> ){
+		const retVal = entity.getProperties( entity.model.getDataSource() );
 		if ( retVal ) {
-			retVal.id = entity.id;
+			delete retVal.idHash;
 		}
 		return retVal;
 	}

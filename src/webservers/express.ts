@@ -3,17 +3,19 @@ import chalk from 'chalk';
 import express = require( 'express' );
 import _ = require( 'lodash' );
 
-import { Diaspora, Entities, Model, Errors } from '@diaspora/diaspora';
+import { Diaspora, Model, Errors, Utils, Set, Entity, ELoggingLevel } from '@diaspora/diaspora';
 
-import { generateUUID } from '@diaspora/diaspora/dist/lib/utils';
-
-import { IConfigurationRaw, IDiasporaApiRequest, IDiasporaApiRequestDescriptor, IDiasporaApiRequestDescriptorPreParse, IHookFunction, IMiddlewareHash, IModelConfiguration } from '../index';
+import { IConfigurationRaw, IDiasporaApiRequest, IDiasporaApiRequestDescriptor, IDiasporaApiRequestDescriptorPreParse, THookFunction, IMiddlewareHash, IModelConfiguration } from '../index';
 import { EQueryAction, EQueryPlurality, JsonError } from '../utils';
 import { ApiGenerator } from '../apiGenerator';
+import { ApiError } from '../errors/apiError';
+import { ApiSyntaxError } from '../errors/apiSyntaxError';
+import { ApiResponseError } from '../errors/apiResponseError';
+import { EHttpStatusCode } from '../types';
 
 /**
  * Lists all HTTP verbs used by this webserver
- * 
+ *
  * @author Gerkin
  */
 export enum HttpVerb {
@@ -24,21 +26,6 @@ export enum HttpVerb {
 	PUT = 'PUT',
 }
 
-/**
- * Lists all HTTP status codes used by this webserver
- * 
- * @author Gerkin
- */
-export enum EHttpStatusCode {
-	Ok = 200,
-	Created = 201,
-	NoContent = 204,
-	
-	MalformedQuery = 400,
-	NotFound = 404,
-	MethodNotAllowed = 405,
-}
-
 export const HttpVerbQuery = {
 	[HttpVerb.GET]: EQueryAction.FIND,
 	[HttpVerb.DELETE]: EQueryAction.DELETE,
@@ -47,31 +34,37 @@ export const HttpVerbQuery = {
 	[HttpVerb.PUT]: EQueryAction.REPLACE,
 };
 
-type IModelRequestApplier = (
+type TModelRequestApplier<TModel, TRet> = (
 	queryNumber: EQueryPlurality,
-	req: IDiasporaApiRequest,
+	req: IDiasporaApiRequest<TModel>,
 	res: express.Response,
-	model: Model
-) => Promise<any>;
+	model: Model<TModel>
+) => Promise<TRet>;
 
 /**
  * Generates a new RESTful API using express.
  * This API responds to all verbs declared in {@link HttpVerb}.
  * > *Note:* the middleware router is already bound with bodyParser urlencoded & json.
- * 
+ *
  * @author Gerkin
  */
 export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 	public constructor( configHash: IConfigurationRaw ){
 		// Init with the subrouter
 		super( configHash, express.Router() );
-		
+
 		this._middleware
-		// parse application/x-www-form-urlencoded
-		.use( bodyParser.urlencoded( { extended: false } ) )
-		// parse application/json
-		.use( bodyParser.json() );
-		
+			.use( ( req, res, next ) => {
+				const contentType = req.headers['content-type'];
+				if ( !contentType || contentType.toLowerCase() !== 'application/json' ){
+					const error = new Error( `Unsupported content type "${contentType}". This API only supports "application/json".` );
+					return ExpressApiGenerator.respondNativeError( req as any, res, ApiResponseError.UnsupportedMediaType( error ) );
+				}
+				return next();
+			} )
+			// parse application/json
+			.use( bodyParser.json() );
+
 		// Configure router
 		_.forEach( this._modelsConfiguration, ( apiDesc, modelName ) => {
 			this.bind(
@@ -87,55 +80,70 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 		} );
 		this._middleware.options( '', this.optionsHandler.bind( this ) );
 	}
-	
+
 	/**
 	 * Responds to the request with either an empty array or the set
-	 * 
+	 *
 	 * @param res          - The express response to respond to.
 	 * @param set          - The set to send to the client.
 	 * @param responseCode - The HTTP status code to send.
 	 * @author Gerkin
 	 */
-	protected static respondMaybeEmptySet( res: express.Response, set: Entities.Set, responseCode = EHttpStatusCode.Ok ) {
+	protected static respondMaybeEmptySet<TModel>( res: express.Response, set: Set<TModel>, responseCode = EHttpStatusCode.Ok ) {
 		res.status( 0 === set.length ? EHttpStatusCode.NoContent : responseCode );
 		return res.json( set.entities.map( ExpressApiGenerator.setIdFromIdHash ) );
 	}
-	
+
 	/**
 	 * Responds to the request with either undefined or the entity
-	 * 
+	 *
 	 * @param res          - The express response to respond to.
 	 * @param entity       - The entity to send to the client.
 	 * @param responseCode - The HTTP status code to send.
 	 * @author Gerkin
 	 */
-	protected static respondMaybeNoEntity ( res: express.Response, entity: Entities.Entity | null, responseCode = EHttpStatusCode.Ok ) {
+	protected static respondMaybeNoEntity<TModel>( res: express.Response, entity: Entity<TModel> | null, responseCode = EHttpStatusCode.Ok ) {
 		if ( _.isNil( entity ) ) {
 			return res.status( EHttpStatusCode.NoContent ).send();
 		} else {
 			return res.status( responseCode ).json( ExpressApiGenerator.setIdFromIdHash( entity ) );
 		}
 	}
-	
+
 	/**
 	 * Retrieves data handled by Diaspora and add them to the request.
-	 * 
+	 *
 	 * @param request     - Request to parse.
 	 * @param diasporaApi - Diaspora API description targeted by the request.
 	 * @returns The express request transformed.
 	 * @author Gerkin
 	 */
-	protected static async castToDiasporaApiRequest ( request: express.Request, diasporaApi: IDiasporaApiRequestDescriptorPreParse ): Promise<IDiasporaApiRequestDescriptor>{
+	protected static async castToDiasporaApiRequest<TModel>(
+		request: express.Request,
+		diasporaApi: IDiasporaApiRequestDescriptorPreParse<TModel>
+	): Promise<IDiasporaApiRequestDescriptor<TModel>>{
 		const diasporaApiWithParsedQuery = _.assign( diasporaApi, ExpressApiGenerator.parseQuery( request.query ) );
+
+		// Check the type of the input
+		if ( EQueryAction.INSERT === diasporaApiWithParsedQuery.action ){
+			if ( EQueryPlurality.SINGULAR === diasporaApiWithParsedQuery.number && !_.isObject( diasporaApiWithParsedQuery.body ) ){
+				throw ApiResponseError.MalformedQuery( new ApiError( 'Expected a single object' ) );
+			} else if ( EQueryPlurality.PLURAL === diasporaApiWithParsedQuery.number &&
+				( !_.isArray( diasporaApiWithParsedQuery.body ) ) || !_.every( diasporaApiWithParsedQuery.body, _.isObject ) ){
+				throw ApiResponseError.MalformedQuery( new ApiError( 'Expected an array of objects' ) );
+			}
+		}
+
+		// Populate data with targetted entity
 		if ( EQueryPlurality.SINGULAR === diasporaApiWithParsedQuery.number ) {
 			const id = _.get( request, 'params[1]' );
 			if ( !_.isNil( id ) ) {
 				if ( EQueryAction.INSERT === diasporaApiWithParsedQuery.action ) {
-					throw new URIError( 'POST (insert) to explicit ID is forbidden' );
+					throw ApiResponseError.MethodNotAllowed( new ApiError( 'POST (insert) to explicit ID is forbidden' ) );
 				} else {
 					const target = await diasporaApi.model.find( id );
 					if ( _.isNil( target ) ) {
-						throw EHttpStatusCode.NotFound;
+						throw ApiResponseError.NotFound();
 					}
 					return _.assign( diasporaApiWithParsedQuery, {
 						urlId: id,
@@ -148,57 +156,77 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 		return diasporaApiWithParsedQuery;
 	}
 
+	protected static wrapApiErrors( error: Errors.ExtendableError ){
+		if ( error instanceof Errors.ValidationError ){
+			return ApiResponseError.Forbidden( error );
+		} else if ( error instanceof ApiResponseError ){
+			return error;
+		} else {
+			return ApiResponseError.ServerError( error );
+		}
+	}
+
 	/**
 	 * Respond to the request with an error code
-	 * 
+	 *
 	 * @param req    - Parsed request to answer to
 	 * @param res    - express response object related to the request
 	 * @param error  - Error to return to the client.
 	 * @param status - Status code to answer with. If not provided, it is guessed depending on the error.
 	 * @author Gerkin
 	 */
-	protected static respondError(
-		req: IDiasporaApiRequest<IDiasporaApiRequestDescriptorPreParse>,
+	protected static respondError<TModel>(
+		req: IDiasporaApiRequest<TModel, IDiasporaApiRequestDescriptorPreParse<TModel>>,
 		res: express.Response,
-		error?: Error,
-		status?: number
+		error: Error
 	){
-		const jsonError: JsonError = _.assign( {}, error );
-		jsonError.message = _.isError( error )
-		? error.message || error.toString()
-		: undefined;
-		
-		const isValidationError = error instanceof Errors.ValidationError;
-		if ( isValidationError ) {
-			Diaspora.logger.debug(
-				`Request ${
-					req.diasporaApi.id
-				} triggered a validation error: message is ${JSON.stringify(
-					jsonError.message
-				)}`,
-				jsonError
-			);
+		if ( error instanceof Errors.ExtendableError ){
+			const wrappedError = ( error instanceof ApiError ? error : this.wrapApiErrors( error ) );
+
+			const message = wrappedError.makeMessage( req );
+
+			switch ( wrappedError.logLevel ){
+				case ELoggingLevel.Error:
+					Diaspora.logger.error( message );
+					break;
+				case ELoggingLevel.Debug:
+					Diaspora.logger.debug( message );
+					break;
+			}
+
+			return res.status( wrappedError.statusCode ).send( wrappedError.toJson( req ) );
 		} else {
-			Diaspora.logger.error(
-				`Request ${_.get(
-					res,
-					'req.diasporaApi.id',
-					'UNKNOWN'
-				)} triggered an error: message is ${JSON.stringify( jsonError.message )}`,
-				jsonError
-			);
+			return this.respondNativeError( req, res, error );
 		}
-		res.status( status || ( isValidationError ? 400 : 500 ) ).send( jsonError );
 	}
-	
+
+	protected static respondNativeError<TModel>(
+		req: IDiasporaApiRequest<TModel, IDiasporaApiRequestDescriptorPreParse<TModel>> ,
+		res: express.Response,
+		error: Error
+	){
+		// TODO: Check for environment: if prod, respond a simple non-descriptive error
+		Diaspora.logger.error(
+			`Request ${_.get(
+				res,
+				'req.diasporaApi.id',
+				'UNKNOWN'
+			)} triggered a native error: message is ${JSON.stringify( error.message )}
+			Stack trace:
+			`, error.stack,
+			error
+		);
+		return res.status( 500 ).send( error.message );
+	}
+
 	/**
 	 * Gets the loggable version of the request.
-	 * 
+	 *
 	 * @param diasporaApi - Request descriptor to log.
 	 * @returns Object containing a description of the Diaspora request.
 	 * @author Gerkin
 	 */
-	protected static getLoggableDiasporaApi( diasporaApi: IDiasporaApiRequestDescriptor ){
+	protected static getLoggableDiasporaApi<TModel>( diasporaApi: IDiasporaApiRequestDescriptor<TModel> ){
 		return _.assign( {}, _.omit( diasporaApi, ['id', 'target'] ), {
 			model: diasporaApi.model.name,
 			targetFound: diasporaApi.urlId ? !_.isNil( diasporaApi.target ) : undefined,
@@ -207,14 +235,14 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 
 	/**
 	 * Parse the query and triggers the Diaspora call. This is the main middleware function of this server
-	 * 
+	 *
 	 * @param apiNumber - Indicates the type of the query, saying if we are targetting a single or several entitie(s)
 	 * @returns The Hook function to add to the router.
 	 * @author Gerkin
 	 */
-	protected prepareQueryHandling( apiNumber: EQueryPlurality ): IHookFunction<express.Request>{
+	protected prepareQueryHandling<TModel>( apiNumber: EQueryPlurality ): THookFunction <TModel, express.Request>{
 		return async ( req, res, next, model ) => {
-			const queryId = generateUUID();
+			const queryId = Utils.generateUUID();
 			Diaspora.logger.verbose(
 				`Received ${chalk.bold.red( req.method )} request ${chalk.bold.yellow(
 					queryId
@@ -240,7 +268,7 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 			};
 			try {
 				const diasporaApi = await ExpressApiGenerator.castToDiasporaApiRequest( req, preParseParams );
-				_.assign( req, {diasporaApi} );
+				req = _.assign( req, {diasporaApi} );
 				Diaspora.logger.debug(
 					`DiasporaAPI params for request ${chalk.bold.yellow( queryId )}: `,
 					ExpressApiGenerator.getLoggableDiasporaApi( diasporaApi )
@@ -248,23 +276,22 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 				return next();
 			} catch ( error ) {
 				const catchReq = _.assign( req, {diasporaApi: preParseParams} );
-				if ( error instanceof URIError ) {
-					return ExpressApiGenerator.respondError( catchReq, res, error, EHttpStatusCode.MethodNotAllowed );
-				} else if ( typeof error === 'number' ) {
-					return res.status( error ).send();
-				} else {
-					return ExpressApiGenerator.respondError( catchReq, res, error, EHttpStatusCode.MalformedQuery );
-				}
+				return ExpressApiGenerator.respondError( catchReq, res, error );
 			}
 		};
 	}
 
 	/**
 	 * Generic `delete` handler that can be called by middlewares.
-	 * 
+	 *
 	 * @author Gerkin
 	 */
-	protected static deleteHandler: IModelRequestApplier = async function( queryNumber, req, res, model ) {
+	protected static async deleteHandler<TModel>(
+		queryNumber: EQueryPlurality,
+		req: IDiasporaApiRequest<TModel>,
+		res: express.Response,
+		model: Model<TModel>
+	){
 		if ( _.isEmpty( req.diasporaApi.where ) ) {
 			return res.status( EHttpStatusCode.MalformedQuery ).send( {
 				message: `${req.method} requires a "where" clause`,
@@ -282,15 +309,20 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 				return ExpressApiGenerator.respondError( req, res, error );
 			}
 		}
-	};
-	
+	}
+
 
 	/**
 	 * Generic `find` handler that can be called by middlewares.
-	 * 
+	 *
 	 * @author Gerkin
 	 */
-	protected static findHandler: IModelRequestApplier = async function( queryNumber, req, res, model ) {
+	protected static async findHandler<TModel>(
+		queryNumber: EQueryPlurality,
+		req: IDiasporaApiRequest<TModel>,
+		res: express.Response,
+		model: Model<TModel>
+	){
 		const {where, options} = req.diasporaApi;
 		try {
 			if ( queryNumber === EQueryPlurality.SINGULAR ) {
@@ -299,17 +331,23 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 				return ExpressApiGenerator.respondMaybeEmptySet( res, await model.findMany( where, options ) );
 			}
 		} catch ( error ) {
+			console.error( error );
 			return ExpressApiGenerator.respondError( req, res, error );
 		}
-	};
+	}
 
 
 	/**
 	 * Generic `insert` handler that can be called by middlewares.
-	 * 
+	 *
 	 * @author Gerkin
 	 */
-	protected static insertHandler: IModelRequestApplier = async function( queryNumber, req, res, model ) {
+	protected static async insertHandler<TModel>(
+		queryNumber: EQueryPlurality,
+		req: IDiasporaApiRequest<TModel>,
+		res: express.Response,
+		model: Model<TModel>
+	){
 		const {body} = req.diasporaApi;
 		try {
 			if ( queryNumber === EQueryPlurality.SINGULAR ) {
@@ -320,15 +358,20 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 		} catch ( error ) {
 			return ExpressApiGenerator.respondError( req, res, error );
 		}
-	};
-	
+	}
+
 
 	/**
 	 * Generic `update` handler that can be called by middlewares.
-	 * 
+	 *
 	 * @author Gerkin
 	 */
-	protected static updateHandler: IModelRequestApplier = async function( queryNumber, req, res, model ) {
+	protected static async updateHandler<TModel>(
+		queryNumber: EQueryPlurality,
+		req: IDiasporaApiRequest<TModel>,
+		res: express.Response,
+		model: Model<TModel>
+	){
 		if ( _.isEmpty( req.diasporaApi.where ) ) {
 			return res.status( EHttpStatusCode.MalformedQuery ).send( {
 				message: `${req.method} requires a "where" clause`,
@@ -345,23 +388,28 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 				return ExpressApiGenerator.respondError( req, res, error );
 			}
 		}
-	};
-	
+	}
+
 
 	/**
 	 * Generic `update` handler that can be called by middlewares. it has the particularity of fully replacing entities attributes, keeping only IDs.
-	 * 
+	 *
 	 * @author Gerkin
 	 */
-	protected static replaceHandler: IModelRequestApplier = async function( queryNumber, req, res, model ){
+	protected static async replaceHandler<TModel>(
+		queryNumber: EQueryPlurality,
+		req: IDiasporaApiRequest<TModel> ,
+		res: express.Response,
+		model: Model<TModel>
+	){
 		if ( _.isEmpty( req.diasporaApi.where ) ) {
 			return res.status( EHttpStatusCode.MalformedQuery ).send( {
 				message: `${req.method} requires a "where" clause`,
 			} );
 		} else {
 			const {where, options} = req.diasporaApi;
-			const replaceEntity = ( entity: Entities.Entity ) => {
-				entity.replaceAttributes( _.clone( req.diasporaApi.body ) );
+			const replaceEntity = ( entity: Entity<TModel> ) => {
+				entity.attributes = _.clone( req.diasporaApi.body );
 				return entity;
 			};
 			try {
@@ -376,7 +424,7 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 					}
 				} else {
 					const foundSet = await model.findMany( where, options );
-					const updatedSet = new Entities.Set( model, foundSet.entities.map( replaceEntity ) );
+					const updatedSet = new Set( model, foundSet.entities.map( replaceEntity ) );
 					const persistedSet = await updatedSet.persist();
 					return ExpressApiGenerator.respondMaybeEmptySet( res, persistedSet );
 				}
@@ -384,19 +432,19 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 				return ExpressApiGenerator.respondError( req, res, error );
 			}
 		}
-	};
-	
+	}
+
 	/**
-	 * Hash of espress middlewares to bind to router.
-	 * 
+	 * Hash of express middlewares to bind to router.
+	 *
 	 * @author Gerkin
 	 */
-	protected static handlers: { [key: string]: IHookFunction<IDiasporaApiRequest> } = {
+	protected static handlers: { [key: string]: THookFunction<any, IDiasporaApiRequest<any>> } = {
 		// Singular
 		_delete( req, res, next, model ) {
 			return ExpressApiGenerator.deleteHandler( EQueryPlurality.SINGULAR, req, res, model );
 		},
-		
+
 		_get( req, res, next, model ) {
 			return ExpressApiGenerator.findHandler( EQueryPlurality.SINGULAR, req, res, model );
 		},
@@ -409,7 +457,7 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 		_put( req, res, next, model ) {
 			return ExpressApiGenerator.replaceHandler( EQueryPlurality.SINGULAR, req, res, model );
 		},
-		
+
 		// Plurals
 		delete( req, res, next, model ) {
 			return ExpressApiGenerator.deleteHandler( EQueryPlurality.PLURAL, req, res, model );
@@ -430,7 +478,7 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 
 	/**
 	 * Binds the instance router with each route verbs.
-	 * 
+	 *
 	 * @param apiNumber - Number of entities that this router will bind.
 	 * @param route     - Path to the API endpoint
 	 * @param modelName - Name of the model that is targetted.
@@ -438,14 +486,14 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 	 */
 	protected bind( apiNumber: EQueryPlurality, route: string, modelName: string ){
 		const modelApi = this._modelsConfiguration[modelName];
-		const partialize = ( methods: Array<_.Many<IHookFunction<IDiasporaApiRequest> | undefined>> ) =>
+		const partialize = ( methods: Array<_.Many<THookFunction<any, IDiasporaApiRequest<any>> | undefined>> ) =>
 		_.chain( methods )
 		.flatten()
 		.compact()
 		.map( ( func ) => _.ary( func, 4 ) )
 		.map( ( func ) => _.partialRight( func, modelApi.model ) )
 		.value();
-		
+
 		this._middleware
 		.route( route )
 		.all( partialize( [
@@ -461,65 +509,74 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 
 	/**
 	 * Respond to the request with a map of the API.
-	 * 
+	 *
 	 * @param req - express request to answer to with API map.
 	 * @param res - express response which we are responding to.
 	 * @returns Returns the answered response.
 	 * @author Gerkin
 	 */
 	protected optionsHandler( req: express.Request, res: express.Response ) {
-		return res.json( _.mapValues( this._modelsConfiguration, apiDesc => ( {
-			[`/${apiDesc.singular}/$ID`]: this.generateApiMap( apiDesc, EQueryPlurality.SINGULAR, req.baseUrl ),
-			[`/${apiDesc.plural}`]: this.generateApiMap( apiDesc, EQueryPlurality.PLURAL, req.baseUrl ),
-		} ) ) );
+		return res.json( {
+			apiType: 'plugin-server',
+			version: require( '../../package.json' ).version,
+			routes: _.mapValues( this._modelsConfiguration, apiDesc => ( {
+				[`/${apiDesc.singular}/$ID`]: this.generateApiMap( apiDesc, EQueryPlurality.SINGULAR, req.baseUrl ),
+				[`/${apiDesc.plural}`]: this.generateApiMap( apiDesc, EQueryPlurality.PLURAL, req.baseUrl ),
+			} ) ),
+		} );
 	}
 
 	/**
 	 * Generates the API map of the specified endpoint. This is usually used with the `options` verb.
-	 * 
+	 *
 	 * @param modelApi    - Model api configuration to answer to
 	 * @param queryNumber - The action number to get map for.
 	 * @param baseUrl     - Base URL of the endpoint (usually taken from the express request).
 	 * @returns Object containing the API map.
 	 */
-	protected generateApiMap( modelApi: IModelConfiguration, queryNumber: EQueryPlurality, baseUrl: string ){
+	protected generateApiMap<TModel>( modelApi: IModelConfiguration < TModel > , queryNumber: EQueryPlurality, baseUrl: string ){
 		const singularRouteName = `/${modelApi.plural}`;
 		const pluralRouteName = `/${modelApi.singular}/$ID`;
 		return queryNumber === EQueryPlurality.PLURAL ? {
-				path: singularRouteName,
-				description: `Base API to query on SEVERAL items of ${modelApi.model.name}`,
-				canonicalUrl: `${baseUrl}${singularRouteName}`,
+			path: singularRouteName,
+			description: `Base API to query on SEVERAL items of ${modelApi.model.name}`,
+			canonicalUrl: `${baseUrl}${singularRouteName}`,
 		} : {
-				path: pluralRouteName,
-				description: `Base API to query on a SINGLE item of ${modelApi.model.name}`,
-				parameters: {
-					$ID: {
-						optional: true,
-						description: 'Id of the item to match',
-					},
+			path: pluralRouteName,
+			description: `Base API to query on a SINGLE item of ${modelApi.model.name}`,
+			parameters: {
+				$ID: {
+					optional: true,
+					description: 'Id of the item to match',
 				},
-				canonicalUrl: `${baseUrl}${pluralRouteName}`,
+			},
+			canonicalUrl: `${baseUrl}${pluralRouteName}`,
 		};
 	}
-	
+
 	/**
 	 * Gets the handler to use with the provided query configuration. This is used at initialization for short binding.
-	 * 
+	 *
 	 * @param modelApi   - Description of the API to bind
 	 * @param apiNumber  - Numbering of the API.
 	 * @param actionName - Action done by the handlers to get.
 	 * @param methodName - HTTP verb that matches the handlers to get.
 	 */
-	protected getRelevantHandlers ( modelApi: IModelConfiguration, apiNumber: EQueryPlurality, actionName: EQueryAction, methodName: HttpVerb ){
+	protected getRelevantHandlers<TModel>(
+		modelApi: IModelConfiguration<TModel>,
+		apiNumber: EQueryPlurality,
+		actionName: EQueryAction,
+		methodName: HttpVerb
+	){
 		const action: 'find' | 'delete' | 'update' | 'insert' | 'replace' = actionName.toLowerCase() as any;
 		const method: 'get' | 'delete' | 'patch' | 'post' | 'put' = methodName.toLowerCase() as any;
 		const middlewares = modelApi.middlewares;
-		
+
 		return [
 			middlewares[method],
 			middlewares[action],
 			( middlewares as any )[action + ( EQueryPlurality.SINGULAR === apiNumber ? 'One' : 'Many' )],
 			( ExpressApiGenerator.handlers as any )[( EQueryPlurality.SINGULAR === apiNumber ? '_' : '' ) + method],
-		] as Array<_.Many<IHookFunction<IDiasporaApiRequest> | undefined>>;
+		] as Array<_.Many<THookFunction<TModel, IDiasporaApiRequest<TModel>> | undefined>>;
 	}
 }
