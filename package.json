@@ -46,7 +46,7 @@
 		"precommit": "lint-staged",
 		"conventional-changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
 		"version": "npm run conventional-changelog && git add CHANGELOG.md && npm run doc && git add docs",
-		"prepack": "npm run build"
+		"prepack": "npm i && npm run build"
 	},
 	"config": {
 		"commitizen": {
