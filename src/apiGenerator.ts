@@ -86,14 +86,10 @@ export abstract class ApiGenerator<T> {
 	 */
 	public static parseQuery( queryObj: object ){
 		const raw = _.mapValues( queryObj, ( val, key ) => {
-			if ( ['query', 'options'].includes( key ) ) {
-				try{
+			try{
 				return JSON.parse( val );
-				} catch ( error ){
-					throw ApiResponseError.MalformedQuery( new ApiSyntaxError( 'Invalid syntax parsing query', error ) );
-				}
-			} else {
-				return val;
+			} catch ( error ){
+				throw ApiResponseError.MalformedQuery( new ApiSyntaxError( 'Invalid syntax parsing query', error ) );
 			}
 		} );
 
