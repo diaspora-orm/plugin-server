@@ -1,4 +1,5 @@
 import express = require('express');
+import _ = require('lodash');
 import { Model, Errors, Set, Entity } from '@diaspora/diaspora';
 import { IConfigurationRaw, IDiasporaApiRequest, IDiasporaApiRequestDescriptor, IDiasporaApiRequestDescriptorPreParse, THookFunction, IModelConfiguration } from '../index';
 import { EQueryAction, EQueryPlurality } from '../utils';
@@ -16,6 +17,30 @@ export declare enum HttpVerb {
     PATCH = "PATCH",
     POST = "POST",
     PUT = "PUT"
+}
+interface IApiMap {
+    apiType: string;
+    version: string;
+}
+declare namespace IApiMap {
+    interface IApiIndexMap {
+        routes: _.Dictionary<_.Dictionary<IApiRouteMap>>;
+    }
+    interface IApiModelMap {
+        routes: _.Dictionary<IApiRouteMap>;
+    }
+    interface IApiRouteMap {
+        path: string;
+        description: string;
+        parameters?: _.Dictionary<IApiRouteMap.IQueryParameter>;
+        canonicalUrl: string;
+    }
+    namespace IApiRouteMap {
+        interface IQueryParameter {
+            optional: boolean;
+            description: string;
+        }
+    }
 }
 export declare const HttpVerbQuery: {
     [HttpVerb.GET]: EQueryAction;
@@ -138,6 +163,9 @@ export declare class ExpressApiGenerator extends ApiGenerator<express.Router> {
      * @author Gerkin
      */
     protected bind(apiNumber: EQueryPlurality, route: string, modelName: string): void;
+    protected getOptions(baseUrl: string): IApiMap.IApiIndexMap;
+    protected getOptions(baseUrl: string, apiDesc: IModelConfiguration<any>): IApiMap.IApiModelMap;
+    protected getOptions(baseUrl: string, apiDesc: IModelConfiguration<any>, plurality: EQueryPlurality): IApiMap.IApiRouteMap;
     /**
      * Respond to the request with a map of the API.
      *
@@ -146,7 +174,7 @@ export declare class ExpressApiGenerator extends ApiGenerator<express.Router> {
      * @returns Returns the answered response.
      * @author Gerkin
      */
-    protected optionsHandler(req: express.Request, res: express.Response): import("express-serve-static-core").Response;
+    protected optionsHandler(req: express.Request, res: express.Response, apiDesc?: IModelConfiguration<any>, plurality?: EQueryPlurality): import("express-serve-static-core").Response;
     /**
      * Generates the API map of the specified endpoint. This is usually used with the `options` verb.
      *
@@ -181,3 +209,4 @@ export declare class ExpressApiGenerator extends ApiGenerator<express.Router> {
      */
     protected getRelevantHandlers<TModel>(modelApi: IModelConfiguration<TModel>, apiNumber: EQueryPlurality, action: EQueryAction, verb: HttpVerb): Array<THookFunction<TModel, IDiasporaApiRequest<TModel>>>;
 }
+export {};

@@ -13,6 +13,7 @@ import { ApiSyntaxError } from '../errors/apiSyntaxError';
 import { ApiResponseError } from '../errors/apiResponseError';
 import { EHttpStatusCode } from '../types';
 import minimatch = require( 'minimatch' );
+import { assign } from 'lodash';
 
 /**
  * Lists all HTTP verbs used by this webserver
@@ -25,6 +26,31 @@ export enum HttpVerb {
 	PATCH = 'PATCH',
 	POST = 'POST',
 	PUT = 'PUT',
+}
+
+interface IApiMap{
+	apiType: string;
+	version: string;
+}
+namespace IApiMap{
+	export interface IApiIndexMap{
+		routes: _.Dictionary<_.Dictionary<IApiRouteMap>>;
+	}
+	export interface IApiModelMap{
+		routes: _.Dictionary<IApiRouteMap>;
+	}
+	export interface IApiRouteMap{
+		path: string;
+		description: string;
+		parameters?: _.Dictionary<IApiRouteMap.IQueryParameter>;
+		canonicalUrl: string;
+	}
+	export namespace IApiRouteMap{
+		export interface IQueryParameter{
+			optional: boolean;
+			description: string;
+		}
+	}
 }
 
 export const HttpVerbQuery = {
@@ -499,7 +525,7 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 
 		this._middleware
 		.route( route )
-		.options( ( req, res ) => res.status( 200 ).send() )
+		.options( ( req, res ) => this.optionsHandler( req, res, modelApi, apiNumber ) )
 		.all( partialize( [
 			this.prepareQueryHandling( apiNumber ),
 		] ) )
@@ -508,6 +534,30 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 		.patch( partialize( this.getRelevantHandlers( modelApi, apiNumber, EQueryAction.UPDATE, HttpVerb.PATCH ) ) )
 		.post( partialize( this.getRelevantHandlers( modelApi, apiNumber, EQueryAction.INSERT, HttpVerb.POST ) ) )
 		.put( partialize( this.getRelevantHandlers( modelApi, apiNumber, EQueryAction.REPLACE, HttpVerb.PUT ) ) );
+	}
+	
+	protected getOptions( baseUrl: string ): IApiMap.IApiIndexMap;
+	protected getOptions( baseUrl: string, apiDesc: IModelConfiguration<any> ): IApiMap.IApiModelMap;
+	protected getOptions( baseUrl: string, apiDesc: IModelConfiguration<any>, plurality: EQueryPlurality ): IApiMap.IApiRouteMap;
+	protected getOptions( baseUrl: string, apiDesc?: IModelConfiguration<any>, plurality?: EQueryPlurality ): IApiMap.IApiIndexMap | IApiMap.IApiModelMap | IApiMap.IApiRouteMap {
+		if ( !apiDesc ){
+			return {routes:_.mapValues( this._modelsConfiguration, apiDesc => this.getOptions( baseUrl, apiDesc ).routes )};
+		}
+
+		if ( plurality ){
+			if ( plurality === EQueryPlurality.SINGULAR ){
+				return this.generateApiMap( apiDesc, EQueryPlurality.SINGULAR, baseUrl );
+			} else if ( plurality === EQueryPlurality.PLURAL ){
+				return this.generateApiMap( apiDesc, EQueryPlurality.PLURAL, baseUrl );
+			} else {
+				throw new Error();
+			}
+		} else {
+			return { routes: {
+				[`/${apiDesc.singular}/$ID`]: this.getOptions( baseUrl, apiDesc, EQueryPlurality.SINGULAR ),
+				[`/${apiDesc.plural}`]: this.getOptions( baseUrl, apiDesc, EQueryPlurality.PLURAL ),
+			} };
+		}
 	}
 
 	/**
@@ -518,15 +568,12 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 	 * @returns Returns the answered response.
 	 * @author Gerkin
 	 */
-	protected optionsHandler( req: express.Request, res: express.Response ) {
-		return res.json( {
+	protected optionsHandler( req: express.Request, res: express.Response, apiDesc?: IModelConfiguration<any>, plurality?: EQueryPlurality ) {
+		return res.json( assign( {
 			apiType: require( '../../package.json' ).name,
 			version: require( '../../package.json' ).version,
-			routes: _.mapValues( this._modelsConfiguration, apiDesc => ( {
-				[`/${apiDesc.singular}/$ID`]: this.generateApiMap( apiDesc, EQueryPlurality.SINGULAR, req.baseUrl ),
-				[`/${apiDesc.plural}`]: this.generateApiMap( apiDesc, EQueryPlurality.PLURAL, req.baseUrl ),
-			} ) ),
-		} );
+			currentUrl: req.baseUrl,
+		}, this.getOptions( req.baseUrl, apiDesc as any, plurality as any ) ) );
 	}
 
 	/**
