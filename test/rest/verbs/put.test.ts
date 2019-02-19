@@ -1,33 +1,36 @@
 import * as _ from 'lodash';
 
-import { datas } from '../mock';
-import { baseAPI, requestApi } from '../server';
-import { resetMock, store } from '../webserver-init';
-import { EHttpStatusCode } from '../../src/webservers/express';
+import { EHttpStatusCode } from '../../../src/types';
+import { setCurrent, resetMock, store, unsetCurrent } from '../../setup/mocks/phonebook-mock';
+import { requestApi, stripIdHash } from '../../setup/request-utils';
+import { datas, DUPLICATE_DATA } from '../../setup/mocks/mock';
+import { config } from '../../setup/config';
 
+
+beforeAll( setCurrent );
 beforeEach( resetMock );
-describe( 'Update (PATCH)', () => {
+describe( 'Replace (PUT)', () => {
 	const update = {
-		name: 'Sig Chisnell',
+		name: 'Josey Passey',
+		phone: '332-83-8304',
 	};
 	describe( 'Single', () => {
-		describe( 'Update by query', () => {
+		describe( 'Replace by query', () => {
 			it( 'OK', async () => {
-				const [res, respJson] = await requestApi.patchAsync( {
-					url: `${baseAPI}/PhoneBook`,
+				const [res, respJson] = await requestApi.putAsync( {
+					url: `${config.baseUrl}/PhoneBook`,
 					json: update,
 					qs: {
-						email: datas[1].email,
+						name: 'Rozanna Neiland',
 					},
 				} );
 				expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.Ok );
-				const patchedData = _.assign( {}, datas[1], update );
-				expect( respJson ).toMatchObject( patchedData );
+				expect( respJson ).toMatchObject( update );
 				expect( store.items ).toHaveLength( 8 );
 			} );
 			it( 'Not found', async () => {
-				const [res, respJson] = await requestApi.patchAsync( {
-					url: `${baseAPI}/PhoneBook`,
+				const [res, respJson] = await requestApi.putAsync( {
+					url: `${config.baseUrl}/PhoneBook`,
 					json: update,
 					qs: {
 						email: 'NotFound@foo.bar',
@@ -38,84 +41,81 @@ describe( 'Update (PATCH)', () => {
 				expect( store.items ).toHaveLength( 8 );
 			} );
 			it( 'Trigger JSON error', async () => {
-				const [res] = await requestApi.patchAsync( {
-					url: `${baseAPI}/PhoneBook`,
+				const [res, respJson] = await requestApi.putAsync( {
+					url: `${config.baseUrl}/PhoneBook`,
 					json: update,
 					qs: {
 						query: '{hey:"there"}',
 					},
 				} );
 				expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.MalformedQuery );
-				expect( store.items ).toHaveLength( 8 );
+				expect( respJson ).toHaveProperty( 'message' );
+				expect( store.items ).toHaveLength( datas.length );
 			} );
 			it( 'Throw if no "where" clause', async () => {
-				const prevLen = store.items.length;
-				const [res] = await requestApi.patchAsync( {
-					url: `${baseAPI}/PhoneBook`,
+				const [res, respJson] = await requestApi.putAsync( {
+					url: `${config.baseUrl}/PhoneBook`,
 					json: update,
 				} );
 				expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.MalformedQuery );
-				expect( store.items ).toHaveLength( prevLen );
+				expect( respJson ).toHaveProperty( 'message' );
+				expect( store.items ).toHaveLength( 8 );
 			} );
 		} );
-		describe( 'Update by id in URL', () => {
+		describe( 'Replace by id in URL', () => {
 			it( 'OK', async () => {
 				const id = store.items[5].id;
-				const [res, respJson] = await requestApi.patchAsync( {
-					url: `${baseAPI}/PhoneBook/${id}`,
+				const [res, respJson] = await requestApi.putAsync( {
+					url: `${config.baseUrl}/PhoneBook/${id}`,
 					json: update,
 				} );
 				expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.Ok );
-				const patchedData = _.assign( {}, datas[5], update );
+				const patchedData = _.assign( {}, stripIdHash( store.items[5] ), update );
 				expect( respJson ).toMatchObject( patchedData );
 				expect( store.items ).toHaveLength( 8 );
 			} );
 			it( 'Not found', async () => {
 				const id = 42;
-				const [res, respJson] = await requestApi.patchAsync( {
-					url: `${baseAPI}/PhoneBook/${id}`,
+				const [res, respJson] = await requestApi.putAsync( {
+					url: `${config.baseUrl}/PhoneBook/${id}`,
 					json: update,
 				} );
 				expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.NotFound );
-				expect( respJson ).toBeUndefined();
+				expect( respJson ).toHaveProperty( 'message' );
+				expect( respJson.message ).toMatch( /not (found|exist)/ );
 				expect( store.items ).toHaveLength( 8 );
 			} );
 		} );
 	} );
 	describe( 'Mutliple', () => {
-		describe( 'Update by query', () => {
+		describe( 'Replace by query', () => {
 			it( 'OK', async () => {
-				const [res, respJson] = await requestApi.patchAsync( {
-					url: `${baseAPI}/PhoneBooks`,
+				const [res, respJson] = await requestApi.putAsync( {
+					url: `${config.baseUrl}/PhoneBooks`,
 					json: update,
 					qs: {
-						email: datas[1].email,
+						email: DUPLICATE_DATA[0].email,
 					},
 				} );
-	   expect( res ).toHaveProperty( 'statusCode', 200 );
-				const patchedData = [
-					_.assign( {}, datas[1], update ),
-					_.assign( {}, datas[2], update ),
-				];
-				expect( respJson ).toMatchObject( patchedData );
+				expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.Ok );
+				expect( respJson ).toMatchObject( [update, update] );
 				expect( store.items ).toHaveLength( 8 );
 			} );
 			it( 'Not found', async () => {
-				const prevLen = store.items.length;
-				const [res, respJson] = await requestApi.patchAsync( {
-					url: `${baseAPI}/PhoneBooks`,
+				const [res, respJson] = await requestApi.putAsync( {
+					url: `${config.baseUrl}/PhoneBooks`,
 					json: update,
 					qs: {
 						email: 'NotFound@foo.bar',
 					},
 				} );
-				expect( res ).toHaveProperty( 'statusCode', 204 );
+				expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.NoContent );
 				expect( respJson ).toBeUndefined();
-				expect( store.items ).toHaveLength( prevLen );
+				expect( store.items ).toHaveLength( 8 );
 			} );
 			it( 'Trigger JSON error', async () => {
-				const [res, respJson] = await requestApi.patchAsync( {
-					url: `${baseAPI}/PhoneBooks`,
+				const [res, respJson] = await requestApi.putAsync( {
+					url: `${config.baseUrl}/PhoneBooks`,
 					json: update,
 					qs: {
 						query: '{hey:"there"}',
@@ -126,8 +126,8 @@ describe( 'Update (PATCH)', () => {
 				expect( store.items ).toHaveLength( 8 );
 			} );
 			it( 'Throw if no "where" clause', async () => {
-				const [res, respJson] = await requestApi.patchAsync( {
-					url: `${baseAPI}/PhoneBooks`,
+				const [res, respJson] = await requestApi.putAsync( {
+					url: `${config.baseUrl}/PhoneBooks`,
 					json: update,
 				} );
 				expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.MalformedQuery );
@@ -137,3 +137,4 @@ describe( 'Update (PATCH)', () => {
 		} );
 	} );
 } );
+afterAll( unsetCurrent );

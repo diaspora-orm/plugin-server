@@ -1,6 +1,7 @@
 # [0.2.0-alpha.3](https://github.com/diaspora-orm/plugin-server/compare/v0.2.0-alpha.2...v0.2.0-alpha.3) (2018-07-05)
 
-
+* **ApiGenerator:** Created a generic class for API generators
+* **ExpressApiGenerator:** Use the above class as parent to start extensibility
 
 # [0.2.0-alpha.2](https://github.com/diaspora-orm/plugin-server/compare/v0.2.0-alpha.1...v0.2.0-alpha.2) (2018-07-03)
 

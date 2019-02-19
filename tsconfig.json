@@ -20,11 +20,10 @@
 			"node_modules/@types"
 		],
 		"rootDirs":[
-			".",
-			"lib"
-		]
+			"."
+    ],
 	},
 	"include": [
-		"src"
+		"src/*"
 	]
 }

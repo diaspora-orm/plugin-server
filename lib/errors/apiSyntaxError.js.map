@@ -1,0 +1,1 @@
+{"version":3,"file":"apiSyntaxError.js","sourceRoot":"","sources":["../../src/errors/apiSyntaxError.ts"],"names":[],"mappings":";;AAAA,yCAAsC;AAEtC,oBAA4B,SAAQ,mBAAQ;IAC3C,YAAoB,OAAe,EAAE,QAAgB;QACpD,KAAK,CAAE,OAAO,EAAE,QAAQ,CAAE,CAAC;IAC5B,CAAC;CACD;AAJD,wCAIC"}

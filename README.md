@@ -36,13 +36,13 @@ Diaspora.declareModel( 'PhoneBook', /* ... */);
 
 // Generates the API handler class
 const expressApiGenerator = new ExpressApiGenerator({
-	models: {
-		PhoneBook: {
-			singular:    'PhoneBook',
-			plural:      'PhoneBooks',
-			middlewares: { /* ... */ },
-		},
-	},
+    models: {
+        PhoneBook: {
+            singular:    'PhoneBook',
+            plural:      'PhoneBooks',
+            middlewares: { /* ... */ },
+        },
+    },
 });
 
 // Use the middleware to handle your requests
@@ -53,11 +53,11 @@ In the hash `models`, you can select which models you want to expose. You can us
 
 ```ts
 const expressApiGenerator = new ExpressApiGenerator({
-	models: {
-		'/ab?c\\d+/': {} // Regex, will match ac1, abc1, abc09
-		'Qux*':       {} // Minimatch, will match Qux, QuxFoo, etc etc
-		PhoneBook:    {} // Plain text matching
-	},
+    models: {
+        '/ab?c\\d+/': {} // Regex, will match ac1, abc1, abc09
+        'Qux*':       {} // Minimatch, will match Qux, QuxFoo, etc etc
+        PhoneBook:    {} // Plain text matching
+    },
 });
 ```
 
@@ -83,13 +83,13 @@ For each requests below, the server may respond:
 * **400** *Bad Request* if the parsing of the query failed
 * **404** *Not Found* if using singular API with ID: `/api/foo/66b72592-b1e2-4229-82b2-c94b475c9135`
 
-| Action | HTTP Verb | Additionnal possible responses |
-|------------------|-----------|------------------------------------------------------------------------------------------------------------------------|
-| Insert | POST | **201** *Created* on success, **400** *Bad request* if validation failed |
-| Find | GET | **200** *OK* on success |
-| Update (diff) | PUT | **200** *OK* on success, **400** *Bad request* if validation failed, **405** *Method Not Allowed* if no `where` clause |
-| Update (replace) | PATCH | **200** *OK* on success, **400** *Bad request* if validation failed, **405** *Method Not Allowed* if no `where` clause |
-| Delete | DELETE | **204** *No Content* if no errors occured |
+| Action           | HTTP Verb | Success response     | Specifical error possible                                                                     |
+|------------------|-----------|----------------------|-----------------------------------------------------------------------------------------------|
+| Insert           | POST      | **201** *Created*    | **400** *Bad request* if validation failed                                                    |
+| Find             | GET       | **200** *OK*         |                                                                                               |
+| Update (diff)    | PUT       | **200** *OK*         | **400** *Bad request* if validation failed, **405** *Method Not Allowed* if no `where` clause |
+| Update (replace) | PATCH     | **200** *OK*         | **400** *Bad request* if validation failed, **405** *Method Not Allowed* if no `where` clause |
+| Delete           | DELETE    | **204** *No Content* |                                                                                               |
 
 The documentation will be available at [https://diaspora-server.ithoughts.io/](https://diaspora-server.ithoughts.io/)
 

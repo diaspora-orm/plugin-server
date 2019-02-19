@@ -1,18 +1,19 @@
 import * as _ from 'lodash';
 
-import { datas } from '../mock';
-import { baseAPI, requestApi, stripIdHash } from '../server';
-import { resetMock, store } from '../webserver-init';
-import { EHttpStatusCode } from '../../src/webservers/express';
+import { EHttpStatusCode } from '../../../src/types';
+import { resetMock, store, setCurrent, unsetCurrent } from '../../setup/mocks/phonebook-mock';
+import { requestApi, stripIdHash } from '../../setup/request-utils';
+import { config } from '../../setup/config';
+import { datas } from '../../setup/mocks/mock';
 
-
+beforeAll( setCurrent );
 beforeEach( resetMock );
 describe( 'Find (GET)', () => {
 	describe( 'Single', () => {
 		describe( 'Find by query', () => {
 			it( 'OK', async () => {
 				const [res, respJson] = await requestApi.getAsync( {
-					url: `${baseAPI}/PhoneBook`,
+					url: `${config.baseUrl}/PhoneBook`,
 					json: true,
 					qs: {
 						name: 'Rozanna Neiland',
@@ -24,7 +25,7 @@ describe( 'Find (GET)', () => {
 			} );
 			it( 'Not found', async () => {
 				const [res, respJson] = await requestApi.getAsync( {
-					url: `${baseAPI}/PhoneBook`,
+					url: `${config.baseUrl}/PhoneBook`,
 					json: true,
 					qs: {
 						email: 'NotFound@foo.bar',
@@ -36,7 +37,7 @@ describe( 'Find (GET)', () => {
 			} );
 			it( 'Trigger JSON error', async () => {
 				const [res, respJson] = await requestApi.getAsync( {
-					url: `${baseAPI}/PhoneBook`,
+					url: `${config.baseUrl}/PhoneBook`,
 					json: true,
 					qs: {
 						query: '{hey:"there"}',
@@ -48,7 +49,7 @@ describe( 'Find (GET)', () => {
 			} );
 			it( 'Do not throw if no "where" clause', async () => {
 				const [res, respJson] = await requestApi.getAsync( {
-					url: `${baseAPI}/PhoneBook`,
+					url: `${config.baseUrl}/PhoneBook`,
 					json: true,
 				} );
 				expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.Ok );
@@ -60,7 +61,7 @@ describe( 'Find (GET)', () => {
 			it( 'OK', async () => {
 				const id = store.items[5].id;
 				const [res, respJson] = await requestApi.getAsync( {
-					url: `${baseAPI}/PhoneBook/${id}`,
+					url: `${config.baseUrl}/PhoneBook/${id}`,
 					json: true,
 				} );
 				expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.Ok );
@@ -70,11 +71,12 @@ describe( 'Find (GET)', () => {
 			it( 'Not found', async () => {
 				const id = 42;
 				const [res, respJson] = await requestApi.getAsync( {
-					url: `${baseAPI}/PhoneBook/${id}`,
+					url: `${config.baseUrl}/PhoneBook/${id}`,
 					json: true,
 				} );
 				expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.NotFound );
-				expect( respJson ).toBeUndefined();
+				expect( respJson ).toHaveProperty( 'message' );
+				expect( respJson.message ).toMatch( /not (found|exist)/ );
 				expect( store.items ).toHaveLength( 8 );
 			} );
 		} );
@@ -83,7 +85,7 @@ describe( 'Find (GET)', () => {
 		describe( 'Find by query', () => {
 			it( 'OK', async () => {
 				const [res, respJson] = await requestApi.getAsync( {
-					url: `${baseAPI}/PhoneBooks`,
+					url: `${config.baseUrl}/PhoneBooks`,
 					json: true,
 					qs: {
 						email: datas[1].email,
@@ -96,7 +98,7 @@ describe( 'Find (GET)', () => {
 			} );
 			it( 'Not found', async () => {
 				const [res, respJson] = await requestApi.getAsync( {
-					url: `${baseAPI}/PhoneBooks`,
+					url: `${config.baseUrl}/PhoneBooks`,
 					json: true,
 					qs: {
 						email: 'NotFound@foo.bar',
@@ -108,7 +110,7 @@ describe( 'Find (GET)', () => {
 			} );
 			it( 'Trigger JSON error', async () => {
 				const [res, respJson] = await requestApi.getAsync( {
-					url: `${baseAPI}/PhoneBooks`,
+					url: `${config.baseUrl}/PhoneBooks`,
 					json: true,
 					qs: {
 						query: '{hey:"there"}',
@@ -120,7 +122,7 @@ describe( 'Find (GET)', () => {
 			} );
 			it( 'Do not throw if no "where" clause', async () => {
 				const [res, respJson] = await requestApi.getAsync( {
-					url: `${baseAPI}/PhoneBooks`,
+					url: `${config.baseUrl}/PhoneBooks`,
 					json: true,
 				} );
 				expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.Ok );
@@ -131,3 +133,4 @@ describe( 'Find (GET)', () => {
 		} );
 	} );
 } );
+afterAll( unsetCurrent );

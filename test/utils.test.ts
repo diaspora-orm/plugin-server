@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 import { inspect } from 'util';
 import { configureList, prettylog } from '../src/utils';
-import { datas } from './mock';
+import { datas } from './setup/mocks/mock';
 import { ExpressApiGenerator } from '../src/webservers/express';
 
 describe( 'Test utilities', () => {
@@ -97,7 +97,7 @@ describe( 'Test utilities', () => {
 					}
 				},
 			};
-			( ExpressApiGenerator as any ).respondError( {} as any, pseudoRes as any );
+			( ExpressApiGenerator as any ).respondError( {} as any, pseudoRes as any, new Error() );
 		} );
 	} );
 	it( 'prettylog', () => {

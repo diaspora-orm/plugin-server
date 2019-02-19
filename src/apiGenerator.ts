@@ -57,7 +57,6 @@ export abstract class ApiGenerator<T> {
 				}
 			}
 		} )();
-		console.log( configuredModels );
 
 
 
@@ -70,7 +69,7 @@ export abstract class ApiGenerator<T> {
 				plural: `${modelName.toLowerCase()}s`,
 				middlewares: {},
 			} );
-			Diaspora.logger.verbose( `Exposing ${modelName}`, defaultedApiDesc );
+			Diaspora.logger.verbose( `Exposing ${modelName} (endpoints "/${defaulted.singular}" & "/${defaulted.plural}")` );
 			const model = Diaspora.models[modelName];
 			const modelConfiguration = _.assign( defaulted, {model} ) as IModelConfiguration<any>;
 			return modelConfiguration;

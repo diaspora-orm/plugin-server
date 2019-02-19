@@ -921,8 +921,17 @@ img { max-width: 100%; }
 		<li class=" tsd-kind-enum">
 			<a href="../enums/httpverb.html" class="tsd-kind-icon">Http<wbr>Verb</a>
 		</li>
+		<li class=" tsd-kind-class">
+			<a href="../classes/apierror.html" class="tsd-kind-icon">Api<wbr>Error</a>
+		</li>
 		<li class=" tsd-kind-class tsd-has-type-parameter">
 			<a href="../classes/apigenerator.html" class="tsd-kind-icon">Api<wbr>Generator</a>
+		</li>
+		<li class=" tsd-kind-class">
+			<a href="../classes/apiresponseerror.html" class="tsd-kind-icon">Api<wbr>Response<wbr>Error</a>
+		</li>
+		<li class=" tsd-kind-class">
+			<a href="../classes/apisyntaxerror.html" class="tsd-kind-icon">Api<wbr>Syntax<wbr>Error</a>
 		</li>
 		<li class=" tsd-kind-class">
 			<a href="../classes/expressapigenerator.html" class="tsd-kind-icon">Express<wbr>Api<wbr>Generator</a>
@@ -936,13 +945,13 @@ img { max-width: 100%; }
 		<li class=" tsd-kind-interface tsd-has-type-parameter">
 			<a href="idiasporaapirequest.html" class="tsd-kind-icon">IDiaspora<wbr>Api<wbr>Request</a>
 		</li>
-		<li class=" tsd-kind-interface">
+		<li class=" tsd-kind-interface tsd-has-type-parameter">
 			<a href="idiasporaapirequestdescriptor.html" class="tsd-kind-icon">IDiaspora<wbr>Api<wbr>Request<wbr>Descriptor</a>
 		</li>
-		<li class=" tsd-kind-interface">
+		<li class=" tsd-kind-interface tsd-has-type-parameter">
 			<a href="idiasporaapirequestdescriptorpreparse.html" class="tsd-kind-icon">IDiaspora<wbr>Api<wbr>Request<wbr>Descriptor<wbr>Pre<wbr>Parse</a>
 		</li>
-		<li class="current tsd-kind-interface">
+		<li class="current tsd-kind-interface tsd-has-type-parameter">
 			<a href="imiddlewarehash.html" class="tsd-kind-icon">IMiddleware<wbr>Hash</a>
 			<ul>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
@@ -1007,23 +1016,23 @@ img { max-width: 100%; }
 				</li>
 			</ul>
 		</li>
-		<li class=" tsd-kind-interface">
+		<li class=" tsd-kind-interface tsd-has-type-parameter">
 			<a href="imodelconfiguration.html" class="tsd-kind-icon">IModel<wbr>Configuration</a>
 		</li>
-		<li class=" tsd-kind-interface">
+		<li class=" tsd-kind-interface tsd-has-type-parameter">
 			<a href="imodelconfigurationraw.html" class="tsd-kind-icon">IModel<wbr>Configuration<wbr>Raw</a>
 		</li>
 		<li class=" tsd-kind-interface">
 			<a href="jsonerror.html" class="tsd-kind-icon">Json<wbr>Error</a>
 		</li>
 		<li class=" tsd-kind-type-alias tsd-has-type-parameter">
-			<a href="../globals.html#ihookfunction" class="tsd-kind-icon">IHook<wbr>Function</a>
-		</li>
-		<li class=" tsd-kind-type-alias tsd-has-type-parameter">
 			<a href="../globals.html#ihookfunctionorarr" class="tsd-kind-icon">IHook<wbr>Function<wbr>OrArr</a>
 		</li>
-		<li class=" tsd-kind-type-alias tsd-is-not-exported">
-			<a href="../globals.html#imodelrequestapplier" class="tsd-kind-icon">IModel<wbr>Request<wbr>Applier</a>
+		<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+			<a href="../globals.html#thookfunction" class="tsd-kind-icon">THook<wbr>Function</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-not-exported">
+			<a href="../globals.html#tmodelrequestapplier" class="tsd-kind-icon">TModel<wbr>Request<wbr>Applier</a>
 		</li>
 		<li class=" tsd-kind-variable tsd-is-not-exported">
 			<a href="../globals.html#query_opts" class="tsd-kind-icon">QUERY_<wbr>OPTS</a>
@@ -1040,10 +1049,21 @@ img { max-width: 100%; }
 		<li class=" tsd-kind-object-literal">
 			<a href="../globals.html#httpverbquery" class="tsd-kind-icon">Http<wbr>Verb<wbr>Query</a>
 		</li>
+		<li class=" tsd-kind-object-literal tsd-is-not-exported">
+			<a href="../globals.html#messageshash" class="tsd-kind-icon">messages<wbr>Hash</a>
+		</li>
 	</ul>
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<section class="tsd-panel tsd-type-parameters">
+			<h3>Type parameters</h3>
+			<ul class="tsd-type-parameters">
+				<li>
+					<h4>TModel</h4>
+				</li>
+			</ul>
+		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
@@ -1089,200 +1109,200 @@ img { max-width: 100%; }
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="all" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> all</h3>
-				<div class="tsd-signature tsd-kind-icon">all<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">all<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L28">index.ts:28</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L28">index.ts:28</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="delete" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> delete</h3>
-				<div class="tsd-signature tsd-kind-icon">delete<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">delete<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L30">index.ts:30</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L30">index.ts:30</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="deletemany" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> delete<wbr>Many</h3>
-				<div class="tsd-signature tsd-kind-icon">delete<wbr>Many<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">delete<wbr>Many<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L32">index.ts:32</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L32">index.ts:32</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="deleteone" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> delete<wbr>One</h3>
-				<div class="tsd-signature tsd-kind-icon">delete<wbr>One<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">delete<wbr>One<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L31">index.ts:31</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L31">index.ts:31</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="find" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> find</h3>
-				<div class="tsd-signature tsd-kind-icon">find<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">find<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L35">index.ts:35</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L35">index.ts:35</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="findmany" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> find<wbr>Many</h3>
-				<div class="tsd-signature tsd-kind-icon">find<wbr>Many<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">find<wbr>Many<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L37">index.ts:37</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L37">index.ts:37</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="findone" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> find<wbr>One</h3>
-				<div class="tsd-signature tsd-kind-icon">find<wbr>One<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">find<wbr>One<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L36">index.ts:36</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L36">index.ts:36</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="get" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> get</h3>
-				<div class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L34">index.ts:34</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L34">index.ts:34</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="insert" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> insert</h3>
-				<div class="tsd-signature tsd-kind-icon">insert<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">insert<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L50">index.ts:50</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L50">index.ts:50</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="insertmany" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> insert<wbr>Many</h3>
-				<div class="tsd-signature tsd-kind-icon">insert<wbr>Many<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">insert<wbr>Many<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L52">index.ts:52</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L52">index.ts:52</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="insertone" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> insert<wbr>One</h3>
-				<div class="tsd-signature tsd-kind-icon">insert<wbr>One<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">insert<wbr>One<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L51">index.ts:51</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L51">index.ts:51</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="patch" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> patch</h3>
-				<div class="tsd-signature tsd-kind-icon">patch<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">patch<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L39">index.ts:39</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L39">index.ts:39</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="post" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> post</h3>
-				<div class="tsd-signature tsd-kind-icon">post<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">post<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L49">index.ts:49</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L49">index.ts:49</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="put" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> put</h3>
-				<div class="tsd-signature tsd-kind-icon">put<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">put<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L44">index.ts:44</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L44">index.ts:44</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="replace" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> replace</h3>
-				<div class="tsd-signature tsd-kind-icon">replace<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">replace<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L45">index.ts:45</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L45">index.ts:45</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="replacemany" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> replace<wbr>Many</h3>
-				<div class="tsd-signature tsd-kind-icon">replace<wbr>Many<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">replace<wbr>Many<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L47">index.ts:47</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L47">index.ts:47</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="replaceone" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> replace<wbr>One</h3>
-				<div class="tsd-signature tsd-kind-icon">replace<wbr>One<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">replace<wbr>One<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L46">index.ts:46</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L46">index.ts:46</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="update" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> update</h3>
-				<div class="tsd-signature tsd-kind-icon">update<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">update<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L40">index.ts:40</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L40">index.ts:40</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="updatemany" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> update<wbr>Many</h3>
-				<div class="tsd-signature tsd-kind-icon">update<wbr>Many<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">update<wbr>Many<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L42">index.ts:42</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L42">index.ts:42</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="updateone" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> update<wbr>One</h3>
-				<div class="tsd-signature tsd-kind-icon">update<wbr>One<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<div class="tsd-signature tsd-kind-icon">update<wbr>One<span class="tsd-signature-symbol">:</span> <a href="../globals.html#ihookfunctionorarr" class="tsd-signature-type">IHookFunctionOrArr</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><a href="idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L41">index.ts:41</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L41">index.ts:41</a></li>
 					</ul>
 				</aside>
 			</section>

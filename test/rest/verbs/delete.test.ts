@@ -1,15 +1,17 @@
-import { DUPLICATE_DATA } from '../mock';
-import { baseAPI, requestApi } from '../server';
-import { resetMock, store } from '../webserver-init';
-import { EHttpStatusCode } from '../../src/webservers/express';
+import { resetMock, store, setCurrent, unsetCurrent } from '../../setup/mocks/phonebook-mock';
+import { DUPLICATE_DATA } from '../../setup/mocks/mock';
+import { requestApi } from '../../setup/request-utils';
+import { EHttpStatusCode } from '../../../src/types';
+import { config } from '../../setup/config';
 
+beforeAll( setCurrent );
 beforeEach( resetMock );
 describe( 'Delete (DELETE)', () => {
 	describe( 'Single', () => {
 		describe( 'Delete by query', () => {
 			it( 'OK', async () => {
 				const [res, respJson] = await requestApi.deleteAsync( {
-					url: `${baseAPI}/PhoneBook`,
+					url: `${config.baseUrl}/PhoneBook`,
 					json: true,
 					qs: {
 						name: 'Rozanna Neiland',
@@ -22,7 +24,7 @@ describe( 'Delete (DELETE)', () => {
 			} );
 			it( 'Not found', async () => {
 				const [res, respJson] = await requestApi.deleteAsync( {
-					url: `${baseAPI}/PhoneBook`,
+					url: `${config.baseUrl}/PhoneBook`,
 					json: true,
 					qs: {
 						email: 'NotFound@foo.bar',
@@ -34,22 +36,22 @@ describe( 'Delete (DELETE)', () => {
 			} );
 			it( 'Trigger JSON error', async () => {
 				const [res, respJson] = await requestApi.deleteAsync( {
-					url: `${baseAPI}/PhoneBook`,
+					url: `${config.baseUrl}/PhoneBook`,
 					json: true,
 					qs: {
 						query: '{hey:"there"}',
 					},
 				} );
-	   expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.MalformedQuery );
+				expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.MalformedQuery );
 				expect( respJson ).toHaveProperty( 'message' );
 				expect( store.items ).toHaveLength( 8 );
 			} );
 			it( 'Throw if no "where" clause', async () => {
 				const [res, respJson] = await requestApi.deleteAsync( {
-					url: `${baseAPI}/PhoneBook`,
+					url: `${config.baseUrl}/PhoneBook`,
 					json: true,
 				} );
-	   expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.MalformedQuery );
+				expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.MalformedQuery );
 				expect( respJson ).toEqual( {message: 'DELETE requires a "where" clause'} );
 				expect( store.items ).toHaveLength( 8 );
 			} );
@@ -58,7 +60,7 @@ describe( 'Delete (DELETE)', () => {
 			it( 'OK', async () => {
 				const id = store.items[5].id;
 				const [res, respJson] = await requestApi.deleteAsync( {
-					url: `${baseAPI}/PhoneBook/${id}`,
+					url: `${config.baseUrl}/PhoneBook/${id}`,
 					json: true,
 				} );
 				expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.NoContent );
@@ -69,11 +71,12 @@ describe( 'Delete (DELETE)', () => {
 			it( 'Not found', async () => {
 				const id = 42;
 				const [res, respJson] = await requestApi.deleteAsync( {
-					url: `${baseAPI}/PhoneBook/${id}`,
+					url: `${config.baseUrl}/PhoneBook/${id}`,
 					json: true,
 				} );
 				expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.NotFound );
-				expect( respJson ).toBeUndefined();
+				expect( respJson ).toHaveProperty( 'message' );
+				expect( respJson.message ).toMatch( /not (found|exist)/ );
 				expect( store.items ).toHaveLength( 8 );
 			} );
 		} );
@@ -82,19 +85,19 @@ describe( 'Delete (DELETE)', () => {
 		describe( 'Delete by query', () => {
 			it( 'OK', async () => {
 				const [res, respJson] = await requestApi.deleteAsync( {
-					url: `${baseAPI}/PhoneBooks`,
+					url: `${config.baseUrl}/PhoneBooks`,
 					json: true,
 					qs: DUPLICATE_DATA[0],
 				} );
 				expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.NoContent );
 				expect( respJson ).toBeUndefined();
-	   expect( store.items ).not.toContainEqual( DUPLICATE_DATA[0] );
+				expect( store.items ).not.toContainEqual( DUPLICATE_DATA[0] );
 				expect( store.items ).toHaveLength( 6 );
 			} );
 			it( 'Not found', async () => {
 				const prevLen = store.items.length;
 				const [res, respJson] = await requestApi.deleteAsync( {
-					url: `${baseAPI}/PhoneBooks`,
+					url: `${config.baseUrl}/PhoneBooks`,
 					json: true,
 					qs: {
 						email: 'NotFound@foo.bar',
@@ -106,7 +109,7 @@ describe( 'Delete (DELETE)', () => {
 			} );
 			it( 'Trigger JSON error', async () => {
 				const [res, respJson] = await requestApi.deleteAsync( {
-					url: `${baseAPI}/PhoneBooks`,
+					url: `${config.baseUrl}/PhoneBooks`,
 					json: true,
 					qs: {
 						query: '{hey:"there"}',
@@ -118,7 +121,7 @@ describe( 'Delete (DELETE)', () => {
 			} );
 			it( 'Throw if no "where" clause', async () => {
 				const [res, respJson] = await requestApi.deleteAsync( {
-					url: `${baseAPI}/PhoneBooks`,
+					url: `${config.baseUrl}/PhoneBooks`,
 					json: true,
 				} );
 				expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.MalformedQuery );
@@ -128,3 +131,4 @@ describe( 'Delete (DELETE)', () => {
 		} );
 	} );
 } );
+afterAll( unsetCurrent );

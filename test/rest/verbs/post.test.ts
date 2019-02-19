@@ -1,9 +1,11 @@
 import * as _ from 'lodash';
 
-import { baseAPI, requestApi } from '../server';
-import { resetMock, store } from '../webserver-init';
-import { EHttpStatusCode } from '../../src/webservers/express';
+import { EHttpStatusCode } from '../../../src/types';
+import { setCurrent, resetMock, store, unsetCurrent } from '../../setup/mocks/phonebook-mock';
+import { requestApi } from '../../setup/request-utils';
+import { config } from '../../setup/config';
 
+beforeAll( setCurrent );
 beforeEach( resetMock );
 describe( 'Create (POST)', () => {
 	describe( 'Single', () => {
@@ -12,7 +14,7 @@ describe( 'Create (POST)', () => {
 				name: 'New item',
 			};
 			const [res, respJson] = await requestApi.postAsync( {
-				url: `${baseAPI}/PhoneBook`,
+				url: `${config.baseUrl}/PhoneBook`,
 				json: newItem,
 			} );
 			expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.Created );
@@ -21,18 +23,18 @@ describe( 'Create (POST)', () => {
 		} );
 		it( 'Validation error', async () => {
 			const [res, respJson] = await requestApi.postAsync( {
-				url: `${baseAPI}/PhoneBook`,
+				url: `${config.baseUrl}/PhoneBook`,
 				json: {
 					phone: '123',
 				},
 			} );
-			expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.MalformedQuery );
+			expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.Forbidden );
 			expect( respJson ).toHaveProperty( 'name', 'EntityValidationError' );
 			expect( store.items ).toHaveLength( 8 );
 		} );
 		it( 'Forbid post to explicit ID', async () => {
 			const [res] = await requestApi.postAsync( {
-				url: `${baseAPI}/PhoneBook/42`,
+				url: `${config.baseUrl}/PhoneBook/42`,
 				json: {
 					name: 'Qux',
 				},
@@ -54,7 +56,7 @@ describe( 'Create (POST)', () => {
 				},
 			];
 			const [res, respJson] = await requestApi.postAsync( {
-				url: `${baseAPI}/PhoneBooks`,
+				url: `${config.baseUrl}/PhoneBooks`,
 				json: newItems,
 			} );
 			expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.Created );
@@ -65,7 +67,7 @@ describe( 'Create (POST)', () => {
 		it( 'Validation error', async () => {
 			const prevLen = store.items.length;
 			const [res, respJson] = await requestApi.postAsync( {
-				url: `${baseAPI}/PhoneBooks`,
+				url: `${config.baseUrl}/PhoneBooks`,
 				json: [
 					{
 						phone: '123',
@@ -75,7 +77,7 @@ describe( 'Create (POST)', () => {
 					},
 				],
 			} );
-			expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.MalformedQuery );
+			expect( res ).toHaveProperty( 'statusCode', EHttpStatusCode.Forbidden );
 			expect( respJson ).toHaveProperty( 'name', 'SetValidationError' );
 			expect( respJson ).toHaveProperty( 'validationErrors' );
 			expect( _.compact( respJson.validationErrors ) ).toHaveLength( 2 );
@@ -83,3 +85,4 @@ describe( 'Create (POST)', () => {
 		} );
 	} );
 } );
+afterAll( unsetCurrent );

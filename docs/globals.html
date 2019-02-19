@@ -921,8 +921,17 @@ img { max-width: 100%; }
 		<li class=" tsd-kind-enum">
 			<a href="enums/httpverb.html" class="tsd-kind-icon">Http<wbr>Verb</a>
 		</li>
+		<li class=" tsd-kind-class">
+			<a href="classes/apierror.html" class="tsd-kind-icon">Api<wbr>Error</a>
+		</li>
 		<li class=" tsd-kind-class tsd-has-type-parameter">
 			<a href="classes/apigenerator.html" class="tsd-kind-icon">Api<wbr>Generator</a>
+		</li>
+		<li class=" tsd-kind-class">
+			<a href="classes/apiresponseerror.html" class="tsd-kind-icon">Api<wbr>Response<wbr>Error</a>
+		</li>
+		<li class=" tsd-kind-class">
+			<a href="classes/apisyntaxerror.html" class="tsd-kind-icon">Api<wbr>Syntax<wbr>Error</a>
 		</li>
 		<li class=" tsd-kind-class">
 			<a href="classes/expressapigenerator.html" class="tsd-kind-icon">Express<wbr>Api<wbr>Generator</a>
@@ -936,32 +945,32 @@ img { max-width: 100%; }
 		<li class=" tsd-kind-interface tsd-has-type-parameter">
 			<a href="interfaces/idiasporaapirequest.html" class="tsd-kind-icon">IDiaspora<wbr>Api<wbr>Request</a>
 		</li>
-		<li class=" tsd-kind-interface">
+		<li class=" tsd-kind-interface tsd-has-type-parameter">
 			<a href="interfaces/idiasporaapirequestdescriptor.html" class="tsd-kind-icon">IDiaspora<wbr>Api<wbr>Request<wbr>Descriptor</a>
 		</li>
-		<li class=" tsd-kind-interface">
+		<li class=" tsd-kind-interface tsd-has-type-parameter">
 			<a href="interfaces/idiasporaapirequestdescriptorpreparse.html" class="tsd-kind-icon">IDiaspora<wbr>Api<wbr>Request<wbr>Descriptor<wbr>Pre<wbr>Parse</a>
 		</li>
-		<li class=" tsd-kind-interface">
+		<li class=" tsd-kind-interface tsd-has-type-parameter">
 			<a href="interfaces/imiddlewarehash.html" class="tsd-kind-icon">IMiddleware<wbr>Hash</a>
 		</li>
-		<li class=" tsd-kind-interface">
+		<li class=" tsd-kind-interface tsd-has-type-parameter">
 			<a href="interfaces/imodelconfiguration.html" class="tsd-kind-icon">IModel<wbr>Configuration</a>
 		</li>
-		<li class=" tsd-kind-interface">
+		<li class=" tsd-kind-interface tsd-has-type-parameter">
 			<a href="interfaces/imodelconfigurationraw.html" class="tsd-kind-icon">IModel<wbr>Configuration<wbr>Raw</a>
 		</li>
 		<li class=" tsd-kind-interface">
 			<a href="interfaces/jsonerror.html" class="tsd-kind-icon">Json<wbr>Error</a>
 		</li>
 		<li class=" tsd-kind-type-alias tsd-has-type-parameter">
-			<a href="globals.html#ihookfunction" class="tsd-kind-icon">IHook<wbr>Function</a>
-		</li>
-		<li class=" tsd-kind-type-alias tsd-has-type-parameter">
 			<a href="globals.html#ihookfunctionorarr" class="tsd-kind-icon">IHook<wbr>Function<wbr>OrArr</a>
 		</li>
-		<li class=" tsd-kind-type-alias tsd-is-not-exported">
-			<a href="globals.html#imodelrequestapplier" class="tsd-kind-icon">IModel<wbr>Request<wbr>Applier</a>
+		<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+			<a href="globals.html#thookfunction" class="tsd-kind-icon">THook<wbr>Function</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-not-exported">
+			<a href="globals.html#tmodelrequestapplier" class="tsd-kind-icon">TModel<wbr>Request<wbr>Applier</a>
 		</li>
 		<li class=" tsd-kind-variable tsd-is-not-exported">
 			<a href="globals.html#query_opts" class="tsd-kind-icon">QUERY_<wbr>OPTS</a>
@@ -977,6 +986,9 @@ img { max-width: 100%; }
 		</li>
 		<li class=" tsd-kind-object-literal">
 			<a href="globals.html#httpverbquery" class="tsd-kind-icon">Http<wbr>Verb<wbr>Query</a>
+		</li>
+		<li class=" tsd-kind-object-literal tsd-is-not-exported">
+			<a href="globals.html#messageshash" class="tsd-kind-icon">messages<wbr>Hash</a>
 		</li>
 	</ul>
 </nav>
@@ -1084,34 +1096,39 @@ app.use( <span class="hljs-string">'/api'</span>, expressApiGenerator.middleware
 					<tr>
 						<th>Action</th>
 						<th>HTTP Verb</th>
-						<th>Additionnal possible responses</th>
+						<th>Success response</th>
+						<th>Specifical error possible</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
 						<td>Insert</td>
 						<td>POST</td>
-						<td><strong>201</strong> <em>Created</em> on success, <strong>400</strong> <em>Bad request</em> if validation failed</td>
+						<td><strong>201</strong> <em>Created</em></td>
+						<td><strong>400</strong> <em>Bad request</em> if validation failed</td>
 					</tr>
 					<tr>
 						<td>Find</td>
 						<td>GET</td>
-						<td><strong>200</strong> <em>OK</em> on success</td>
+						<td><strong>200</strong> <em>OK</em></td>
+						<td></td>
 					</tr>
 					<tr>
 						<td>Update (diff)</td>
 						<td>PUT</td>
-						<td><strong>200</strong> <em>OK</em> on success, <strong>400</strong> <em>Bad request</em> if validation failed, <strong>405</strong> <em>Method Not Allowed</em> if no <code>where</code> clause</td>
+						<td><strong>200</strong> <em>OK</em></td>
+						<td><strong>400</strong> <em>Bad request</em> if validation failed, <strong>405</strong> <em>Method Not Allowed</em> if no <code>where</code> clause</td>
 					</tr>
 					<tr>
 						<td>Update (replace)</td>
 						<td>PATCH</td>
-						<td><strong>200</strong> <em>OK</em> on success, <strong>400</strong> <em>Bad request</em> if validation failed, <strong>405</strong> <em>Method Not Allowed</em> if no <code>where</code> clause</td>
+						<td><strong>200</strong> <em>OK</em></td>
+						<td><strong>400</strong> <em>Bad request</em> if validation failed, <strong>405</strong> <em>Method Not Allowed</em> if no <code>where</code> clause</td>
 					</tr>
 					<tr>
 						<td>Delete</td>
 						<td>DELETE</td>
-						<td><strong>204</strong> <em>No Content</em> if no errors occured</td>
+						<td><strong>204</strong> <em>No Content</em></td>
 					</tr>
 				</tbody>
 			</table>
@@ -1139,7 +1156,10 @@ app.use( <span class="hljs-string">'/api'</span>, expressApiGenerator.middleware
 					<section class="tsd-index-section ">
 						<h3>Classes</h3>
 						<ul class="tsd-index-list">
+							<li class="tsd-kind-class"><a href="classes/apierror.html" class="tsd-kind-icon">Api<wbr>Error</a></li>
 							<li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/apigenerator.html" class="tsd-kind-icon">Api<wbr>Generator</a></li>
+							<li class="tsd-kind-class"><a href="classes/apiresponseerror.html" class="tsd-kind-icon">Api<wbr>Response<wbr>Error</a></li>
+							<li class="tsd-kind-class"><a href="classes/apisyntaxerror.html" class="tsd-kind-icon">Api<wbr>Syntax<wbr>Error</a></li>
 							<li class="tsd-kind-class"><a href="classes/expressapigenerator.html" class="tsd-kind-icon">Express<wbr>Api<wbr>Generator</a></li>
 						</ul>
 					</section>
@@ -1149,20 +1169,20 @@ app.use( <span class="hljs-string">'/api'</span>, expressApiGenerator.middleware
 							<li class="tsd-kind-interface"><a href="interfaces/iconfiguration.html" class="tsd-kind-icon">IConfiguration</a></li>
 							<li class="tsd-kind-interface"><a href="interfaces/iconfigurationraw.html" class="tsd-kind-icon">IConfiguration<wbr>Raw</a></li>
 							<li class="tsd-kind-interface tsd-has-type-parameter"><a href="interfaces/idiasporaapirequest.html" class="tsd-kind-icon">IDiaspora<wbr>Api<wbr>Request</a></li>
-							<li class="tsd-kind-interface"><a href="interfaces/idiasporaapirequestdescriptor.html" class="tsd-kind-icon">IDiaspora<wbr>Api<wbr>Request<wbr>Descriptor</a></li>
-							<li class="tsd-kind-interface"><a href="interfaces/idiasporaapirequestdescriptorpreparse.html" class="tsd-kind-icon">IDiaspora<wbr>Api<wbr>Request<wbr>Descriptor<wbr>Pre<wbr>Parse</a></li>
-							<li class="tsd-kind-interface"><a href="interfaces/imiddlewarehash.html" class="tsd-kind-icon">IMiddleware<wbr>Hash</a></li>
-							<li class="tsd-kind-interface"><a href="interfaces/imodelconfiguration.html" class="tsd-kind-icon">IModel<wbr>Configuration</a></li>
-							<li class="tsd-kind-interface"><a href="interfaces/imodelconfigurationraw.html" class="tsd-kind-icon">IModel<wbr>Configuration<wbr>Raw</a></li>
+							<li class="tsd-kind-interface tsd-has-type-parameter"><a href="interfaces/idiasporaapirequestdescriptor.html" class="tsd-kind-icon">IDiaspora<wbr>Api<wbr>Request<wbr>Descriptor</a></li>
+							<li class="tsd-kind-interface tsd-has-type-parameter"><a href="interfaces/idiasporaapirequestdescriptorpreparse.html" class="tsd-kind-icon">IDiaspora<wbr>Api<wbr>Request<wbr>Descriptor<wbr>Pre<wbr>Parse</a></li>
+							<li class="tsd-kind-interface tsd-has-type-parameter"><a href="interfaces/imiddlewarehash.html" class="tsd-kind-icon">IMiddleware<wbr>Hash</a></li>
+							<li class="tsd-kind-interface tsd-has-type-parameter"><a href="interfaces/imodelconfiguration.html" class="tsd-kind-icon">IModel<wbr>Configuration</a></li>
+							<li class="tsd-kind-interface tsd-has-type-parameter"><a href="interfaces/imodelconfigurationraw.html" class="tsd-kind-icon">IModel<wbr>Configuration<wbr>Raw</a></li>
 							<li class="tsd-kind-interface"><a href="interfaces/jsonerror.html" class="tsd-kind-icon">Json<wbr>Error</a></li>
 						</ul>
 					</section>
 					<section class="tsd-index-section ">
 						<h3>Type aliases</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-type-alias tsd-has-type-parameter"><a href="globals.html#ihookfunction" class="tsd-kind-icon">IHook<wbr>Function</a></li>
 							<li class="tsd-kind-type-alias tsd-has-type-parameter"><a href="globals.html#ihookfunctionorarr" class="tsd-kind-icon">IHook<wbr>Function<wbr>OrArr</a></li>
-							<li class="tsd-kind-type-alias tsd-is-not-exported"><a href="globals.html#imodelrequestapplier" class="tsd-kind-icon">IModel<wbr>Request<wbr>Applier</a></li>
+							<li class="tsd-kind-type-alias tsd-has-type-parameter"><a href="globals.html#thookfunction" class="tsd-kind-icon">THook<wbr>Function</a></li>
+							<li class="tsd-kind-type-alias tsd-has-type-parameter tsd-is-not-exported"><a href="globals.html#tmodelrequestapplier" class="tsd-kind-icon">TModel<wbr>Request<wbr>Applier</a></li>
 						</ul>
 					</section>
 					<section class="tsd-index-section tsd-is-not-exported">
@@ -1183,6 +1203,7 @@ app.use( <span class="hljs-string">'/api'</span>, expressApiGenerator.middleware
 						<h3>Object literals</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-object-literal"><a href="globals.html#httpverbquery" class="tsd-kind-icon">Http<wbr>Verb<wbr>Query</a></li>
+							<li class="tsd-kind-object-literal tsd-is-not-exported"><a href="globals.html#messageshash" class="tsd-kind-icon">messages<wbr>Hash</a></li>
 						</ul>
 					</section>
 				</div>
@@ -1191,12 +1212,22 @@ app.use( <span class="hljs-string">'/api'</span>, expressApiGenerator.middleware
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Type aliases</h2>
 			<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-has-type-parameter">
-				<a name="ihookfunction" class="tsd-anchor"></a>
-				<h3>IHook<wbr>Function</h3>
-				<div class="tsd-signature tsd-kind-icon">IHook<wbr>Function<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+				<a name="ihookfunctionorarr" class="tsd-anchor"></a>
+				<h3>IHook<wbr>Function<wbr>OrArr</h3>
+				<div class="tsd-signature tsd-kind-icon">IHook<wbr>Function<wbr>OrArr<span class="tsd-signature-symbol">:</span> <a href="globals.html#thookfunction" class="tsd-signature-type">THookFunction</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="globals.html#thookfunction" class="tsd-signature-type">THookFunction</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L25">index.ts:25</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L26">index.ts:26</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-has-type-parameter">
+				<a name="thookfunction" class="tsd-anchor"></a>
+				<h3>THook<wbr>Function</h3>
+				<div class="tsd-signature tsd-kind-icon">THook<wbr>Function<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/index.ts#L25">index.ts:25</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -1204,7 +1235,7 @@ app.use( <span class="hljs-string">'/api'</span>, expressApiGenerator.middleware
 					<ul class="tsd-parameters">
 						<li class="tsd-parameter-siganture">
 							<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-not-exported">
-								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Express.Response</span>, next<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Express.NextFunction</span>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Express.Response</span>, next<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Express.NextFunction</span>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 							</ul>
 							<ul class="tsd-descriptions">
 								<li class="tsd-description">
@@ -1220,7 +1251,7 @@ app.use( <span class="hljs-string">'/api'</span>, expressApiGenerator.middleware
 											<h5>next: <span class="tsd-signature-type">Express.NextFunction</span></h5>
 										</li>
 										<li>
-											<h5>model: <span class="tsd-signature-type">Model</span></h5>
+											<h5>model: <span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span></h5>
 										</li>
 									</ul>
 									<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1230,23 +1261,13 @@ app.use( <span class="hljs-string">'/api'</span>, expressApiGenerator.middleware
 					</ul>
 				</div>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-has-type-parameter">
-				<a name="ihookfunctionorarr" class="tsd-anchor"></a>
-				<h3>IHook<wbr>Function<wbr>OrArr</h3>
-				<div class="tsd-signature tsd-kind-icon">IHook<wbr>Function<wbr>OrArr<span class="tsd-signature-symbol">:</span> <a href="globals.html#ihookfunction" class="tsd-signature-type">IHookFunction</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="globals.html#ihookfunction" class="tsd-signature-type">IHookFunction</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
+			<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-has-type-parameter tsd-is-not-exported">
+				<a name="tmodelrequestapplier" class="tsd-anchor"></a>
+				<h3>TModel<wbr>Request<wbr>Applier</h3>
+				<div class="tsd-signature tsd-kind-icon">TModel<wbr>Request<wbr>Applier<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/index.ts#L26">index.ts:26</a></li>
-					</ul>
-				</aside>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-is-not-exported">
-				<a name="imodelrequestapplier" class="tsd-anchor"></a>
-				<h3>IModel<wbr>Request<wbr>Applier</h3>
-				<div class="tsd-signature tsd-kind-icon">IModel<wbr>Request<wbr>Applier<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L50">webservers/express.ts:50</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/webservers/express.ts#L38">webservers/express.ts:38</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -1254,7 +1275,7 @@ app.use( <span class="hljs-string">'/api'</span>, expressApiGenerator.middleware
 					<ul class="tsd-parameters">
 						<li class="tsd-parameter-siganture">
 							<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-not-exported">
-								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>queryNumber<span class="tsd-signature-symbol">: </span><a href="enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a>, req<span class="tsd-signature-symbol">: </span><a href="interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">express.Response</span>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>queryNumber<span class="tsd-signature-symbol">: </span><a href="enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a>, req<span class="tsd-signature-symbol">: </span><a href="interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span>, res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">express.Response</span>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TRet</span><span class="tsd-signature-symbol">&gt;</span></li>
 							</ul>
 							<ul class="tsd-descriptions">
 								<li class="tsd-description">
@@ -1264,16 +1285,16 @@ app.use( <span class="hljs-string">'/api'</span>, expressApiGenerator.middleware
 											<h5>queryNumber: <a href="enums/equeryplurality.html" class="tsd-signature-type">EQueryPlurality</a></h5>
 										</li>
 										<li>
-											<h5>req: <a href="interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a></h5>
+											<h5>req: <a href="interfaces/idiasporaapirequest.html" class="tsd-signature-type">IDiasporaApiRequest</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span></h5>
 										</li>
 										<li>
 											<h5>res: <span class="tsd-signature-type">express.Response</span></h5>
 										</li>
 										<li>
-											<h5>model: <span class="tsd-signature-type">Model</span></h5>
+											<h5>model: <span class="tsd-signature-type">Model</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TModel</span><span class="tsd-signature-symbol">&gt;</span></h5>
 										</li>
 									</ul>
-									<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+									<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TRet</span><span class="tsd-signature-symbol">&gt;</span></h4>
 								</li>
 							</ul>
 						</li>
@@ -1289,7 +1310,7 @@ app.use( <span class="hljs-string">'/api'</span>, expressApiGenerator.middleware
 				<div class="tsd-signature tsd-kind-icon">QUERY_<wbr>OPTS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[&#x27;skip&#x27;, &#x27;limit&#x27;, &#x27;sort&#x27;, &#x27;page&#x27;]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/apiGenerator.ts#L7">apiGenerator.ts:7</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/apiGenerator.ts#L9">apiGenerator.ts:9</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1306,7 +1327,7 @@ app.use( <span class="hljs-string">'/api'</span>, expressApiGenerator.middleware
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/utils.ts#L25">utils.ts:25</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/utils.ts#L25">utils.ts:25</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1346,7 +1367,7 @@ app.use( <span class="hljs-string">'/api'</span>, expressApiGenerator.middleware
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/utils.ts#L37">utils.ts:37</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/utils.ts#L37">utils.ts:37</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1385,7 +1406,7 @@ app.use( <span class="hljs-string">'/api'</span>, expressApiGenerator.middleware
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/utils.ts#L80">utils.ts:80</a></li>
+								<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/utils.ts#L80">utils.ts:80</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1410,7 +1431,7 @@ app.use( <span class="hljs-string">'/api'</span>, expressApiGenerator.middleware
 				<div class="tsd-signature tsd-kind-icon">Http<wbr>Verb<wbr>Query<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L42">webservers/express.ts:42</a></li>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/webservers/express.ts#L30">webservers/express.ts:30</a></li>
 					</ul>
 				</aside>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -1419,11 +1440,33 @@ app.use( <span class="hljs-string">'/api'</span>, expressApiGenerator.middleware
 					<div class="tsd-signature tsd-kind-icon">__computed<span class="tsd-signature-symbol">:</span> <a href="enums/equeryaction.html" class="tsd-signature-type">EQueryAction</a><span class="tsd-signature-symbol"> =&nbsp;EQueryAction.REPLACE</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L43">webservers/express.ts:43</a></li>
-							<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L44">webservers/express.ts:44</a></li>
-							<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L45">webservers/express.ts:45</a></li>
-							<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L46">webservers/express.ts:46</a></li>
-							<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/60fa133/src/webservers/express.ts#L47">webservers/express.ts:47</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/webservers/express.ts#L31">webservers/express.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/webservers/express.ts#L32">webservers/express.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/webservers/express.ts#L33">webservers/express.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/webservers/express.ts#L34">webservers/express.ts:34</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/webservers/express.ts#L35">webservers/express.ts:35</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-is-not-exported">
+				<a name="messageshash" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> messages<wbr>Hash</h3>
+				<div class="tsd-signature tsd-kind-icon">messages<wbr>Hash<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/errors/apiResponseError.ts#L6">errors/apiResponseError.ts:6</a></li>
+					</ul>
+				</aside>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-not-exported">
+					<a name="messageshash.__computed" class="tsd-anchor"></a>
+					<h3>__computed</h3>
+					<div class="tsd-signature tsd-kind-icon">__computed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;The method used on this resource is not allowed&quot;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/errors/apiResponseError.ts#L7">errors/apiResponseError.ts:7</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/errors/apiResponseError.ts#L8">errors/apiResponseError.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/diaspora-orm/plugin-server/blob/9b3628e/src/errors/apiResponseError.ts#L9">errors/apiResponseError.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>

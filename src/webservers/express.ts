@@ -5,13 +5,14 @@ import _ = require( 'lodash' );
 
 import { Diaspora, Model, Errors, Utils, Set, Entity, ELoggingLevel } from '@diaspora/diaspora';
 
-import { IConfigurationRaw, IDiasporaApiRequest, IDiasporaApiRequestDescriptor, IDiasporaApiRequestDescriptorPreParse, THookFunction, IMiddlewareHash, IModelConfiguration } from '../index';
+import { IConfigurationRaw, IDiasporaApiRequest, IDiasporaApiRequestDescriptor, IDiasporaApiRequestDescriptorPreParse, THookFunction, IMiddlewareHash, IModelConfiguration, IHookFunctionOrArr } from '../index';
 import { EQueryAction, EQueryPlurality, JsonError } from '../utils';
 import { ApiGenerator } from '../apiGenerator';
 import { ApiError } from '../errors/apiError';
 import { ApiSyntaxError } from '../errors/apiSyntaxError';
 import { ApiResponseError } from '../errors/apiResponseError';
 import { EHttpStatusCode } from '../types';
+import minimatch = require( 'minimatch' );
 
 /**
  * Lists all HTTP verbs used by this webserver
@@ -55,9 +56,9 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 
 		this._middleware
 			.use( ( req, res, next ) => {
-				const contentType = req.headers['content-type'];
-				if ( !contentType || contentType.toLowerCase() !== 'application/json' ){
-					const error = new Error( `Unsupported content type "${contentType}". This API only supports "application/json".` );
+				const accept = req.headers['accept'];
+				if ( !accept || !minimatch( 'application/json', accept.toLowerCase() ) ){
+					const error = new Error( `Unsupported Accept MIME "${accept}". This API only supports "application/json".` );
 					return ExpressApiGenerator.respondNativeError( req as any, res, ApiResponseError.UnsupportedMediaType( error ) );
 				}
 				return next();
@@ -129,7 +130,7 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 			if ( EQueryPlurality.SINGULAR === diasporaApiWithParsedQuery.number && !_.isObject( diasporaApiWithParsedQuery.body ) ){
 				throw ApiResponseError.MalformedQuery( new ApiError( 'Expected a single object' ) );
 			} else if ( EQueryPlurality.PLURAL === diasporaApiWithParsedQuery.number &&
-				( !_.isArray( diasporaApiWithParsedQuery.body ) ) || !_.every( diasporaApiWithParsedQuery.body, _.isObject ) ){
+				( !_.isArray( diasporaApiWithParsedQuery.body ) || !_.every( diasporaApiWithParsedQuery.body, _.isObject ) ) ){
 				throw ApiResponseError.MalformedQuery( new ApiError( 'Expected an array of objects' ) );
 			}
 		}
@@ -474,6 +475,10 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 		put( req, res, next, model ) {
 			return ExpressApiGenerator.replaceHandler( EQueryPlurality.PLURAL, req, res, model );
 		},
+
+		forbidden( req, res, next, model ){
+			return res.status( 403 ).send( 'Forbidden' );
+		},
 	};
 
 	/**
@@ -486,19 +491,17 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 	 */
 	protected bind( apiNumber: EQueryPlurality, route: string, modelName: string ){
 		const modelApi = this._modelsConfiguration[modelName];
-		const partialize = ( methods: Array<_.Many<THookFunction<any, IDiasporaApiRequest<any>> | undefined>> ) =>
+		const partialize = <TModel>( methods: Array<THookFunction<TModel, IDiasporaApiRequest<TModel>>> ) =>
 		_.chain( methods )
-		.flatten()
-		.compact()
-		.map( ( func ) => _.ary( func, 4 ) )
-		.map( ( func ) => _.partialRight( func, modelApi.model ) )
-		.value();
+			.map( ( func ) => _.ary( func, 4 ) )
+			.map( ( func ) => _.partialRight( func, modelApi.model ) )
+			.value();
 
 		this._middleware
 		.route( route )
+		.options( ( req, res ) => res.status( 200 ).send() )
 		.all( partialize( [
 			this.prepareQueryHandling( apiNumber ),
-			modelApi.middlewares.all,
 		] ) )
 		.delete( partialize( this.getRelevantHandlers( modelApi, apiNumber, EQueryAction.DELETE, HttpVerb.DELETE ) ) )
 		.get( partialize( this.getRelevantHandlers( modelApi, apiNumber, EQueryAction.FIND, HttpVerb.GET ) ) )
@@ -517,7 +520,7 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 	 */
 	protected optionsHandler( req: express.Request, res: express.Response ) {
 		return res.json( {
-			apiType: 'plugin-server',
+			apiType: require( '../../package.json' ).name,
 			version: require( '../../package.json' ).version,
 			routes: _.mapValues( this._modelsConfiguration, apiDesc => ( {
 				[`/${apiDesc.singular}/$ID`]: this.generateApiMap( apiDesc, EQueryPlurality.SINGULAR, req.baseUrl ),
@@ -534,7 +537,7 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 	 * @param baseUrl     - Base URL of the endpoint (usually taken from the express request).
 	 * @returns Object containing the API map.
 	 */
-	protected generateApiMap<TModel>( modelApi: IModelConfiguration < TModel > , queryNumber: EQueryPlurality, baseUrl: string ){
+	protected generateApiMap<TModel>( modelApi: IModelConfiguration<TModel> , queryNumber: EQueryPlurality, baseUrl: string ){
 		const singularRouteName = `/${modelApi.plural}`;
 		const pluralRouteName = `/${modelApi.singular}/$ID`;
 		return queryNumber === EQueryPlurality.PLURAL ? {
@@ -559,24 +562,39 @@ export class ExpressApiGenerator extends ApiGenerator<express.Router> {
 	 *
 	 * @param modelApi   - Description of the API to bind
 	 * @param apiNumber  - Numbering of the API.
-	 * @param actionName - Action done by the handlers to get.
-	 * @param methodName - HTTP verb that matches the handlers to get.
+	 * @param action - Action done by the handlers to get.
+	 * @param verb - HTTP verb that matches the handlers to get.
 	 */
 	protected getRelevantHandlers<TModel>(
 		modelApi: IModelConfiguration<TModel>,
 		apiNumber: EQueryPlurality,
-		actionName: EQueryAction,
-		methodName: HttpVerb
-	){
-		const action: 'find' | 'delete' | 'update' | 'insert' | 'replace' = actionName.toLowerCase() as any;
-		const method: 'get' | 'delete' | 'patch' | 'post' | 'put' = methodName.toLowerCase() as any;
+		action: EQueryAction,
+		verb: HttpVerb
+	) : Array<THookFunction<TModel, IDiasporaApiRequest<TModel>>>{
+		const actionLowered: 'find' | 'delete' | 'update' | 'insert' | 'replace' = action.toLowerCase() as any;
+		const verbLowered: 'get' | 'patch' | 'post' | 'put' = verb.toLowerCase() as any;
 		const middlewares = modelApi.middlewares;
 
-		return [
-			middlewares[method],
-			middlewares[action],
-			( middlewares as any )[action + ( EQueryPlurality.SINGULAR === apiNumber ? 'One' : 'Many' )],
-			( ExpressApiGenerator.handlers as any )[( EQueryPlurality.SINGULAR === apiNumber ? '_' : '' ) + method],
-		] as Array<_.Many<THookFunction<TModel, IDiasporaApiRequest<TModel>> | undefined>>;
+		// Get all handlers that apply to this verb
+		const relevantSpecificMiddlewares = _.uniq( _.reject( [
+			middlewares[verbLowered],
+			middlewares[actionLowered],
+			( middlewares as any )[actionLowered + ( EQueryPlurality.SINGULAR === apiNumber ? 'One' : 'Many' )] as IHookFunctionOrArr<TModel, IDiasporaApiRequest<TModel>> | boolean | undefined,
+		], _.isNil ) );
+		if (
+			( middlewares.all === false && relevantSpecificMiddlewares.length > 0 )  ||
+			_.some( relevantSpecificMiddlewares, item => item === false )
+		) {
+			return [ExpressApiGenerator.handlers.forbidden];
+		}
+
+		const allFunctions = _.chain( relevantSpecificMiddlewares as any )
+			.flattenDeep<THookFunction<TModel, IDiasporaApiRequest<TModel>> | true>()
+			.reject( handler => handler === true )
+			.value() as Array<THookFunction<TModel, IDiasporaApiRequest<TModel>>>;
+
+		const actionHandler = ( ExpressApiGenerator.handlers as any )[( EQueryPlurality.SINGULAR === apiNumber ? '_' : '' ) + verbLowered];
+		allFunctions.push( actionHandler );
+		return allFunctions;
 	}
 }
