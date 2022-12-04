@@ -139,7 +139,7 @@
 		"validate-commit-msg": "^2.14.0"
 	},
 	"dependencies": {
-		"body-parser": "^1.18.3",
+		"body-parser": "^1.19.2",
 		"chalk": "^2.4.1",
 		"jest-plugins-recommended": "^2.9.0",
 		"lodash": "^4.17.10",
